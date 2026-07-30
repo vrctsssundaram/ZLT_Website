@@ -1,0 +1,109 @@
+{
+  "brand": [
+    {
+      "file": "assets/brand/zepto-logo.png",
+      "type": "transparent PNG logo",
+      "use": "Header and footer brand identity"
+    },
+    {
+      "file": "assets/brand/favicon-16.png",
+      "type": "16×16 PNG favicon",
+      "use": "Browser tab icon"
+    },
+    {
+      "file": "assets/brand/favicon-32.png",
+      "type": "32×32 PNG favicon",
+      "use": "High-density browser tab icon"
+    },
+    {
+      "file": "assets/brand/apple-touch-icon.png",
+      "type": "180×180 PNG touch icon",
+      "use": "iOS home-screen icon"
+    },
+    {
+      "file": "assets/brand/og-image.jpg",
+      "type": "1200×630 JPEG social preview",
+      "use": "Open Graph and Twitter sharing image"
+    }
+  ],
+  "news": [
+    {
+      "file": "assets/news/mou-signing.jpg",
+      "type": "JPEG milestone photograph",
+      "use": "Tamil Nadu Government MoU signing"
+    },
+    {
+      "file": "assets/news/land-allotment.jpg",
+      "type": "JPEG milestone photograph",
+      "use": "Land allotment for industrial development"
+    },
+    {
+      "file": "assets/news/cdot-grant.jpg",
+      "type": "JPEG milestone photograph",
+      "use": "C-DOT Samarth grant milestone"
+    },
+    {
+      "file": "assets/news/cdiic-incubation.jpg",
+      "type": "JPEG milestone photograph",
+      "use": "CDIIC defence incubation milestone"
+    },
+    {
+      "file": "assets/news/tnrpf-grant.jpg",
+      "type": "JPEG milestone photograph",
+      "use": "TNRPF research grant milestone"
+    },
+    {
+      "file": "assets/news/ism-dpr.jpg",
+      "type": "JPEG milestone photograph",
+      "use": "India Semiconductor Mission DPR submission"
+    }
+  ],
+  "people": [
+    {
+      "file": "assets/people/sakthivel-kandasamy.jpg",
+      "type": "JPEG executive portrait",
+      "use": "Founder leadership profile"
+    },
+    {
+      "file": "assets/people/suresh-kuppuswamy.jpg",
+      "type": "JPEG executive portrait",
+      "use": "CEO/MD leadership profile"
+    },
+    {
+      "file": "assets/people/praveen-revankar-s.jpg",
+      "type": "JPEG team portrait",
+      "use": "People gallery"
+    },
+    {
+      "file": "assets/people/siva-kumar-m.jpg",
+      "type": "JPEG team portrait",
+      "use": "People gallery"
+    },
+    {
+      "file": "assets/people/venkata-ranga-reddy-s.jpg",
+      "type": "JPEG team portrait",
+      "use": "People gallery"
+    }
+  ],
+  "legacy_code": [
+    {
+      "file": "assets/style.css (from uploaded ZIP)",
+      "type": "legacy stylesheet",
+      "use": "Reviewed but not copied over; enterprise stylesheet retained"
+    },
+    {
+      "file": "assets/main.js (from uploaded ZIP)",
+      "type": "legacy JavaScript",
+      "use": "Reviewed but not copied over; enhanced enterprise JavaScript retained"
+    }
+  ],
+  "ui_features": [
+    "Contextual rolling marquees on every page",
+    "Ecosystem recognition marquee",
+    "Compact language selector: English, Tamil, Hindi, Japanese, Korean, Simplified Chinese",
+    "Persistent dark/light theme toggle",
+    "Official logo inside animated chip",
+    "Circular capability orbit widgets",
+    "Responsive navigation and motion accessibility"
+  ]
+}
