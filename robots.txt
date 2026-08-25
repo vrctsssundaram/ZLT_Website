@@ -1,4 +1,4 @@
 User-agent: *
-Allow: /
+Disallow: /
 
-Sitemap: https://zeptologic.com/sitemap.xml
+# STAGING ONLY — remove this block at controlled migration to zeptologic.com.
