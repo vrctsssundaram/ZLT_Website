@@ -3,6 +3,7 @@ name: Website 2.0 Static QA
 on:
   push:
     branches:
+      - main
       - website-2.0-conversion-rebuild
   pull_request:
     paths:
