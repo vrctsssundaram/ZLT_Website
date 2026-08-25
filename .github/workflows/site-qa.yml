@@ -1,0 +1,33 @@
+name: Website 2.0 Static QA
+
+on:
+  push:
+    branches:
+      - website-2.0-conversion-rebuild
+  pull_request:
+    paths:
+      - "*.html"
+      - "assets/**"
+      - "sitemap.xml"
+      - "robots.txt"
+      - "scripts/site_qa.py"
+      - ".github/workflows/site-qa.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  static-qa:
+    name: Internal links, SEO and disclosure guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run zero-dependency site QA
+        run: python scripts/site_qa.py
