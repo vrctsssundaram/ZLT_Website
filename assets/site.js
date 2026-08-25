@@ -5,6 +5,11 @@ if(q('.frontispiece')){const homeCss=document.createElement('link');homeCss.rel=
 if(!q('link[href="assets/v4.css"]')){const v4=document.createElement('link');v4.rel='stylesheet';v4.href='assets/v4.css';document.head.appendChild(v4)}
 document.body.classList.add('v4');
 
+// Page coordinates and automatic section telemetry labels for all interior pages.
+const file=(location.pathname.split('/').pop()||'index.html').toLowerCase();const pageKey=file.replace('.html','')||'index';document.body.dataset.page=pageKey;
+const pageCodes={index:'ZL / 00 / HOME',about:'ZL / 10 / COMPANY',products:'ZL / 20 / IP',services:'ZL / 30 / SERVICES',research:'ZL / 40 / R&D',news:'ZL / 50 / NEWS',careers:'ZL / 60 / CAREERS',contact:'ZL / 70 / INTAKE'};
+const hero=q('.page-hero');if(hero)hero.dataset.v4Code=pageCodes[pageKey]||'ZL / TECHNICAL FIELD';qa('main > section').forEach((s,i)=>{if(!s.dataset.v4Section){const code=q('.section-code',s)?.textContent?.split('/')[0]?.trim();const heading=q('h1,h2',s)?.textContent?.trim();s.dataset.v4Section=code||heading?.slice(0,28)||`Section ${String(i+1).padStart(2,'0')}`}});
+
 // Mobile navigation
 q('.menu-btn')?.addEventListener('click',()=>{const links=q('.links');links?.classList.toggle('open');q('.menu-btn')?.setAttribute('aria-expanded',String(links?.classList.contains('open')))});
 
@@ -20,7 +25,7 @@ applyTheme(document.documentElement.dataset.theme||'light');themeButton?.addEven
 const nav=q('.nav');const syncNav=()=>nav?.classList.toggle('is-scrolled',window.scrollY>18);syncNav();window.addEventListener('scroll',syncNav,{passive:true});
 const progress=document.createElement('div');progress.className='v4-progress';progress.innerHTML='<div class="v4-progress-track"><div class="v4-progress-fill"></div><div class="v4-progress-dot"></div></div><div class="v4-progress-label">Signal position</div>';document.body.appendChild(progress);
 const progressFill=q('.v4-progress-fill',progress),progressDot=q('.v4-progress-dot',progress),progressLabel=q('.v4-progress-label',progress);
-const syncProgress=()=>{const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);const pct=Math.min(1,Math.max(0,scrollY/max));if(progressFill)progressFill.style.height=`${pct*100}%`;if(progressDot)progressDot.style.top=`${pct*100}%`;const sections=qa('[data-v4-section]');let current=sections[0];sections.forEach(s=>{if(s.getBoundingClientRect().top<innerHeight*.42)current=s});if(progressLabel&&current)progressLabel.textContent=`${String(Math.round(pct*100)).padStart(2,'0')}% · ${current.dataset.v4Section}`};syncNav()};syncProgress();window.addEventListener('scroll',syncProgress,{passive:true});window.addEventListener('resize',syncProgress,{passive:true});
+const syncProgress=()=>{const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);const pct=Math.min(1,Math.max(0,scrollY/max));if(progressFill)progressFill.style.height=`${pct*100}%`;if(progressDot)progressDot.style.top=`${pct*100}%`;const sections=qa('[data-v4-section]');let current=sections[0];sections.forEach(s=>{if(s.getBoundingClientRect().top<innerHeight*.42)current=s});if(progressLabel&&current)progressLabel.textContent=`${String(Math.round(pct*100)).padStart(2,'0')}% · ${current.dataset.v4Section}`;syncNav()};syncProgress();window.addEventListener('scroll',syncProgress,{passive:true});window.addEventListener('resize',syncProgress,{passive:true});
 
 // Fine-pointer spotlight: subtle spatial response, disabled for touch/reduced motion.
 if(matchMedia('(pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches){window.addEventListener('pointermove',e=>{document.body.style.setProperty('--mx',`${e.clientX}px`);document.body.style.setProperty('--my',`${e.clientY}px`)},{passive:true})}
@@ -57,7 +62,7 @@ qa('[data-track]').forEach(el=>el.addEventListener('click',()=>track(el.dataset.
 
 // V4 topology route interactions
 const topologyRoutes={ip:'products.html',rtl:'rtl-design-services.html',verification:'verification-coverage-closure.html',fpga:'fpga-prototyping-services.html',research:'research.html'};
-qa('.topology-node[data-topology]').forEach(node=>{node.style.cursor='pointer';node.setAttribute('tabindex','0');node.setAttribute('role','link');const go=()=>{const route=topologyRoutes[node.dataset.topology];if(route)location.href=route};node.addEventListener('click',go);node.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});node.addEventListener('mouseenter',()=>{qa('.topology-node').forEach(n=>n.classList.remove('active'));node.classList.add('active')});node.addEventListener('mouseleave',()=>{q('.topology-center')?.classList.add('active')})});
+qa('.topology-node[data-topology]').forEach(node=>{node.style.cursor='pointer';node.setAttribute('tabindex','0');node.setAttribute('role','link');const go=()=>{const route=topologyRoutes[node.dataset.topology];if(route)location.href=route};node.addEventListener('click',go);node.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});node.addEventListener('mouseenter',()=>{qa('.topology-node').forEach(n=>n.classList.remove('active'));node.classList.add('active')});node.addEventListener('mouseleave',()=>{node.classList.remove('active');q('.topology-center')?.classList.add('active')})});
 
 // V4 project brief composer
 const composerState={need:null,stage:null,outcome:null};
