@@ -1,22 +1,16 @@
-# Zepto Logic Website 2.0 — Draft Review
+# Zepto Logic Website 2.0 — GitHub Pages Staging
 
-> **DO NOT MERGE TO `main` OR DEPLOY AS PRODUCTION YET.**
->
-> This branch is the isolated Website 2.0 conversion-led rebuild. The current production/GitHub Pages baseline remains on `main` until final approvals and deployment dependencies are cleared.
+This repository is the **trial/staging implementation** of Zepto Logic Website 2.0.
 
-## Branch
+Live staging URL:
 
-`website-2.0-conversion-rebuild`
+https://vrctsssundaram.github.io/ZLT_Website/
 
-Draft review PR: https://github.com/vrctsssundaram/ZLT_Website/pull/1
+Production website:
 
-## Read-only branch preview
+https://zeptologic.com/
 
-Development renderer (third-party, read-only; it does not deploy or modify production):
-
-https://raw.githack.com/vrctsssundaram/ZLT_Website/website-2.0-conversion-rebuild/index.html
-
-Use the preview only for visual/navigation review. RawGitHack is not a production host and may briefly cache branch changes.
+The GitHub Pages site is intentionally separate from production. Changes merged to `main` are used for dry-run review, QA and migration preparation before anything is transferred to the production website repository/hosting environment.
 
 ## Website 2.0 objective
 
@@ -37,8 +31,8 @@ rather than a passive company brochure.
 - Qualified technical-enquiry form with static mail fallback
 - Light/dark theme, responsive navigation, static site search and analytics hooks
 - High-intent landing pages for RTL, verification, FPGA, floating-point IP, IP-quality, cryptographic hardware, research-to-hardware and India design-partner searches
-- Updated sitemap and historical-route 404 fallback
-- Automated zero-dependency static QA on every Website 2.0 push/PR change
+- Sitemap, robots.txt, `.nojekyll` and historical-route 404 fallback
+- Automated static QA and JavaScript syntax validation
 
 ## Public-claim guardrails
 
@@ -52,63 +46,22 @@ rather than a passive company brochure.
 - Proprietary architecture, equations and optimisation mechanisms remain non-public
 - No third-party logo artwork without written permission
 
-## Review matrix
-
-### Desktop
-- Header/nav alignment at 1280–1440 px
-- Hero hierarchy and CTA prominence
-- Table/ledger readability on Products and Services
-- R&D status-label clarity
-- Contact form validation and mail fallback
-- Light/dark theme contrast
-
-### Mobile
-- 320, 375 and 430 px widths
-- Menu open/close and tap targets
-- No horizontal overflow in spec/evidence rows
-- CTA stacking
-- Form field sizing and keyboard-safe inputs
-
-### Functional
-- All navigation links
-- Search results and intent-page routing
-- Product-family filters
-- Query-string form prefill
-- Theme persistence
-- 404 historical-route fallback
-- Privacy/Terms links
-
-### Content / disclosure
-- Capability wording vs current operating reality
-- Government/programme status wording
-- No confidential or proprietary implementation detail
-- Leadership and partner references require final approval before launch
-
-## URL policy — resolved
+## URL policy
 
 **Production target: clean URLs** such as `/about/`, `/services/`, `/products/`, `/research/` and `/privacy/`.
 
-The current public site is already indexed on this clean-path model, so Website 2.0 keeps clean canonical URLs and clean sitemap locations.
+The staging source uses physical `.html` links because GitHub Pages directly serves the static files. Before migration to production, internal links must be normalised to the clean-path model and historical URLs preserved through server-side 301 redirects/rewrite rules.
 
-The source files retain `.html` hrefs temporarily because the read-only GitHub branch preview requires direct physical-file navigation. Before production launch:
+## Staging limitations
 
-1. verify the production host's `.html` → clean-path redirect/rewrite behaviour;
-2. normalize internal navigation/search links to the clean URLs so users and crawlers do not incur unnecessary redirects; and
-3. preserve server-side 301 mappings for historical/renamed routes.
+These do not block the GitHub Pages trial site:
 
-This is a deployment-normalisation task, not an unresolved SEO architecture decision.
+1. Enquiry submission currently uses a mail-client fallback; production requires server-side lead routing and secure upload.
+2. Final role-based aliases, phone/WhatsApp/social links and approved leadership assets remain production inputs.
+3. Public PPA figures remain withheld until re-characterisation.
+4. GTM/GA/Clarity IDs, cookie-consent configuration and Search Console verification remain production setup items.
+5. Final legal review remains required before production migration.
 
-## Open launch blockers
+## Deployment policy
 
-1. Final approved leadership copy and portraits
-2. Approved role-based contact aliases
-3. Production server-side lead routing and secure file upload
-4. Final legal review and analytics consent implementation
-5. GTM/GA/Clarity production IDs and Search Console verification
-6. Final approved office/lab/event/leadership images
-7. Public PPA data only after re-characterisation
-8. Verified production redirect/rewrite rules and final internal-link normalization
-
-## Deployment rule
-
-No production deployment, domain cutover, `main` merge, DNS change or GitHub Pages source change should occur from this branch until the draft PR is explicitly approved for launch.
+`main` is the GitHub Pages staging branch. Every staging release should pass the repository QA workflow before being treated as a migration candidate for the production website.
