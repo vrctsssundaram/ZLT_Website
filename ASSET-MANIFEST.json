@@ -1,11 +1,16 @@
 {
-  "version": "website-2.0-conversion-rebuild",
-  "status": "draft-review",
+  "version": "v8-total-brand-reset",
+  "status": "staging-release-candidate",
   "brand": [
     {
       "file": "assets/brand/zepto-logo.png",
       "type": "transparent PNG logo",
-      "use": "Header and footer brand identity"
+      "use": "Wordmark in header and footer"
+    },
+    {
+      "file": "assets/brand/og-image.jpg",
+      "type": "social sharing image",
+      "use": "Open Graph and social cards"
     },
     {
       "file": "assets/brand/favicon-32.png",
@@ -16,29 +21,46 @@
   "interface": [
     {
       "file": "assets/style.css",
-      "type": "Website 2.0 stylesheet",
-      "use": "Light-primary precision layout, dark technical sections, responsive presentation and accessibility states"
+      "type": "V8 editorial-commercial design system",
+      "use": "Warm paper canvas, oversized editorial typography, asymmetrical layouts, photographic proof, responsive forms and navigation"
     },
     {
       "file": "assets/site.js",
-      "type": "Website 2.0 JavaScript",
-      "use": "Navigation, theme persistence, static search, portfolio filtering, conversion-event hooks and technical-enquiry validation"
+      "type": "V8 interaction layer",
+      "use": "Mobile navigation, site search, UTM/context handling, analytics hooks and Supabase-backed technical enquiry submission with email fallback"
     }
   ],
+  "typography": [
+    "Libre Caslon Display",
+    "Plus Jakarta Sans",
+    "IBM Plex Mono"
+  ],
   "current_ui_features": [
-    "Problem-led homepage routing",
-    "Engineering specification and evidence layouts",
-    "Static dependency-free site search",
-    "Persistent light/dark theme toggle",
-    "Responsive navigation",
-    "Reduced-motion accessibility support",
-    "Qualified technical-enquiry validation",
-    "Conversion analytics event hooks"
+    "Editorial hero and project routes",
+    "Asymmetrical commercial offer layouts",
+    "Real programme photography",
+    "Direct phone, email and WhatsApp paths",
+    "Responsive site-wide navigation",
+    "Keyboard-accessible search",
+    "Persistent technical enquiry intake",
+    "UTM and contextual enquiry routing",
+    "Reduced-motion support"
+  ],
+  "explicitly_removed_legacy_systems": [
+    "V3 home stylesheet",
+    "V4 shared stylesheet",
+    "V4 page stylesheet",
+    "Topology diagram",
+    "Project composer",
+    "Scroll telemetry rail",
+    "Theme toggle",
+    "Status-chip and evidence-ledger visual language"
   ],
   "asset_policy": [
-    "No AI-generated imagery of people, facilities or hardware",
+    "No AI-generated people, facilities or hardware",
     "No stock facility imagery",
+    "Use genuine programme photography already owned by the repository",
     "No third-party logo artwork without written permission",
-    "Leadership portraits and other launch photography are activated only after approval"
+    "Leadership portraits remain unpublished until titles, bios, portraits and links are approved"
   ]
 }
