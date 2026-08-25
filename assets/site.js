@@ -1,5 +1,8 @@
 const q=(s,c=document)=>c.querySelector(s);const qa=(s,c=document)=>[...c.querySelectorAll(s)];
 
+// Homepage visual layer is isolated from the shared component system.
+if(q('.frontispiece')){const homeCss=document.createElement('link');homeCss.rel='stylesheet';homeCss.href='assets/home-v3.css';document.head.appendChild(homeCss)}
+
 // Mobile navigation
 q('.menu-btn')?.addEventListener('click',()=>{const links=q('.links');links?.classList.toggle('open');q('.menu-btn')?.setAttribute('aria-expanded',String(links?.classList.contains('open')))});
 
@@ -8,8 +11,11 @@ if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>es.for
 
 // Persistent theme
 const themeButton=q('.theme-toggle');
-function applyTheme(theme){document.documentElement.dataset.theme=theme;const dark=theme==='dark';if(themeButton){themeButton.setAttribute('aria-pressed',String(dark));themeButton.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');themeButton.querySelector('.theme-icon')&&(themeButton.querySelector('.theme-icon').textContent=dark?'☀':'◐')}const meta=q('meta[name="theme-color"]');if(meta)meta.content=dark?'#0b1113':'#f3f4ef'}
+function applyTheme(theme){document.documentElement.dataset.theme=theme;const dark=theme==='dark';if(themeButton){themeButton.setAttribute('aria-pressed',String(dark));themeButton.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');themeButton.querySelector('.theme-icon')&&(themeButton.querySelector('.theme-icon').textContent=dark?'☀':'◐')}const meta=q('meta[name="theme-color"]');if(meta)meta.content=dark?'#0c0f14':'#f5f1e8'}
 applyTheme(document.documentElement.dataset.theme||'light');themeButton?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';localStorage.setItem('zl-theme',next);applyTheme(next)});
+
+// Masthead state: a subtle engineering-instrument cue, not decorative motion.
+const nav=q('.nav');const syncNav=()=>nav?.classList.toggle('is-scrolled',window.scrollY>18);syncNav();window.addEventListener('scroll',syncNav,{passive:true});
 
 // Product filtering
 qa('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{qa('[data-filter]').forEach(x=>x.classList.remove('active'));btn.classList.add('active');const target=btn.dataset.filter;qa('.spec-row[data-category]').forEach(row=>row.classList.toggle('hidden',target!=='all'&&row.dataset.category!==target))}));
@@ -34,7 +40,7 @@ const SITE_INDEX=[
 ];
 const searchDialog=q('.search-dialog');const searchInput=q('#siteSearch');const searchResults=q('.search-results');
 function renderSearch(term=''){if(!searchResults)return;const tokens=term.trim().toLowerCase().split(/\s+/).filter(Boolean);if(!tokens.length){searchResults.innerHTML='<p class="muted">Search IP, RTL, verification, FPGA, research or company information.</p>';return}const matches=SITE_INDEX.filter(x=>{const haystack=(x.title+' '+x.text).toLowerCase();return tokens.every(token=>haystack.includes(token))}).slice(0,10);searchResults.innerHTML=matches.length?matches.map(x=>`<a class="search-result" href="${x.url}"><strong>${x.title}</strong><small>${x.text.split(' ').slice(0,12).join(' ')}…</small></a>`).join(''):'<p class="muted">No direct match. Try a shorter technical term.</p>'}
-function openSearch(){searchDialog?.classList.add('open');searchDialog?.setAttribute('aria-hidden','false');setTimeout(()=>searchInput?.focus(),50)}function closeSearch(){searchDialog?.classList.remove('open');searchDialog?.setAttribute('aria-hidden','true')}
+function openSearch(){searchDialog?.classList.add('open');searchDialog?.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(()=>searchInput?.focus(),50)}function closeSearch(){searchDialog?.classList.remove('open');searchDialog?.setAttribute('aria-hidden','true');document.body.style.overflow=''}
 q('.search-toggle')?.addEventListener('click',openSearch);q('.search-close')?.addEventListener('click',closeSearch);searchDialog?.addEventListener('click',e=>{if(e.target===searchDialog)closeSearch()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSearch()});searchInput?.addEventListener('input',e=>renderSearch(e.target.value));
 
 // Analytics hooks. GTM/GA/Clarity can be connected later without changing CTA markup.
