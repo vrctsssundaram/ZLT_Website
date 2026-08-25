@@ -31,3 +31,6 @@ jobs:
 
       - name: Run zero-dependency site QA
         run: python scripts/site_qa.py
+
+      - name: Validate JavaScript syntax
+        run: node --check assets/site.js
