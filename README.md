@@ -38,6 +38,7 @@ rather than a passive company brochure.
 - Light/dark theme, responsive navigation, static site search and analytics hooks
 - High-intent landing pages for RTL, verification, FPGA, floating-point IP, IP-quality, cryptographic hardware, research-to-hardware and India design-partner searches
 - Updated sitemap and historical-route 404 fallback
+- Automated zero-dependency static QA on every Website 2.0 push/PR change
 
 ## Public-claim guardrails
 
@@ -83,6 +84,20 @@ rather than a passive company brochure.
 - No confidential or proprietary implementation detail
 - Leadership and partner references require final approval before launch
 
+## URL policy — resolved
+
+**Production target: clean URLs** such as `/about/`, `/services/`, `/products/`, `/research/` and `/privacy/`.
+
+The current public site is already indexed on this clean-path model, so Website 2.0 keeps clean canonical URLs and clean sitemap locations.
+
+The source files retain `.html` hrefs temporarily because the read-only GitHub branch preview requires direct physical-file navigation. Before production launch:
+
+1. verify the production host's `.html` → clean-path redirect/rewrite behaviour;
+2. normalize internal navigation/search links to the clean URLs so users and crawlers do not incur unnecessary redirects; and
+3. preserve server-side 301 mappings for historical/renamed routes.
+
+This is a deployment-normalisation task, not an unresolved SEO architecture decision.
+
 ## Open launch blockers
 
 1. Final approved leadership copy and portraits
@@ -92,10 +107,7 @@ rather than a passive company brochure.
 5. GTM/GA/Clarity production IDs and Search Console verification
 6. Final approved office/lab/event/leadership images
 7. Public PPA data only after re-characterisation
-8. Production redirect strategy for historical URLs
-9. **URL-policy decision:** the physical static files currently use `.html` links while canonical/sitemap entries use clean paths such as `/about/`. Do not ship this mismatch. At launch either:
-   - implement verified server rewrites and move internal links to clean paths, or
-   - keep `.html` as the canonical/sitemap URL model.
+8. Verified production redirect/rewrite rules and final internal-link normalization
 
 ## Deployment rule
 
