@@ -9,9 +9,10 @@ import re, sys, xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
 HTML_FILES=sorted(ROOT.glob('*.html'))
 HOSTS={'zeptologic.com','www.zeptologic.com'}
-THEME='#f4f0e7'
+LIGHT_THEME='#f4f0e7';DARK_HOME_THEME='#06111c'
 FORBIDDEN_CLAIMS={r'\b15\+\s*(?:FPGA[- ]validated\s*)?(?:IP|cores?|blocks?)\b':'legacy 15+ IP-count claim',r'\bsilicon[- ]validated\b':'silicon-validation claim',r'\bpatent\s+pending\b':'patent-pending claim',r'\bTRL[- ]?\d+\b':'public TRL claim',r'\bfoundry[- ]ready\b':'foundry-ready claim',r'\bDeep\s+Tech\s+Startup\b':'unapproved deep-tech recognition wording',r'\bunfiled\s+(?:invention|architecture|IP)':'filing-state disclosure'}
 LEGACY_PUBLIC_PATTERNS={r'assets/(?:v4|v4-pages|home-v3|v9-edge|v10-blue)\.css':'legacy stylesheet reference',r'class=["\'][^"\']*\bsignal-chamber\b':'legacy signal-chamber component',r'class=["\'][^"\']*\bproject-composer\b':'legacy composer component',r'class=["\'][^"\']*\bevidence-tape\b':'legacy evidence-tape component',r'class=["\'][^"\']*\bproblem-atlas\b':'legacy problem-atlas component',r'class=["\'][^"\']*\btheme-toggle\b':'legacy theme-toggle component',r'\bZepto Logic at a glance\b':'legacy at-a-glance language',r'>\s*Verified\s*<':'legacy Verified label'}
+REJECTED_UI_PATTERNS={r'class=["\'][^"\']*\bnexus-bar\b':'rejected Nexus relationship bar',r'class=["\'][^"\']*\bnexus-console\b':'rejected Nexus opportunity console',r'data-audience-choice':'rejected persona-routing control',r'class=["\'][^"\']*\becosystem-canvas\b':'rejected Nexus ecosystem canvas',r'\bI am here to\b':'rejected relationship-bar wording',r'\bRecommended route\b':'rejected route-console wording',r'\bExplore as\b':'rejected persona-routing wording'}
 
 class PageParser(HTMLParser):
  def __init__(self):
@@ -57,11 +58,14 @@ def main():
    physical='/' if name=='index.html' else f'/{name}'
    if c.path not in {physical,physical.removesuffix('.html')+'/'}:warnings.append(f'{name}: canonical path {c.path!r} does not directly correspond to {physical!r}')
   if page.robots!='noindex,nofollow':failures.append(f'{name}: staging page must contain static noindex,nofollow')
-  if page.theme!=THEME:failures.append(f'{name}: theme-color must be {THEME}, found {page.theme!r}')
+  expected_theme=DARK_HOME_THEME if name=='index.html' else LIGHT_THEME
+  if page.theme!=expected_theme:failures.append(f'{name}: theme-color must be {expected_theme}, found {page.theme!r}')
   if not page.viewport or 'width=device-width' not in page.viewport or 'initial-scale=1' not in page.viewport:failures.append(f'{name}: missing responsive viewport contract')
   for pattern,reason in FORBIDDEN_CLAIMS.items():
    if re.search(pattern,text,re.I):failures.append(f'{name}: {reason}')
   for pattern,reason in LEGACY_PUBLIC_PATTERNS.items():
+   if re.search(pattern,text,re.I):failures.append(f'{name}: {reason}')
+  for pattern,reason in REJECTED_UI_PATTERNS.items():
    if re.search(pattern,text,re.I):failures.append(f'{name}: {reason}')
   for image in page.images:
    if image['alt'] is None:failures.append(f"{name}: image missing alt attribute — {image['src']}")
@@ -75,28 +79,33 @@ def main():
     target_page=parsed.get(target.name)
     if target_page and fragment not in target_page.ids:failures.append(f'{name}: missing fragment #{fragment} in {target.name}')
 
- style=ROOT/'assets/style.css';js=ROOT/'assets/site.js';home=ROOT/'index.html';spec=ROOT/'V11-DESIGN-SPEC.md'
- if not style.exists():failures.append('assets/style.css missing')
+ base=ROOT/'assets/style.css';v13=ROOT/'assets/v13.css';stature=ROOT/'assets/stature.css';js=ROOT/'assets/site.js';home=ROOT/'index.html';spec=ROOT/'V13-DESIGN-SPEC.md'
+ if not base.exists():failures.append('assets/style.css missing')
+ if not v13.exists():failures.append('assets/v13.css missing')
  else:
-  css=style.read_text(encoding='utf-8')
-  required=['Hanken+Grotesk','IBM+Plex+Mono','@media(min-width:1600px)','@media(max-width:1199px)','@media(max-width:980px)','@media(max-width:760px)','@media(max-width:430px)','scroll-snap-type:x mandatory','.nexus-bar','.nexus-hero','.nexus-console','.opportunity-matrix','.ecosystem-canvas','.partnership-grid','.mobile-dock','100dvh','prefers-reduced-motion']
+  css=v13.read_text(encoding='utf-8')
+  required=['Instrument+Sans','JetBrains+Mono','.hero-v13','.hero-proof','.capability-architecture','.maturity-flow','.stature-section','.proof-spread','@media(max-width:980px)','@media(max-width:760px)','@media(max-width:430px)']
   for marker in required:
-   if marker not in css:failures.append(f'V11 CSS marker missing — {marker}')
-  for stale in ['Instrument Sans','JetBrains Mono','Spline Sans','DM Mono','Libre Caslon Display','Plus Jakarta Sans']:
-   if stale in css:failures.append(f'legacy typography remains in V11 stylesheet — {stale}')
+   if marker not in css:failures.append(f'V13 CSS marker missing — {marker}')
+  for rejected in ['.nexus-bar{display:grid','.nexus-console{display:block','.persona-btn{display']:
+   if rejected in css:failures.append(f'V13 CSS re-enables rejected Nexus UI — {rejected}')
+ if not stature.exists():failures.append('assets/stature.css missing')
+ elif "@import url('v13.css')" not in stature.read_text(encoding='utf-8'):failures.append('stature.css must import v13.css')
  if not js.exists():failures.append('assets/site.js missing')
  else:
   script=js.read_text(encoding='utf-8')
-  required=['audienceData','zl_audience','nexus_audience_selected','data-audience-choice','ecoData','ecosystem_route_selected','ip-explorer-tools','service-flow','mobile-dock','technical_enquiry_submitted','viewportMode']
+  required=['v13.css','ip-explorer-tools','service-flow','mobile-dock','technical_enquiry_submitted','viewportMode','cdot-samarth-zksnark.html','fp-add-sub','i2c-master']
   for marker in required:
-   if marker not in script:failures.append(f'V11 interaction marker missing — {marker}')
-  for stale in ['wbData','intentData','v9-edge.css','v10-blue.css']:
-   if stale in script:failures.append(f'V11 runtime retains obsolete interaction/style dependency — {stale}')
+   if marker not in script:failures.append(f'V13 runtime marker missing — {marker}')
+  for rejected in ['audienceData','zl_audience=','nexus_audience_selected','data-audience-choice','ecoData','ecosystem_route_selected','insertAdjacentHTML(\'afterend\',\'<div class="nexus-bar']:
+   if rejected in script:failures.append(f'V13 runtime retains rejected routing system — {rejected}')
  if home.exists():
   ht=home.read_text(encoding='utf-8')
-  for marker in ['class="nexus-hero','class="nexus-console','class="opportunity-matrix','class="ecosystem-canvas','class="partnership-grid','data-audience-choice="buyer"','data-eco="strategic"']:
-   if marker not in ht:failures.append(f'V11 homepage experience marker missing — {marker}')
- if not spec.exists():failures.append('V11 design specification missing')
+  for marker in ['class="hero-v13','class="hero-proof','class="signal-strip','class="capability-architecture','class="maturity-flow','class="stature-section','class="proof-spread','cdot-samarth-zksnark.html']:
+   if marker not in ht:failures.append(f'V13 homepage marker missing — {marker}')
+  for rejected in ['class="nexus-hero','class="nexus-console','class="silicon-workbench','class="intent-lab','data-audience-choice','class="ecosystem-canvas']:
+   if rejected in ht:failures.append(f'V13 homepage contains rejected/obsolete interaction — {rejected}')
+ if not spec.exists():failures.append('V13 design specification missing')
  for stale in ['assets/v4.css','assets/v4-pages.css','assets/home-v3.css','assets/v9-edge.css','assets/v10-blue.css']:
   if (ROOT/stale).exists():failures.append(f'obsolete visual asset must be removed — {stale}')
  robots=ROOT/'robots.txt'
@@ -122,7 +131,7 @@ def main():
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print(f'PASS: V11 Nexus adaptive corporate, responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
+ print(f'PASS: V13 hybrid pre-Nexus responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
  return 0
 
 if __name__=='__main__':sys.exit(main())
