@@ -155,7 +155,7 @@ def main():
  if not sitemap.exists():failures.append('sitemap.xml missing')
  else:
   try:
-   ns={'sm':'http://www.sitemaps.org/sitemap/0.9'};tree=ET.parse(sitemap)
+   ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'};tree=ET.parse(sitemap)
    locs=[x.text.strip() for x in tree.findall('sm:url/sm:loc',ns) if x.text];seen=set()
    if 'https://zeptologic.com/applications/' not in locs:failures.append('sitemap.xml: applications URL missing')
    for loc in locs:
