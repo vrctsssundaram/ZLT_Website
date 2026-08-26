@@ -1,5 +1,6 @@
 const $=(s,c=document)=>c.querySelector(s);const $$=(s,c=document)=>[...c.querySelectorAll(s)];
 if(!$('link[href="assets/v9-edge.css"]')){const l=document.createElement('link');l.rel='stylesheet';l.href='assets/v9-edge.css';document.head.appendChild(l)}
+if(!$('link[href="assets/v10-blue.css"]')){const l=document.createElement('link');l.rel='stylesheet';l.href='assets/v10-blue.css';document.head.appendChild(l)}
 
 /* Responsive navigation */
 const header=$('.site-head'),menuBtn=$('.menu-toggle'),nav=$('.head-links');
@@ -10,6 +11,10 @@ const syncHeader=()=>header?.classList.toggle('scrolled',scrollY>8);syncHeader()
 /* Mobile conversion dock */
 if(!$('.mobile-dock')){document.body.insertAdjacentHTML('beforeend','<div class="mobile-dock" aria-label="Quick contact"><a href="tel:+919626632233" data-track="mobile_call">Call</a><a href="contact.html" data-track="mobile_enquire">Send requirement →</a></div>')}
 
+/* Premium hero light response — pointer devices only */
+const hero=$('.hero-v8');
+if(hero&&matchMedia('(hover:hover) and (pointer:fine)').matches&&!matchMedia('(prefers-reduced-motion: reduce)').matches){hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();hero.style.setProperty('--v10-x',`${((e.clientX-r.left)/r.width)*100}%`);hero.style.setProperty('--v10-y',`${((e.clientY-r.top)/r.height)*100}%`)},{passive:true})}
+
 /* Search */
 const searchIndex=[['IP Portfolio','products.html','semiconductor IP floating point UART SPI I2C license evaluate'],['Floating-point IP','floating-point-ip.html','IEEE 754 multiplier divider reciprocal square root MAC complex matrix'],['RTL Design','rtl-design-services.html','Verilog SystemVerilog VHDL microarchitecture RTL outsourcing'],['Verification','verification-coverage-closure.html','UVM coverage regression assertions verification audit'],['FPGA Prototyping','fpga-prototyping-services.html','AMD Xilinx Zynq Alveo prototype timing bring-up'],['IP Quality Audit','ip-quality-audit.html','lint CDC RDC reuse readiness RTL audit'],['Cryptographic Hardware','cryptographic-hardware-acceleration.html','zk SNARK PQC cryptography accelerator FPGA'],['Research to Hardware','research-to-hardware.html','research co-development architecture FPGA industrial hardware'],['Company','about.html','Zepto Logic Coimbatore DPIIT company semiconductor'],['R&D','research.html','research secure hardware cryptography programmes'],['Newsroom','news.html','C-DOT Tamil Nadu TNRPF CDIIC milestones'],['Careers','careers.html','VLSI RTL verification FPGA internship Coimbatore'],['Contact','contact.html','technical enquiry phone WhatsApp email']];
 const dialog=$('.search-dialog'),input=$('#siteSearch'),results=$('.search-results');
@@ -19,7 +24,7 @@ function runSearch(v=''){if(!results)return;const terms=v.toLowerCase().trim().s
 $$('.search-button').forEach(b=>{b.setAttribute('aria-label','Search site');b.addEventListener('click',openSearch)});$('.search-close')?.addEventListener('click',closeSearch);dialog?.addEventListener('click',e=>{if(e.target===dialog)closeSearch()});input?.addEventListener('input',e=>runSearch(e.target.value));document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')){e.preventDefault();openSearch()}});
 
 /* Lightweight motion */
-if('IntersectionObserver'in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.animate([{opacity:.15,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{duration:380,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});io.unobserve(e.target)}}),{threshold:.07,rootMargin:'0px 0px -5%'});$$('[data-reveal]').forEach(el=>io.observe(el))}
+if('IntersectionObserver'in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.animate([{opacity:.15,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:340,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});io.unobserve(e.target)}}),{threshold:.07,rootMargin:'0px 0px -5%'});$$('[data-reveal]').forEach(el=>io.observe(el))}
 
 /* Analytics hooks ready for GA/GTM */
 function track(event,detail={}){window.dataLayer=window.dataLayer||[];window.dataLayer.push({event,...detail})}

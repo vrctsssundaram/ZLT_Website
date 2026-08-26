@@ -81,7 +81,7 @@ def main():
     if target_page and fragment not in target_page.ids:failures.append(f'{name}: missing fragment #{fragment} in {target.name}')
 
  # V9 multi-device responsive contract.
- style=ROOT/'assets/style.css';edge=ROOT/'assets/v9-edge.css';js=ROOT/'assets/site.js'
+ style=ROOT/'assets/style.css';edge=ROOT/'assets/v9-edge.css';v10=ROOT/'assets/v10-blue.css';js=ROOT/'assets/site.js'
  if not style.exists():failures.append('assets/style.css missing')
  else:
   css=style.read_text(encoding='utf-8')
@@ -89,13 +89,22 @@ def main():
   for marker in required:
    if marker not in css:failures.append(f'V9 responsive CSS marker missing — {marker}')
   if 'Libre Caslon Display' in css or 'Plus Jakarta Sans' in css:failures.append('V8 typography dependency remains in V9 stylesheet')
-  if 'Spline Sans' not in css or 'DM Mono' not in css:failures.append('V9 typography system missing')
+  if 'Spline Sans' not in css or 'DM Mono' not in css:failures.append('V9 base typography system missing')
  if not edge.exists():failures.append('assets/v9-edge.css missing')
+
+ # V10 premium blue + compact rhythm contract.
+ if not v10.exists():failures.append('assets/v10-blue.css missing')
+ else:
+  blue=v10.read_text(encoding='utf-8')
+  for marker in ['--signal:#2563eb','--night:#06172f','Space Grotesk','Inter:wght','statement-band{padding:62px 0}','offer-stage{padding:70px 0}','section{padding:66px 0}','@media (max-width:430px)','mobile-dock a:last-child','linear-gradient(135deg,#1f5fe5,#3478f6)']:
+   if marker not in blue:failures.append(f'V10 blue/rhythm marker missing — {marker}')
+  for orange in ['#ff4d1f','#ff7a52','#ffede8','#ffd1c5','#fff1ec','#ffd4c8']:
+   if orange in blue.lower():failures.append(f'V10 refinement reintroduces orange token — {orange}')
  if not js.exists():failures.append('assets/site.js missing')
  else:
   script=js.read_text(encoding='utf-8')
-  for marker in ['mobile-dock','viewportMode','matchMedia(\'(min-width:981px)\')','setMenu(false)','v9-edge.css']:
-   if marker not in script:failures.append(f'V9 responsive interaction marker missing — {marker}')
+  for marker in ['mobile-dock','viewportMode','matchMedia(\'(min-width:981px)\')','setMenu(false)','v9-edge.css','v10-blue.css']:
+   if marker not in script:failures.append(f'responsive/premium interaction marker missing — {marker}')
 
  robots=ROOT/'robots.txt'
  if not robots.exists():failures.append('robots.txt missing')
@@ -122,7 +131,7 @@ def main():
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print(f'PASS: V9 responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
+ print(f'PASS: V10 blue-premium, responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
  return 0
 
 if __name__=='__main__':sys.exit(main())
