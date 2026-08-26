@@ -1,0 +1,153 @@
+/* V15 — global editorial system. Scoped to top-level pages via body.v15. */
+body.v15{--v15-blue:#234fc7;--v15-blue-2:#173b9c;--v15-teal:#087d73;--v15-gold:#8a6412;--v15-ink:#111827;--v15-copy:#354052;--v15-muted:#5d6878;--v15-line:#d9dee6;--v15-soft:#f5f7f9;--v15-wash:#eef3ff;--v15-warm:#f7f4ec;background:#fff;color:var(--v15-ink)}
+body.v15 .wrap{width:min(1460px,calc(100% - 72px))}
+body.v15 .site-head{min-height:76px;padding-block:12px;background:rgba(255,255,255,.97);border-bottom:1px solid var(--v15-line)}
+body.v15 .wordmark{font-size:16px;letter-spacing:-.025em}
+body.v15 .wordmark img{width:32px;height:32px}
+body.v15 .head-links{gap:clamp(15px,1.55vw,27px);font-size:12px}
+body.v15 .head-links a{color:#465264;font-weight:700}
+body.v15 .head-links a::after{height:1px;background:var(--v15-blue)}
+body.v15 .head-actions>a:first-child{display:none}
+body.v15 .project-link{background:var(--v15-ink);box-shadow:none;border-radius:7px;padding-inline:16px}
+body.v15 .project-link:hover{background:#263143}
+body.v15 .search-button,body.v15 .menu-toggle{border-radius:7px}
+body.v15 .eyebrow,body.v15 .kicker{color:#596576;letter-spacing:.115em}
+body.v15 .action{border-radius:7px;box-shadow:none}
+body.v15 .action.primary{background:var(--v15-blue);border-color:var(--v15-blue);box-shadow:none}
+body.v15 .action.primary:hover{background:var(--v15-blue-2);border-color:var(--v15-blue-2)}
+
+/* Global home */
+.global-hero{position:relative;overflow:hidden;background:#fff;border-bottom:1px solid var(--v15-line)}
+.global-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(112deg,#fff 0%,#fff 60%,#f3f6fb 60%,#f3f6fb 100%);pointer-events:none}
+.global-hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,.55fr);gap:70px;align-items:end;padding:112px 0 86px}
+.global-hero-copy{max-width:1030px}
+.global-hero h1{font-size:clamp(58px,6.7vw,104px);line-height:.94;letter-spacing:-.06em;font-weight:780;margin:17px 0 26px;max-width:1050px}
+.global-hero .lead{font-size:clamp(19px,1.5vw,23px);line-height:1.5;color:var(--v15-copy);max-width:830px;margin:0}
+.global-hero-side{border-top:2px solid var(--v15-ink);padding-top:18px;margin-bottom:4px}
+.global-hero-side strong{display:block;font-size:14px;margin-bottom:16px}
+.global-hero-side ul{list-style:none;padding:0;margin:0;display:grid}
+.global-hero-side li{padding:13px 0;border-top:1px solid var(--v15-line);font-size:13px;color:var(--v15-copy)}
+.global-hero-side li:first-child{border-top:0}
+.global-hero-side a{display:inline-flex;margin-top:20px;color:var(--v15-blue);font-weight:800;font-size:13px}
+
+.portfolio-rail{background:var(--v15-soft);border-bottom:1px solid var(--v15-line)}
+.portfolio-rail .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.portfolio-rail article{padding:25px 26px;border-right:1px solid var(--v15-line)}
+.portfolio-rail article:first-child{border-left:1px solid var(--v15-line)}
+.portfolio-rail strong{display:block;font-size:30px;line-height:1;letter-spacing:-.045em;margin-bottom:7px}
+.portfolio-rail span{display:block;font-size:12px;color:var(--v15-muted)}
+
+.editorial-section{padding:88px 0;border-bottom:1px solid var(--v15-line);background:#fff}
+.editorial-section.soft{background:var(--v15-soft)}
+.editorial-section.wash{background:linear-gradient(120deg,#f6f8fc 0%,#eef3ff 100%)}
+.editorial-head{display:grid;grid-template-columns:minmax(0,.78fr) minmax(320px,1.22fr);gap:70px;align-items:end;margin-bottom:42px}
+.editorial-head h2{font-size:clamp(40px,4.6vw,68px);line-height:1;letter-spacing:-.05em;margin:8px 0 0}
+.editorial-head p{margin:0;color:var(--v15-copy);font-size:17px;max-width:760px}
+.capability-grid-v15{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--v15-line);border-left:1px solid var(--v15-line)}
+.capability-item-v15{min-height:300px;padding:27px 25px;display:flex;flex-direction:column;border-right:1px solid var(--v15-line);border-bottom:1px solid var(--v15-line);background:#fff;transition:background .18s,transform .18s}
+.capability-item-v15:hover{background:#fafbfc;transform:translateY(-2px)}
+.capability-item-v15 .number{font:600 10px 'IBM Plex Mono',monospace;color:var(--v15-blue);letter-spacing:.08em;margin-bottom:62px}
+.capability-item-v15 h3{font-size:28px;line-height:1.08;letter-spacing:-.035em;margin:0 0 14px}
+.capability-item-v15 p{font-size:14px;color:var(--v15-copy);margin:0 0 24px;max-width:33ch}
+.capability-item-v15 .tail{margin-top:auto;color:var(--v15-blue);font-weight:800;font-size:12px}
+
+.application-grid{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--v15-line);border-left:1px solid var(--v15-line)}
+.application-item{min-height:165px;padding:22px;border-right:1px solid var(--v15-line);border-bottom:1px solid var(--v15-line);background:#fff}
+.application-item span{display:block;font:600 9px 'IBM Plex Mono',monospace;color:var(--v15-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:40px}
+.application-item strong{display:block;font-size:19px;line-height:1.18;letter-spacing:-.025em}
+
+.rnd-band-v15{padding:82px 0;background:var(--v15-wash);border-bottom:1px solid #cfd8ef}
+.rnd-band-v15 .wrap{display:grid;grid-template-columns:minmax(280px,.7fr) minmax(0,1.3fr);gap:80px;align-items:start}
+.rnd-band-v15 h2{font-size:clamp(44px,4.6vw,68px);line-height:.98;letter-spacing:-.05em;margin:8px 0 18px}
+.rnd-band-v15 p{color:var(--v15-copy);font-size:16px}
+.rnd-topics{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #bdc9e5;border-left:1px solid #bdc9e5}
+.rnd-topic{padding:23px;border-right:1px solid #bdc9e5;border-bottom:1px solid #bdc9e5;min-height:145px;background:rgba(255,255,255,.5)}
+.rnd-topic strong{display:block;font-size:19px;margin-bottom:8px}
+.rnd-topic span{font-size:13px;color:var(--v15-copy)}
+
+.engage-strip{padding:76px 0;background:#fff;border-bottom:1px solid var(--v15-line)}
+.engage-strip .wrap{display:grid;grid-template-columns:minmax(280px,.72fr) minmax(0,1.28fr);gap:70px}
+.engage-strip h2{font-size:clamp(40px,4vw,58px);line-height:1;letter-spacing:-.045em;margin:8px 0 0}
+.engage-options{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--v15-line)}
+.engage-option{padding:18px 10px 18px 0;border-bottom:1px solid var(--v15-line);display:flex;justify-content:space-between;gap:20px;font-size:14px;font-weight:750}
+.engage-option:nth-child(odd){padding-right:28px}
+.engage-option:nth-child(even){padding-left:28px;border-left:1px solid var(--v15-line)}
+.engage-option span{color:var(--v15-blue)}
+
+/* Interior editorial heroes */
+.global-page-hero{padding:84px 0 62px;background:#fff;border-bottom:1px solid var(--v15-line)}
+.global-page-hero .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:70px;align-items:end}
+.global-page-hero h1{font-size:clamp(50px,5.6vw,84px);line-height:.96;letter-spacing:-.055em;margin:12px 0 0;max-width:1040px}
+.global-page-hero .intro{font-size:18px;line-height:1.55;color:var(--v15-copy);margin:0;max-width:650px}
+
+.editorial-facts{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--v15-line);border-right:0}
+.editorial-fact{padding:22px;border-right:1px solid var(--v15-line);min-height:120px;background:#fff}
+.editorial-fact strong{display:block;font-size:23px;line-height:1.12;letter-spacing:-.035em;margin-bottom:8px}
+.editorial-fact span{font-size:12px;color:var(--v15-muted)}
+
+/* IP catalogue */
+body.v15 .listing{border-top:1px solid var(--v15-line)}
+body.v15 .listing-row{min-height:78px;border-bottom:1px solid var(--v15-line);padding:15px 8px;align-items:center}
+body.v15 .listing-row .name{font-size:15px;font-weight:800}
+body.v15 .listing-row .desc{font-size:13px;color:var(--v15-copy)}
+body.v15 .listing-row .go{color:var(--v15-blue);font-size:12px;font-weight:800}
+body.v15 .ip-explorer-tools{border:1px solid var(--v15-line);border-radius:8px;background:#fff;margin-bottom:24px}
+body.v15 .ip-filter{border-radius:5px}
+
+/* Service / research / company cards */
+.service-grid-v15,.research-grid-v15{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--v15-line);border-left:1px solid var(--v15-line)}
+.service-card-v15,.research-card-v15{min-height:260px;padding:25px;border-right:1px solid var(--v15-line);border-bottom:1px solid var(--v15-line);background:#fff;display:flex;flex-direction:column}
+.service-card-v15 h3,.research-card-v15 h3{font-size:27px;margin:0 0 13px}
+.service-card-v15 p,.research-card-v15 p{font-size:14px;color:var(--v15-copy);margin:0;max-width:39ch}
+.service-card-v15 .tail,.research-card-v15 .tail{margin-top:auto;color:var(--v15-blue);font-weight:800;font-size:12px;padding-top:24px}
+.service-card-v15 ul{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:7px}
+.service-card-v15 li{font-size:12px;color:var(--v15-copy);padding-top:7px;border-top:1px solid var(--v15-line)}
+
+.company-intro-v15{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:80px;align-items:start}
+.company-intro-v15 .statement{font-size:clamp(34px,3.5vw,54px);line-height:1.06;letter-spacing:-.045em;font-weight:760}
+.company-copy-v15{font-size:17px;color:var(--v15-copy)}
+.company-facts-v15{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--v15-line);border-left:1px solid var(--v15-line)}
+.company-fact-v15{padding:23px;border-right:1px solid var(--v15-line);border-bottom:1px solid var(--v15-line);min-height:150px}
+.company-fact-v15 span{font:600 9px 'IBM Plex Mono',monospace;color:var(--v15-muted);text-transform:uppercase;letter-spacing:.1em}
+.company-fact-v15 strong{display:block;font-size:18px;line-height:1.35;margin-top:20px}
+
+/* Newsroom */
+.news-grid-v15{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.news-card-v15{grid-column:span 6;border:1px solid var(--v15-line);background:#fff;overflow:hidden;display:grid;grid-template-columns:180px 1fr;min-height:235px}
+.news-card-v15:first-child{grid-column:span 12;grid-template-columns:minmax(260px,.65fr) minmax(0,1.35fr)}
+.news-card-v15 img{width:100%;height:100%;object-fit:cover;min-height:235px}
+.news-card-v15 .copy{padding:25px;display:flex;flex-direction:column}
+.news-card-v15 time{font:600 9px 'IBM Plex Mono',monospace;color:var(--v15-muted);text-transform:uppercase;letter-spacing:.09em}
+.news-card-v15 h2,.news-card-v15 h3{font-size:clamp(24px,2.2vw,34px);line-height:1.08;letter-spacing:-.035em;margin:14px 0 10px}
+.news-card-v15 p{font-size:13px;color:var(--v15-copy);margin:0}
+.news-card-v15 a{margin-top:auto;padding-top:22px;color:var(--v15-blue);font-size:12px;font-weight:800}
+
+/* Contact */
+body.v15 .contact-shell{grid-template-columns:minmax(280px,.65fr) minmax(0,1.35fr);gap:68px}
+body.v15 .contact-direct{position:sticky;top:110px}
+.contact-channels-v15{margin-top:26px;border-top:1px solid var(--v15-line)}
+.contact-channel-v15{display:grid;grid-template-columns:80px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--v15-line);font-size:13px}
+.contact-channel-v15 span{color:var(--v15-muted);font:600 9px 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.08em;padding-top:3px}
+body.v15 .form{border-radius:9px;box-shadow:none;padding:28px}
+
+/* Footer */
+body.v15 .site-foot{background:#f7f8fa;color:var(--v15-ink);border-top:1px solid var(--v15-line)}
+body.v15 .site-foot a{color:inherit}
+body.v15 .foot-top{border-color:var(--v15-line)}
+body.v15 .foot-top h2{color:var(--v15-ink);font-size:clamp(32px,3vw,46px)}
+body.v15 .foot-contact a{color:var(--v15-blue)}
+body.v15 .foot-grid,body.v15 .foot-bottom{border-color:var(--v15-line)}
+body.v15 .foot-brand p,body.v15 .foot-grid li,body.v15 .foot-bottom{color:#596576}
+body.v15 .foot-grid h4{color:var(--v15-ink)}
+
+@media(max-width:1180px){
+body.v15 .wrap{width:min(100% - 48px,1460px)}
+.global-hero .wrap{grid-template-columns:1fr;gap:38px;padding:90px 0 70px}.global-hero-side{max-width:680px}.capability-grid-v15{grid-template-columns:1fr 1fr}.application-grid{grid-template-columns:repeat(3,1fr)}.service-grid-v15,.research-grid-v15{grid-template-columns:1fr 1fr}.news-card-v15{grid-column:span 12}.global-page-hero .wrap{grid-template-columns:1fr;gap:28px}.editorial-head{gap:40px}
+}
+@media(max-width:980px){
+body.v15 .head-actions>a:first-child{display:none}.portfolio-rail .wrap{grid-template-columns:1fr 1fr}.portfolio-rail article:nth-child(3){border-left:1px solid var(--v15-line);border-top:1px solid var(--v15-line)}.portfolio-rail article:nth-child(4){border-top:1px solid var(--v15-line)}.editorial-head,.rnd-band-v15 .wrap,.engage-strip .wrap,.company-intro-v15{grid-template-columns:1fr;gap:28px}.editorial-facts{grid-template-columns:1fr 1fr}.application-grid{grid-template-columns:1fr 1fr}.news-card-v15:first-child{grid-template-columns:220px 1fr}
+}
+@media(max-width:760px){
+body.v15 .wrap{width:min(100% - 32px,1460px)}.global-hero::before{background:#fff}.global-hero .wrap{padding:66px 0 52px}.global-hero h1{font-size:clamp(48px,15vw,72px)}.global-hero-side{display:none}.portfolio-rail .wrap{grid-template-columns:1fr 1fr}.portfolio-rail article{padding:19px 16px}.portfolio-rail strong{font-size:25px}.editorial-section{padding:58px 0}.editorial-head h2{font-size:42px}.capability-grid-v15,.service-grid-v15,.research-grid-v15{grid-template-columns:1fr}.capability-item-v15{min-height:220px}.capability-item-v15 .number{margin-bottom:35px}.application-grid{grid-template-columns:1fr 1fr}.application-item{min-height:135px}.rnd-band-v15{padding:58px 0}.rnd-topics{grid-template-columns:1fr}.engage-options{grid-template-columns:1fr}.engage-option:nth-child(n){padding:17px 0;border-left:0}.global-page-hero{padding:58px 0 46px}.global-page-hero h1{font-size:clamp(45px,12vw,64px)}.editorial-facts{grid-template-columns:1fr 1fr}.company-facts-v15{grid-template-columns:1fr}.news-card-v15,.news-card-v15:first-child{display:block}.news-card-v15 img{height:190px;min-height:0}.news-card-v15:first-child img{height:230px}body.v15 .contact-direct{position:static}
+}
+@media(max-width:480px){.portfolio-rail .wrap,.editorial-facts,.application-grid{grid-template-columns:1fr}.portfolio-rail article{border-left:1px solid var(--v15-line);border-top:1px solid var(--v15-line)}.portfolio-rail article:first-child{border-top:0}.application-item{min-height:120px}.rnd-topic{min-height:125px}}
