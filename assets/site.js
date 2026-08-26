@@ -1,19 +1,17 @@
 const $=(s,c=document)=>c.querySelector(s);const $$=(s,c=document)=>[...c.querySelectorAll(s)];
 
-/* V13 global visual fallback for pages that do not already load stature.css. */
-if(!document.querySelector('link[href$="stature.css"]')&&!document.querySelector('link[href$="v13.css"]')){const css=document.createElement('link');css.rel='stylesheet';css.href='assets/v13.css';document.head.appendChild(css)}
-
 /* Navigation */
 const header=$('.site-head'),menuBtn=$('.menu-toggle'),nav=$('.head-links');
 function setMenu(open){if(!nav||!menuBtn)return;nav.classList.toggle('open',open);document.body.classList.toggle('nav-open',open);menuBtn.setAttribute('aria-expanded',String(open));menuBtn.setAttribute('aria-label',open?'Close navigation':'Open navigation');menuBtn.textContent=open?'Close':'Menu'}
 menuBtn?.addEventListener('click',()=>setMenu(!nav.classList.contains('open')));nav?.addEventListener('click',e=>{if(e.target.closest('a'))setMenu(false)});matchMedia('(min-width:981px)').addEventListener?.('change',e=>{if(e.matches)setMenu(false)});const syncHeader=()=>header?.classList.toggle('scrolled',scrollY>8);syncHeader();addEventListener('scroll',syncHeader,{passive:true});
 
-/* Explicitly remove legacy Nexus/routing UI if stale markup or cache survives. */
-$$('.nexus-bar,.nexus-console,.ecosystem-section').forEach(el=>el.remove());
+/* Retired UI safety */
+$$('.nexus-bar,.nexus-console,.ecosystem-section,.silicon-workbench,.intent-lab').forEach(el=>el.remove());
 sessionStorage.removeItem('zl_audience');
 
-/* Mobile contact dock */
-if(!$('.mobile-dock'))document.body.insertAdjacentHTML('beforeend','<div class="mobile-dock" aria-label="Quick contact"><a href="tel:+919626632233" data-track="mobile_call">Call</a><a href="contact.html" data-track="mobile_enquire">Contact →</a></div>');
+/* Consistent commercial access */
+const headerCta=$('.project-link');if(headerCta){headerCta.href='contact.html';headerCta.textContent='Discuss your requirement'}
+if(!$('.mobile-dock'))document.body.insertAdjacentHTML('beforeend','<div class="mobile-dock" aria-label="Quick contact"><a href="tel:+919626632233" data-track="mobile_call">Call</a><a href="contact.html" data-track="mobile_enquire">Send requirement →</a></div>');
 
 /* Analytics hooks */
 function track(event,detail={}){window.dataLayer=window.dataLayer||[];window.dataLayer.push({event,...detail})}
@@ -24,7 +22,7 @@ const searchIndex=[['IP Portfolio','products.html','semiconductor IP floating po
 const dialog=$('.search-dialog'),input=$('#siteSearch'),results=$('.search-results');
 function openSearch(){setMenu(false);dialog?.classList.add('open');dialog?.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(()=>input?.focus(),40)}
 function closeSearch(){dialog?.classList.remove('open');dialog?.setAttribute('aria-hidden','true');if(!document.body.classList.contains('nav-open'))document.body.style.overflow=''}
-function runSearch(v=''){if(!results)return;const terms=v.toLowerCase().trim().split(/\s+/).filter(Boolean);if(!terms.length){results.innerHTML='<p>Search semiconductor IP, engineering, R&D, programme proof or company information.</p>';return}const found=searchIndex.filter(([t,,x])=>terms.every(term=>(t+' '+x).toLowerCase().includes(term))).slice(0,9);results.innerHTML=found.length?found.map(([t,u])=>`<a class="search-result" href="${u}"><strong>${t}</strong><span>Open →</span></a>`).join(''):'<p>Explore the <a href="products.html">IP portfolio</a>, <a href="services.html">engineering services</a> or <a href="contact.html">contact Zepto Logic</a>.</p>'}
+function runSearch(v=''){if(!results)return;const terms=v.toLowerCase().trim().split(/\s+/).filter(Boolean);if(!terms.length){results.innerHTML='<p>Search semiconductor IP, engineering, R&D, programme proof or company information.</p>';return}const found=searchIndex.filter(([t,,x])=>terms.every(term=>(t+' '+x).toLowerCase().includes(term))).slice(0,9);results.innerHTML=found.length?found.map(([t,u])=>`<a class="search-result" href="${u}"><strong>${t}</strong><span>Open →</span></a>`).join(''):'<p>No direct match. <a href="contact.html">Send your technical requirement →</a></p>'}
 $$('.search-button').forEach(b=>{b.setAttribute('aria-label','Search site');b.addEventListener('click',openSearch)});$('.search-close')?.addEventListener('click',closeSearch);dialog?.addEventListener('click',e=>{if(e.target===dialog)closeSearch()});input?.addEventListener('input',e=>runSearch(e.target.value));document.addEventListener('keydown',e=>{if(e.key==='Escape'){setMenu(false);closeSearch()}if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')){e.preventDefault();openSearch()}});
 
 /* IP explorer */
@@ -34,7 +32,7 @@ if(location.pathname.endsWith('products.html')||location.pathname.endsWith('/pro
 if(location.pathname.endsWith('services.html')||location.pathname.endsWith('/services/')){const grid=$('.block-grid');if(grid&&!$('.service-flow')){const flow=document.createElement('div');flow.className='service-flow';flow.innerHTML='<div class="service-flow-head"><div><span>Front-end design flow</span><h3>Architecture through FPGA proof.</h3></div><span>scope → build → verify → prove → hand off</span></div><div class="service-flow-track"><div class="service-node active"><b>Scope</b><small>architecture / assumptions</small></div><div class="service-node"><b>Build</b><small>RTL / integration</small></div><div class="service-node"><b>Verify</b><small>UVM / regression</small></div><div class="service-node"><b>Prove</b><small>FPGA / timing</small></div><div class="service-node"><b>Deliver</b><small>source / reports / notes</small></div></div>';grid.before(flow);$$('.service-node',flow).forEach(n=>n.addEventListener('click',()=>{$$('.service-node',flow).forEach(x=>x.classList.toggle('active',x===n));track('service_flow_selected',{stage:n.querySelector('b')?.textContent||''})}))}}
 
 /* Lightweight reveal */
-if('IntersectionObserver'in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.animate([{opacity:.45,transform:'translateY(7px)'},{opacity:1,transform:'translateY(0)'}],{duration:300,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});io.unobserve(e.target)}}),{threshold:.06,rootMargin:'0px 0px -3%'});$$('[data-reveal]').forEach(el=>io.observe(el))}
+if('IntersectionObserver'in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.animate([{opacity:.6,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)'}],{duration:260,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});io.unobserve(e.target)}}),{threshold:.06,rootMargin:'0px 0px -3%'});$$('[data-reveal]').forEach(el=>io.observe(el))}
 
 /* Enquiry context + backend */
 const params=new URLSearchParams(location.search),project=$('#projectType'),service=$('#service'),description=$('#description');
