@@ -1,14 +1,14 @@
-name: Website 2.0 Static QA
+name: Website Release QA
 
 on:
   push:
     branches:
       - main
-      - website-2.0-conversion-rebuild
   pull_request:
     paths:
       - "*.html"
       - "assets/**"
+      - "tests/**"
       - "sitemap.xml"
       - "robots.txt"
       - "scripts/site_qa.py"
@@ -19,19 +19,58 @@ permissions:
 
 jobs:
   static-qa:
-    name: Internal links, SEO and disclosure guardrails
+    name: Static integrity, SEO and disclosure guardrails
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Run zero-dependency site QA
         run: python scripts/site_qa.py
-
       - name: Validate JavaScript syntax
         run: node --check assets/site.js
+
+  browser-qa:
+    name: Responsive browser, accessibility and conversion QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned browser QA dependencies
+        run: npm install --no-save @playwright/test@1.55.0 @axe-core/playwright@4.10.2
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start static site server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/zlt-site.log 2>&1 &
+          echo $! >/tmp/zlt-site.pid
+          sleep 2
+          curl --fail --silent http://127.0.0.1:4173/index.html >/dev/null
+      - name: Verify live enquiry endpoint CORS contract without writing a lead
+        run: |
+          code=$(curl --silent --show-error --output /tmp/enquiry-options.txt --write-out "%{http_code}" \
+            -X OPTIONS "https://nujmuknvhgyoxhxuvscx.supabase.co/functions/v1/website-enquiry" \
+            -H "Origin: https://vrctsssundaram.github.io" \
+            -H "Access-Control-Request-Method: POST" \
+            -H "Access-Control-Request-Headers: content-type")
+          test "$code" = "204"
+      - name: Run multi-device browser suite
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: npx playwright test tests/site.spec.js --reporter=line --workers=4
+      - name: Upload responsive review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: responsive-review-screenshots
+          path: test-results/screens
+          if-no-files-found: ignore
+          retention-days: 14
