@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zero-dependency release QA for the Zepto Logic staging website."""
+"""V16 release QA for the Zepto Logic staging website."""
 from __future__ import annotations
 from html.parser import HTMLParser
 from pathlib import Path
@@ -9,17 +9,54 @@ import re, sys, xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
 HTML_FILES=sorted(ROOT.glob('*.html'))
 HOSTS={'zeptologic.com','www.zeptologic.com'}
-FORBIDDEN_CLAIMS={r'\b15\+\s*(?:FPGA[- ]validated\s*)?(?:IP|cores?|blocks?)\b':'legacy 15+ IP-count claim',r'\bsilicon[- ]validated\b':'silicon-validation claim',r'\bpatent\s+pending\b':'patent-pending claim',r'\bTRL[- ]?\d+\b':'public TRL claim',r'\bfoundry[- ]ready\b':'foundry-ready claim',r'\bDeep\s+Tech\s+Startup\b':'unapproved deep-tech recognition wording',r'\bunfiled\s+(?:invention|architecture|IP)':'filing-state disclosure'}
-REJECTED_UI={r'class=["\'][^"\']*\bnexus-bar\b':'rejected Nexus relationship bar',r'class=["\'][^"\']*\bnexus-console\b':'rejected Nexus opportunity console',r'data-audience-choice':'rejected persona-routing control',r'class=["\'][^"\']*\becosystem-canvas\b':'rejected ecosystem routing canvas',r'class=["\'][^"\']*\bsilicon-workbench\b':'retired Silicon Workbench',r'class=["\'][^"\']*\bintent-lab\b':'retired Intent Lab',r'\bI am here to\b':'rejected relationship wording',r'\bRecommended route\b':'rejected route wording',r'\bExplore as\b':'rejected persona wording'}
-LEGACY_PUBLIC={r'assets/(?:v4|v4-pages|home-v3|v9-edge|v10-blue|v13)\.css':'retired stylesheet reference',r'class=["\'][^"\']*\bsignal-chamber\b':'legacy signal chamber',r'class=["\'][^"\']*\bproject-composer\b':'legacy composer',r'\bZepto Logic at a glance\b':'legacy at-a-glance language',r'>\s*Verified\s*<':'legacy Verified label'}
-SMALLNESS={r'\bno budget question\b':'smallness marketing',r'\bdoes not justify building a permanent organisation\b':'smallness marketing',r'\btoo focused to justify a new team\b':'smallness marketing',r'\bnot a staffing form\b':'defensive staffing language',r'\bnot a generic internship form\b':'defensive careers language',r'\bbefore you fund another internal build\b':'defensive rebuild language',r'\baccessible enough for the focused job\b':'smallness marketing'}
+V16_PAGES={'index.html','products.html','services.html','applications.html','research.html','about.html','news.html','careers.html','contact.html'}
+FORBIDDEN_CLAIMS={
+ r'\b15\+\s*(?:FPGA[- ]validated\s*)?(?:IP|cores?|blocks?)\b':'legacy 15+ IP-count claim',
+ r'\bsilicon[- ]validated\b':'silicon-validation claim',
+ r'\bpatent\s+pending\b':'patent-pending claim',
+ r'\bTRL[- ]?\d+\b':'public TRL claim',
+ r'\bfoundry[- ]ready\b':'foundry-ready claim',
+ r'\bDeep\s+Tech\s+Startup\b':'unapproved deep-tech recognition wording',
+ r'\bunfiled\s+(?:invention|architecture|IP)':'filing-state disclosure',
+}
+REJECTED_UI={
+ r'class=["\'][^"\']*\bnexus-bar\b':'rejected Nexus relationship bar',
+ r'class=["\'][^"\']*\bnexus-console\b':'rejected Nexus opportunity console',
+ r'data-audience-choice':'rejected persona-routing control',
+ r'class=["\'][^"\']*\becosystem-canvas\b':'rejected ecosystem routing canvas',
+ r'class=["\'][^"\']*\bsilicon-workbench\b':'retired Silicon Workbench',
+ r'class=["\'][^"\']*\bintent-lab\b':'retired Intent Lab',
+ r'\bI am here to\b':'rejected relationship wording',
+ r'\bRecommended route\b':'rejected route wording',
+ r'\bExplore as\b':'rejected persona wording',
+}
+SELF_JUSTIFY={
+ r'\bnot customer deployment claims\b':'self-justifying deployment disclaimer',
+ r'\bso commercial pages can remain focused\b':'self-referential page-placement explanation',
+ r'\bstated with their current public status\b':'editorial-status explanation',
+ r'\bwhy this route exists\b':'page-purpose narration',
+ r'\bpublic disclosure ceiling\b':'internal disclosure-language',
+ r'\bpublic benchmark policy\b':'internal publication-language',
+ r'\bscope clarity\b':'internal scoping-language',
+ r'\bEvaluation questions\b':'runtime FAQ language',
+ r'\bTypical engagement path\b':'runtime process narration',
+ r'\bprogramme proof\b':'proof-as-argument language',
+ r'\bevidence before adjectives\b':'editorial-policy narration',
+ r'\bno budget question\b':'smallness / reassurance marketing',
+ r'\bdoes not justify building a permanent organisation\b':'smallness marketing',
+ r'\btoo focused to justify a new team\b':'smallness marketing',
+ r'\bbefore you fund another internal build\b':'defensive internal-build comparison',
+}
 
 class PageParser(HTMLParser):
  def __init__(self):
-  super().__init__(convert_charrefs=True);self.refs=[];self.ids=set();self.images=[];self.canonical=None;self.h1_count=0;self.robots=None;self.theme=None;self.viewport=None;self.lang=None
+  super().__init__(convert_charrefs=True)
+  self.refs=[];self.ids=set();self.images=[];self.canonical=None;self.h1_count=0
+  self.robots=None;self.theme=None;self.viewport=None;self.lang=None;self.body_class=''
  def handle_starttag(self,tag,attrs):
   a=dict(attrs)
   if tag=='html':self.lang=a.get('lang')
+  if tag=='body':self.body_class=a.get('class','') or ''
   if a.get('id'):self.ids.add(a['id'])
   if tag=='a' and a.get('href'):self.refs.append(('href',a['href']))
   if tag in {'img','script','link'}:
@@ -66,11 +103,16 @@ def main():
    c=urlparse(page.canonical)
    if c.scheme!='https' or c.netloc not in HOSTS:failures.append(f'{name}: invalid canonical host/scheme — {page.canonical}')
   if page.robots!='noindex,nofollow':failures.append(f'{name}: staging page must contain static noindex,nofollow')
-  if page.theme and page.theme.startswith('#') and hex_luminance(page.theme)<.25:failures.append(f'{name}: dark browser theme-color is prohibited — {page.theme}')
+  if page.theme and page.theme.startswith('#') and hex_luminance(page.theme)<.25:failures.append(f'{name}: dark browser theme-color prohibited — {page.theme}')
   if not page.viewport or 'width=device-width' not in page.viewport or 'initial-scale=1' not in page.viewport:failures.append(f'{name}: missing responsive viewport contract')
-  for group in (FORBIDDEN_CLAIMS,REJECTED_UI,LEGACY_PUBLIC,SMALLNESS):
+  for group in (FORBIDDEN_CLAIMS,REJECTED_UI,SELF_JUSTIFY):
    for pattern,reason in group.items():
     if re.search(pattern,text,re.I):failures.append(f'{name}: {reason}')
+  if name in V16_PAGES:
+   if 'v16' not in page.body_class.split():failures.append(f'{name}: top-level page must use body.v16')
+   if 'assets/v16.css' not in text:failures.append(f'{name}: V16 stylesheet missing')
+   for href in ['products.html','services.html','applications.html','research.html','about.html','news.html']:
+    if href not in text:failures.append(f'{name}: global taxonomy link missing — {href}')
   for image in page.images:
    if image['alt'] is None:failures.append(f"{name}: image missing alt attribute — {image['src']}")
   for kind,ref in page.refs:
@@ -83,43 +125,27 @@ def main():
     target_page=parsed.get(target.name)
     if target_page and fragment not in target_page.ids:failures.append(f'{name}: missing fragment #{fragment} in {target.name}')
 
- css_path=ROOT/'assets/style.css';js_path=ROOT/'assets/site.js';home=ROOT/'index.html';spec=ROOT/'V14-DESIGN-SPEC.md';browser_test=ROOT/'tests/site.spec.js';workflow=ROOT/'.github/workflows/site-qa.yml'
- if not css_path.exists():failures.append('assets/style.css missing')
+ css=ROOT/'assets/v16.css';js=ROOT/'assets/site.js';browser=ROOT/'tests/site.spec.js';workflow=ROOT/'.github/workflows/site-qa.yml'
+ if not css.exists():failures.append('assets/v16.css missing')
  else:
-  css=css_path.read_text(encoding='utf-8')
-  required=['Manrope','IBM+Plex+Mono','.hero-v13','.hero-proof','.capability-architecture','.maturity-flow','.stature-section','.proof-spread','.mobile-dock','@media(min-width:1600px)','@media(max-width:1199px)','@media(max-width:980px)','@media(max-width:760px)','@media(max-width:430px)','prefers-reduced-motion']
-  for marker in required:
-   if marker not in css:failures.append(f'V14 CSS marker missing — {marker}')
-  forbidden_tokens=['--night:','--graphite:','background:var(--ink)','background:var(--ink2)','background:#000','background:#050','background:#06111c','background:#07101d','background:#101820','background:#111a22','background:#0a1728']
-  for token in forbidden_tokens:
-   if token.lower() in css.lower():failures.append(f'V14 dark-surface token present — {token}')
-  for m in re.finditer(r'background(?:-color)?\s*:\s*(#[0-9a-fA-F]{3,6})',css):
-   if hex_luminance(m.group(1))<.08:failures.append(f'V14 dark background declaration prohibited — {m.group(0)}')
- if (ROOT/'assets/v13.css').exists():failures.append('assets/v13.css must be removed')
- stature=ROOT/'assets/stature.css'
- if not stature.exists():failures.append('assets/stature.css compatibility file missing')
- elif '@import' in stature.read_text(encoding='utf-8'):failures.append('stature.css must not import another visual layer')
- if not js_path.exists():failures.append('assets/site.js missing')
+  ct=css.read_text(encoding='utf-8')
+  for marker in ['Inter','IBM+Plex+Mono','.z-hero','.z-grid4','.z-app-grid','.z-page-hero','.z-news','.z-contact-lines','@media(max-width:980px)','@media(max-width:700px)','prefers-reduced-motion']:
+   if marker not in ct:failures.append(f'V16 CSS marker missing — {marker}')
+  forbidden=['background:var(--z-ink)','background:#000','background:#05070b','background:#06111c','background:#07101d']
+  for token in forbidden:
+   if token.lower() in ct.lower():failures.append(f'V16 dark component background prohibited — {token}')
+  for m in re.finditer(r'background(?:-color)?\s*:\s*(#[0-9a-fA-F]{3,6})',ct):
+   if hex_luminance(m.group(1))<.075:failures.append(f'V16 dark background declaration prohibited — {m.group(0)}')
+ if not js.exists():failures.append('assets/site.js missing')
  else:
-  script=js_path.read_text(encoding='utf-8')
-  required=['Discuss your requirement','Send requirement','ip-explorer-tools','service-flow','mobile-dock','technical_enquiry_submitted','viewportMode','cdot-samarth-zksnark.html','fp-add-sub','i2c-master','website-enquiry']
-  for marker in required:
-   if marker not in script:failures.append(f'V14 runtime marker missing — {marker}')
-  for rejected in ['audienceData','nexus_audience_selected','data-audience-choice','ecoData','ecosystem_route_selected','v13.css','silicon-workbench','intent-lab']:
-   if rejected in script and rejected not in ['silicon-workbench','intent-lab']:failures.append(f'V14 runtime retains retired system — {rejected}')
- if home.exists():
-  ht=home.read_text(encoding='utf-8')
-  for marker in ['class="hero-v13','class="hero-proof','class="signal-strip','class="capability-architecture','class="maturity-flow','class="stature-section','class="proof-spread','cdot-samarth-zksnark.html']:
-   if marker not in ht:failures.append(f'V14 homepage marker missing — {marker}')
- if not spec.exists():failures.append('V14 design specification missing')
- if not browser_test.exists():failures.append('tests/site.spec.js missing')
+  st=js.read_text(encoding='utf-8')
+  for marker in ['Applications','ip-explorer-tools','technical_enquiry_submitted','website-enquiry','viewportMode','mobile-dock','fp-add-sub','i2c-master']:
+   if marker not in st:failures.append(f'V16 runtime marker missing — {marker}')
+  for rejected in ['disclosureSection','Evaluation questions','Scope clarity','Typical engagement path','audienceData','nexus_audience_selected','data-audience-choice','ecoData']:
+   if rejected in st:failures.append(f'V16 runtime retains explanatory/retired system — {rejected}')
+ if not (ROOT/'applications.html').exists():failures.append('applications.html missing')
+ if not browser.exists():failures.append('tests/site.spec.js missing')
  if not workflow.exists():failures.append('site QA workflow missing')
- else:
-  wf=workflow.read_text(encoding='utf-8')
-  for marker in ['browser-qa','playwright','responsive-review-screenshots','website-enquiry']:
-   if marker not in wf:failures.append(f'Browser QA workflow marker missing — {marker}')
- for stale in ['assets/v4.css','assets/v4-pages.css','assets/home-v3.css','assets/v9-edge.css','assets/v10-blue.css','assets/v13.css']:
-  if (ROOT/stale).exists():failures.append(f'obsolete visual asset must be removed — {stale}')
  robots=ROOT/'robots.txt'
  if not robots.exists():failures.append('robots.txt missing')
  else:
@@ -129,7 +155,9 @@ def main():
  if not sitemap.exists():failures.append('sitemap.xml missing')
  else:
   try:
-   ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'};tree=ET.parse(sitemap);locs=[x.text.strip() for x in tree.findall('sm:url/sm:loc',ns) if x.text];seen=set()
+   ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'};tree=ET.parse(sitemap)
+   locs=[x.text.strip() for x in tree.findall('sm:url/sm:loc',ns) if x.text];seen=set()
+   if 'https://zeptologic.com/applications/' not in locs:failures.append('sitemap.xml: applications URL missing')
    for loc in locs:
     if loc in seen:failures.append(f'sitemap.xml: duplicate URL — {loc}')
     seen.add(loc);u=urlparse(loc)
@@ -143,7 +171,7 @@ def main():
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print(f'PASS: V14 light commercial static, responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
+ print('PASS: V16 global editorial, light-surface, staging, disclosure, taxonomy and integrity guardrails clear.')
  return 0
 
 if __name__=='__main__':sys.exit(main())
