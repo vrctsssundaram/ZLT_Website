@@ -10,12 +10,8 @@ ROOT=Path(__file__).resolve().parents[1]
 HTML_FILES=sorted(ROOT.glob('*.html'))
 HOSTS={'zeptologic.com','www.zeptologic.com'}
 THEME='#f4f0e7'
-
-FORBIDDEN_CLAIMS={
- r'\b15\+\s*(?:FPGA[- ]validated\s*)?(?:IP|cores?|blocks?)\b':'legacy 15+ IP-count claim',
- r'\bsilicon[- ]validated\b':'silicon-validation claim',r'\bpatent\s+pending\b':'patent-pending claim',r'\bTRL[- ]?\d+\b':'public TRL claim',r'\bfoundry[- ]ready\b':'foundry-ready claim',r'\bDeep\s+Tech\s+Startup\b':'unapproved deep-tech recognition wording',r'\bunfiled\s+(?:invention|architecture|IP)':'filing-state disclosure'}
-LEGACY_PUBLIC_PATTERNS={
- r'assets/(?:v4|v4-pages|home-v3)\.css':'legacy stylesheet reference',r'class=["\'][^"\']*\bsignal-chamber\b':'legacy signal-chamber component',r'class=["\'][^"\']*\bsignal-topology\b':'legacy topology component',r'class=["\'][^"\']*\bproject-composer\b':'legacy composer component',r'class=["\'][^"\']*\bevidence-tape\b':'legacy evidence-tape component',r'class=["\'][^"\']*\bproblem-atlas\b':'legacy problem-atlas component',r'class=["\'][^"\']*\bcapability-field\b':'legacy capability-field component',r'class=["\'][^"\']*\boffer-ledger\b':'legacy offer-ledger component',r'class=["\'][^"\']*\bevidence-list\b':'legacy evidence-list component',r'class=["\'][^"\']*\bproblem-register\b':'legacy problem-register component',r'class=["\'][^"\']*\btheme-toggle\b':'legacy theme-toggle component',r'class=["\'][^"\']*\bpage-hero\b':'legacy page-hero component',r'class=["\'][^"\']*\bsection-code\b':'legacy section-code component',r'\bZepto Logic at a glance\b':'legacy at-a-glance language',r'>\s*Verified\s*<':'legacy Verified label'}
+FORBIDDEN_CLAIMS={r'\b15\+\s*(?:FPGA[- ]validated\s*)?(?:IP|cores?|blocks?)\b':'legacy 15+ IP-count claim',r'\bsilicon[- ]validated\b':'silicon-validation claim',r'\bpatent\s+pending\b':'patent-pending claim',r'\bTRL[- ]?\d+\b':'public TRL claim',r'\bfoundry[- ]ready\b':'foundry-ready claim',r'\bDeep\s+Tech\s+Startup\b':'unapproved deep-tech recognition wording',r'\bunfiled\s+(?:invention|architecture|IP)':'filing-state disclosure'}
+LEGACY_PUBLIC_PATTERNS={r'assets/(?:v4|v4-pages|home-v3|v9-edge|v10-blue)\.css':'legacy stylesheet reference',r'class=["\'][^"\']*\bsignal-chamber\b':'legacy signal-chamber component',r'class=["\'][^"\']*\bsignal-topology\b':'legacy topology component',r'class=["\'][^"\']*\bproject-composer\b':'legacy composer component',r'class=["\'][^"\']*\bevidence-tape\b':'legacy evidence-tape component',r'class=["\'][^"\']*\bproblem-atlas\b':'legacy problem-atlas component',r'class=["\'][^"\']*\bcapability-field\b':'legacy capability-field component',r'class=["\'][^"\']*\boffer-ledger\b':'legacy offer-ledger component',r'class=["\'][^"\']*\bevidence-list\b':'legacy evidence-list component',r'class=["\'][^"\']*\bproblem-register\b':'legacy problem-register component',r'class=["\'][^"\']*\btheme-toggle\b':'legacy theme-toggle component',r'class=["\'][^"\']*\bpage-hero\b':'legacy page-hero component',r'class=["\'][^"\']*\bsection-code\b':'legacy section-code component',r'\bZepto Logic at a glance\b':'legacy at-a-glance language',r'>\s*Verified\s*<':'legacy Verified label'}
 
 class PageParser(HTMLParser):
  def __init__(self):
@@ -46,8 +42,7 @@ def local_target(current,ref):
  u=urlparse(ref)
  if u.scheme in {'http','https'}:return None
  if not u.path:return current,u.fragment
- target=ROOT/u.path.lstrip('/') if u.path.startswith('/') else (current.parent/u.path).resolve()
- return target,u.fragment
+ return (ROOT/u.path.lstrip('/') if u.path.startswith('/') else (current.parent/u.path).resolve()),u.fragment
 
 def main():
  failures=[];warnings=[];parsed=parse_pages()
@@ -80,32 +75,29 @@ def main():
     target_page=parsed.get(target.name)
     if target_page and fragment not in target_page.ids:failures.append(f'{name}: missing fragment #{fragment} in {target.name}')
 
- # V9 multi-device responsive contract.
- style=ROOT/'assets/style.css';edge=ROOT/'assets/v9-edge.css';v10=ROOT/'assets/v10-blue.css';js=ROOT/'assets/site.js'
+ style=ROOT/'assets/style.css';js=ROOT/'assets/site.js';home=ROOT/'index.html'
  if not style.exists():failures.append('assets/style.css missing')
  else:
   css=style.read_text(encoding='utf-8')
-  required=['@media (min-width:1600px)','@media (max-width:1199px)','@media (max-width:980px)','@media (max-width:760px)','@media (max-width:430px)','scroll-snap-type:x mandatory','.mobile-dock','.listing-row{display:grid','min-height:50px','100dvh','prefers-reduced-motion']
+  required=['Instrument+Sans','JetBrains+Mono','@media (min-width:1600px)','@media (max-width:1199px)','@media (max-width:980px)','@media (max-width:760px)','@media (max-width:430px)','scroll-snap-type:x mandatory','.silicon-workbench','.intent-lab','.ip-explorer-tools','.service-flow','.mobile-dock','100dvh','prefers-reduced-motion','container-type:inline-size']
   for marker in required:
-   if marker not in css:failures.append(f'V9 responsive CSS marker missing — {marker}')
-  if 'Libre Caslon Display' in css or 'Plus Jakarta Sans' in css:failures.append('V8 typography dependency remains in V9 stylesheet')
-  if 'Spline Sans' not in css or 'DM Mono' not in css:failures.append('V9 base typography system missing')
- if not edge.exists():failures.append('assets/v9-edge.css missing')
-
- # V10 premium blue + compact rhythm contract.
- if not v10.exists():failures.append('assets/v10-blue.css missing')
- else:
-  blue=v10.read_text(encoding='utf-8')
-  for marker in ['--signal:#2563eb','--night:#06172f','Space Grotesk','Inter:wght','statement-band{padding:62px 0}','offer-stage{padding:70px 0}','section{padding:66px 0}','@media (max-width:430px)','mobile-dock a:last-child','linear-gradient(135deg,#1f5fe5,#3478f6)']:
-   if marker not in blue:failures.append(f'V10 blue/rhythm marker missing — {marker}')
-  for orange in ['#ff4d1f','#ff7a52','#ffede8','#ffd1c5','#fff1ec','#ffd4c8']:
-   if orange in blue.lower():failures.append(f'V10 refinement reintroduces orange token — {orange}')
+   if marker not in css:failures.append(f'V10 CSS marker missing — {marker}')
+  for stale in ['Spline Sans','DM Mono','Libre Caslon Display','Plus Jakarta Sans']:
+   if stale in css:failures.append(f'legacy typography remains in V10 stylesheet — {stale}')
  if not js.exists():failures.append('assets/site.js missing')
  else:
   script=js.read_text(encoding='utf-8')
-  for marker in ['mobile-dock','viewportMode','matchMedia(\'(min-width:981px)\')','setMenu(false)','v9-edge.css','v10-blue.css']:
-   if marker not in script:failures.append(f'responsive/premium interaction marker missing — {marker}')
+  for marker in ['wbData','intentData','ip-explorer-tools','service-flow','data-tilt','viewportMode','mobile-dock','technical_enquiry_submitted']:
+   if marker not in script:failures.append(f'V10 interaction marker missing — {marker}')
+  for stale in ['v9-edge.css','v10-blue.css']:
+   if stale in script:failures.append(f'V10 runtime still loads obsolete stylesheet — {stale}')
+ if home.exists():
+  ht=home.read_text(encoding='utf-8')
+  for marker in ['class="silicon-workbench','class="intent-lab','data-wb="ip"','data-intent="schedule"']:
+   if marker not in ht:failures.append(f'V10 homepage experience marker missing — {marker}')
 
+ for stale in ['assets/v4.css','assets/v4-pages.css','assets/home-v3.css','assets/v9-edge.css','assets/v10-blue.css']:
+  if (ROOT/stale).exists():failures.append(f'obsolete visual asset must be removed — {stale}')
  robots=ROOT/'robots.txt'
  if not robots.exists():failures.append('robots.txt missing')
  else:
@@ -123,15 +115,13 @@ def main():
     physical=ROOT/'index.html' if u.path=='/' else ROOT/((u.path.strip('/')+'.html') if u.path.endswith('/') else u.path.lstrip('/'))
     if not physical.exists():failures.append(f'sitemap.xml: URL has no physical page mapping — {loc}')
   except ET.ParseError as exc:failures.append(f'sitemap.xml: XML parse error — {exc}')
- for legacy in ['assets/v4.css','assets/v4-pages.css','assets/home-v3.css']:
-  if (ROOT/legacy).exists():failures.append(f'legacy visual asset must be removed — {legacy}')
  print(f'Checked {len(HTML_FILES)} HTML pages.')
  for w in warnings:print(f'WARNING: {w}')
  if failures:
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print(f'PASS: V10 blue-premium, responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
+ print(f'PASS: V10 interactive-density, responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
  return 0
 
 if __name__=='__main__':sys.exit(main())
