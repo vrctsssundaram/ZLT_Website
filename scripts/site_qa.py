@@ -11,7 +11,7 @@ HTML_FILES=sorted(ROOT.glob('*.html'))
 HOSTS={'zeptologic.com','www.zeptologic.com'}
 THEME='#f4f0e7'
 FORBIDDEN_CLAIMS={r'\b15\+\s*(?:FPGA[- ]validated\s*)?(?:IP|cores?|blocks?)\b':'legacy 15+ IP-count claim',r'\bsilicon[- ]validated\b':'silicon-validation claim',r'\bpatent\s+pending\b':'patent-pending claim',r'\bTRL[- ]?\d+\b':'public TRL claim',r'\bfoundry[- ]ready\b':'foundry-ready claim',r'\bDeep\s+Tech\s+Startup\b':'unapproved deep-tech recognition wording',r'\bunfiled\s+(?:invention|architecture|IP)':'filing-state disclosure'}
-LEGACY_PUBLIC_PATTERNS={r'assets/(?:v4|v4-pages|home-v3|v9-edge|v10-blue)\.css':'legacy stylesheet reference',r'class=["\'][^"\']*\bsignal-chamber\b':'legacy signal-chamber component',r'class=["\'][^"\']*\bsignal-topology\b':'legacy topology component',r'class=["\'][^"\']*\bproject-composer\b':'legacy composer component',r'class=["\'][^"\']*\bevidence-tape\b':'legacy evidence-tape component',r'class=["\'][^"\']*\bproblem-atlas\b':'legacy problem-atlas component',r'class=["\'][^"\']*\bcapability-field\b':'legacy capability-field component',r'class=["\'][^"\']*\boffer-ledger\b':'legacy offer-ledger component',r'class=["\'][^"\']*\bevidence-list\b':'legacy evidence-list component',r'class=["\'][^"\']*\bproblem-register\b':'legacy problem-register component',r'class=["\'][^"\']*\btheme-toggle\b':'legacy theme-toggle component',r'class=["\'][^"\']*\bpage-hero\b':'legacy page-hero component',r'class=["\'][^"\']*\bsection-code\b':'legacy section-code component',r'\bZepto Logic at a glance\b':'legacy at-a-glance language',r'>\s*Verified\s*<':'legacy Verified label'}
+LEGACY_PUBLIC_PATTERNS={r'assets/(?:v4|v4-pages|home-v3|v9-edge|v10-blue)\.css':'legacy stylesheet reference',r'class=["\'][^"\']*\bsignal-chamber\b':'legacy signal-chamber component',r'class=["\'][^"\']*\bproject-composer\b':'legacy composer component',r'class=["\'][^"\']*\bevidence-tape\b':'legacy evidence-tape component',r'class=["\'][^"\']*\bproblem-atlas\b':'legacy problem-atlas component',r'class=["\'][^"\']*\btheme-toggle\b':'legacy theme-toggle component',r'\bZepto Logic at a glance\b':'legacy at-a-glance language',r'>\s*Verified\s*<':'legacy Verified label'}
 
 class PageParser(HTMLParser):
  def __init__(self):
@@ -75,27 +75,28 @@ def main():
     target_page=parsed.get(target.name)
     if target_page and fragment not in target_page.ids:failures.append(f'{name}: missing fragment #{fragment} in {target.name}')
 
- style=ROOT/'assets/style.css';js=ROOT/'assets/site.js';home=ROOT/'index.html'
+ style=ROOT/'assets/style.css';js=ROOT/'assets/site.js';home=ROOT/'index.html';spec=ROOT/'V11-DESIGN-SPEC.md'
  if not style.exists():failures.append('assets/style.css missing')
  else:
   css=style.read_text(encoding='utf-8')
-  required=['Instrument+Sans','JetBrains+Mono','@media (min-width:1600px)','@media (max-width:1199px)','@media (max-width:980px)','@media (max-width:760px)','@media (max-width:430px)','scroll-snap-type:x mandatory','.silicon-workbench','.intent-lab','.ip-explorer-tools','.service-flow','.mobile-dock','100dvh','prefers-reduced-motion','container-type:inline-size']
+  required=['Hanken+Grotesk','IBM+Plex+Mono','@media(min-width:1600px)','@media(max-width:1199px)','@media(max-width:980px)','@media(max-width:760px)','@media(max-width:430px)','scroll-snap-type:x mandatory','.nexus-bar','.nexus-hero','.nexus-console','.opportunity-matrix','.ecosystem-canvas','.partnership-grid','.mobile-dock','100dvh','prefers-reduced-motion']
   for marker in required:
-   if marker not in css:failures.append(f'V10 CSS marker missing — {marker}')
-  for stale in ['Spline Sans','DM Mono','Libre Caslon Display','Plus Jakarta Sans']:
-   if stale in css:failures.append(f'legacy typography remains in V10 stylesheet — {stale}')
+   if marker not in css:failures.append(f'V11 CSS marker missing — {marker}')
+  for stale in ['Instrument Sans','JetBrains Mono','Spline Sans','DM Mono','Libre Caslon Display','Plus Jakarta Sans']:
+   if stale in css:failures.append(f'legacy typography remains in V11 stylesheet — {stale}')
  if not js.exists():failures.append('assets/site.js missing')
  else:
   script=js.read_text(encoding='utf-8')
-  for marker in ['wbData','intentData','ip-explorer-tools','service-flow','data-tilt','viewportMode','mobile-dock','technical_enquiry_submitted']:
-   if marker not in script:failures.append(f'V10 interaction marker missing — {marker}')
-  for stale in ['v9-edge.css','v10-blue.css']:
-   if stale in script:failures.append(f'V10 runtime still loads obsolete stylesheet — {stale}')
+  required=['audienceData','zl_audience','nexus_audience_selected','data-audience-choice','ecoData','ecosystem_route_selected','ip-explorer-tools','service-flow','mobile-dock','technical_enquiry_submitted','viewportMode']
+  for marker in required:
+   if marker not in script:failures.append(f'V11 interaction marker missing — {marker}')
+  for stale in ['wbData','intentData','v9-edge.css','v10-blue.css']:
+   if stale in script:failures.append(f'V11 runtime retains obsolete interaction/style dependency — {stale}')
  if home.exists():
   ht=home.read_text(encoding='utf-8')
-  for marker in ['class="silicon-workbench','class="intent-lab','data-wb="ip"','data-intent="schedule"']:
-   if marker not in ht:failures.append(f'V10 homepage experience marker missing — {marker}')
-
+  for marker in ['class="nexus-hero','class="nexus-console','class="opportunity-matrix','class="ecosystem-canvas','class="partnership-grid','data-audience-choice="buyer"','data-eco="strategic"']:
+   if marker not in ht:failures.append(f'V11 homepage experience marker missing — {marker}')
+ if not spec.exists():failures.append('V11 design specification missing')
  for stale in ['assets/v4.css','assets/v4-pages.css','assets/home-v3.css','assets/v9-edge.css','assets/v10-blue.css']:
   if (ROOT/stale).exists():failures.append(f'obsolete visual asset must be removed — {stale}')
  robots=ROOT/'robots.txt'
@@ -121,7 +122,7 @@ def main():
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print(f'PASS: V10 interactive-density, responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
+ print(f'PASS: V11 Nexus adaptive corporate, responsive, staging, disclosure and integrity guardrails clear; {len(warnings)} warning(s).')
  return 0
 
 if __name__=='__main__':sys.exit(main())
