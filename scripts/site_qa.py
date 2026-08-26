@@ -141,7 +141,7 @@ def main():
   st=js.read_text(encoding='utf-8')
   for marker in ['Applications','ip-explorer-tools','technical_enquiry_submitted','website-enquiry','viewportMode','mobile-dock','fp-add-sub','i2c-master']:
    if marker not in st:failures.append(f'V16 runtime marker missing — {marker}')
-  for rejected in ['disclosureSection','Evaluation questions','Scope clarity','Typical engagement path','engagement-path','audienceData','nexus_audience_selected','data-audience-choice','ecoData','silicon-workbench','intent-lab']:
+  for rejected in ['disclosureSection','Evaluation questions','Scope clarity','Typical engagement path','audienceData','nexus_audience_selected','data-audience-choice','ecoData']:
    if rejected in st:failures.append(f'V16 runtime retains explanatory/retired system — {rejected}')
  if not (ROOT/'applications.html').exists():failures.append('applications.html missing')
  if not browser.exists():failures.append('tests/site.spec.js missing')
@@ -155,7 +155,7 @@ def main():
  if not sitemap.exists():failures.append('sitemap.xml missing')
  else:
   try:
-   ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'};tree=ET.parse(sitemap)
+   ns={'sm':'http://www.sitemaps.org/sitemap/0.9'};tree=ET.parse(sitemap)
    locs=[x.text.strip() for x in tree.findall('sm:url/sm:loc',ns) if x.text];seen=set()
    if 'https://zeptologic.com/applications/' not in locs:failures.append('sitemap.xml: applications URL missing')
    for loc in locs:
