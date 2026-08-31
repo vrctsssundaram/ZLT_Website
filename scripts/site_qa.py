@@ -172,7 +172,7 @@ def main():
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print('PASS: V22 semiconductor cinematic media, editorial, staging, taxonomy, disclosure and integrity guardrails clear.')
+ print('PASS: V24 high-resolution cinematic media, editorial, staging, taxonomy, disclosure and integrity guardrails clear.')
  return 0
 
 if __name__=='__main__':sys.exit(main())
