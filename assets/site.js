@@ -86,3 +86,77 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
     metrics.forEach(el=>counterIO.observe(el));
   }
 })();
+
+
+/* V19 — original hero film controls, energy-aware playback and conversion beacon. */
+(function v19CinematicMotion(){
+  const film=document.querySelector('[data-hero-film]');
+  const toggle=document.querySelector('[data-film-toggle]');
+  const hero=document.querySelector('.v19-hero');
+  const beacon=document.querySelector('[data-project-beacon]');
+  if(!hero)return;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const fine=matchMedia('(hover:hover) and (pointer:fine)');
+  const saveData=Boolean(navigator.connection&&navigator.connection.saveData);
+  let userPaused=reduce.matches||saveData;
+  let inView=true;
+
+  function setFilmState(running){
+    if(!film)return;
+    const shouldRun=running&&!reduce.matches&&inView&&!document.hidden;
+    if(shouldRun){
+      const p=film.play();
+      if(p&&p.catch)p.catch(()=>{document.body.classList.add('film-static')});
+      film.dataset.motion='running';
+      document.body.classList.remove('film-static');
+    }else{
+      film.pause();
+      film.dataset.motion='paused';
+      document.body.classList.add('film-static');
+    }
+    if(toggle){
+      toggle.setAttribute('aria-pressed',String(!running));
+      toggle.innerHTML=running?'<span aria-hidden="true">Ⅱ</span> Pause motion':'<span aria-hidden="true">▶</span> Play motion';
+    }
+  }
+
+  setFilmState(!userPaused);
+  toggle?.addEventListener('click',()=>{
+    userPaused=!userPaused;
+    setFilmState(!userPaused);
+    window.dataLayer=window.dataLayer||[];
+    window.dataLayer.push({event:'hero_motion_toggle',state:userPaused?'paused':'playing',page:location.pathname});
+  });
+
+  if('IntersectionObserver'in window&&film){
+    const io=new IntersectionObserver(entries=>{
+      const entry=entries[0]; inView=Boolean(entry&&entry.isIntersecting);
+      setFilmState(!userPaused);
+    },{threshold:.08});
+    io.observe(hero);
+  }
+  document.addEventListener('visibilitychange',()=>setFilmState(!userPaused));
+  reduce.addEventListener?.('change',e=>{if(e.matches)userPaused=true;setFilmState(!userPaused)});
+
+  if(fine.matches&&!reduce.matches){
+    hero.addEventListener('pointermove',e=>{
+      const r=hero.getBoundingClientRect();
+      const x=((e.clientX-r.left)/r.width-.5)*-14;
+      const y=((e.clientY-r.top)/r.height-.5)*-9;
+      hero.style.setProperty('--film-x',x.toFixed(1)+'px');
+      hero.style.setProperty('--film-y',y.toFixed(1)+'px');
+    },{passive:true});
+    hero.addEventListener('pointerleave',()=>{hero.style.setProperty('--film-x','0px');hero.style.setProperty('--film-y','0px')},{passive:true});
+  }
+
+  if(beacon){
+    let ticking=false;
+    const syncBeacon=()=>{
+      const threshold=Math.max(520,hero.offsetHeight*.72);
+      beacon.classList.toggle('show',scrollY>threshold&&scrollY<document.documentElement.scrollHeight-innerHeight-520);
+      ticking=false;
+    };
+    addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(syncBeacon)}},{passive:true});
+    syncBeacon();
+  }
+})();

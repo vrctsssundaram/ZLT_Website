@@ -138,6 +138,12 @@ def main():
    if marker not in st:failures.append(f'V16 runtime marker missing — {marker}')
   for rejected in ['disclosureSection','Evaluation questions','Scope clarity','Typical engagement path','audienceData','nexus_audience_selected','data-audience-choice','ecoData']:
    if rejected in st:failures.append(f'V16 runtime retains explanatory/retired system — {rejected}')
+ motion_assets=['zlt-silicon-film.webm','zlt-silicon-film.mp4','zlt-silicon-film-mobile.webm','zlt-silicon-film-mobile.mp4','zlt-silicon-film-poster.jpg','zlt-silicon-film-mobile-poster.jpg']
+ media_dir=ROOT/'assets/media'
+ for asset in motion_assets:
+  p=media_dir/asset
+  if not p.exists():failures.append(f'V19 motion asset missing — {asset}')
+  elif p.stat().st_size<20000:failures.append(f'V19 motion asset unexpectedly small — {asset}')
  if not (ROOT/'applications.html').exists():failures.append('applications.html missing')
  if not browser.exists():failures.append('tests/site.spec.js missing')
  if not workflow.exists():failures.append('site QA workflow missing')
@@ -166,7 +172,7 @@ def main():
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print('PASS: V18 editorial, staging, taxonomy, disclosure and integrity guardrails clear.')
+ print('PASS: V19 cinematic motion, editorial, staging, taxonomy, disclosure and integrity guardrails clear.')
  return 0
 
 if __name__=='__main__':sys.exit(main())

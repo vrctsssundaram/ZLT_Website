@@ -488,3 +488,81 @@ body.v16 .search-result:hover{background:linear-gradient(90deg,#eff6ff,#f7f2ff)}
  html{scroll-behavior:auto}.hero-aurora i,.live-pill i,.chip-core,.chip-core::after,.orbit,.signal-node,.data-lane::after,.marquee-track,.z-page-hero::before,.z-cta::before{animation:none!important}
  .silicon-scene,.magnetic,.z-card,.z-app,.listing-row{transform:none!important;transition:none!important}.motion-ready .reveal-v18{opacity:1!important;transform:none!important;transition:none!important}.cursor-glow{display:none!important}
 }
+
+
+/* =====================================================================
+   V19 — ORIGINAL CINEMATIC MOTION
+   Locally rendered Zepto Logic media + interactive engineering narrative.
+   ===================================================================== */
+.v19-hero{position:relative;isolation:isolate;background:#040d20}
+.v19-hero .wrap{position:relative;z-index:5}
+.v19-hero::before{z-index:3;opacity:.16}
+.v19-hero .hero-aurora{z-index:2;opacity:.72}
+.hero-film{position:absolute;z-index:1;inset:0;overflow:hidden;pointer-events:none;background:#061226 url('media/zlt-silicon-film-poster.jpg') center/cover no-repeat}
+.hero-film-video{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;object-position:center;opacity:.72;filter:saturate(1.28) contrast(1.08) brightness(.82);transform:translate3d(var(--film-x,0),var(--film-y,0),0) scale(1.035);transition:transform .22s ease-out,opacity .35s ease}
+.hero-film-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,10,26,.90) 0%,rgba(3,10,26,.72) 35%,rgba(3,10,26,.28) 64%,rgba(3,10,26,.54) 100%)}
+.hero-film-spectrum{position:absolute;inset:0;background:radial-gradient(circle at 18% 54%,rgba(47,99,255,.28),transparent 30%),radial-gradient(circle at 84% 22%,rgba(240,75,182,.18),transparent 26%),linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.26));mix-blend-mode:screen}
+body.film-static .hero-film-video{opacity:.38}
+.motion-toggle{min-height:36px;display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.17);background:rgba(4,14,34,.42);color:#d8e5f8;font:650 9px 'IBM Plex Mono',monospace;letter-spacing:.06em;text-transform:uppercase;backdrop-filter:blur(10px);cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.motion-toggle:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.32);transform:translateY(-1px)}
+.motion-toggle span{color:#66e8ff;font-size:12px}
+.motion-toggle[aria-pressed="true"] span{color:#ffbd43}
+.motion-toggle:focus-visible{outline:3px solid #ffd246;outline-offset:3px}
+
+/* Let the film and the interactive chip reinforce each other without visual collision. */
+.v19-hero .silicon-scene{background:linear-gradient(145deg,rgba(5,18,42,.36),rgba(22,12,49,.28));border-color:rgba(119,221,255,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 34px 80px rgba(0,0,0,.26);backdrop-filter:blur(7px)}
+.v19-hero .circuit-grid{opacity:.20}
+.v19-hero .hero-route-panel{background:rgba(3,12,29,.58);border-color:rgba(126,210,255,.18)}
+
+/* Kinetic architecture-to-proof band */
+.v19-motion-story{position:relative;overflow:hidden;padding:82px 0 76px;color:#fff;background:radial-gradient(circle at 8% 18%,rgba(47,99,255,.28),transparent 28%),radial-gradient(circle at 92% 74%,rgba(240,75,182,.20),transparent 28%),linear-gradient(125deg,#061226,#0d2450 48%,#25133f 100%);border-bottom:1px solid rgba(255,255,255,.08)}
+.v19-motion-story::before{content:"";position:absolute;inset:0;opacity:.20;background-image:linear-gradient(rgba(102,190,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(102,190,255,.12) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+.v19-motion-story::after{content:"";position:absolute;left:-18%;top:-50%;width:62%;height:180%;background:linear-gradient(105deg,transparent 36%,rgba(90,226,255,.06) 48%,rgba(194,92,255,.08) 54%,transparent 66%);animation:storySweep 8s linear infinite;pointer-events:none}
+@keyframes storySweep{to{transform:translateX(180%)}}
+.v19-motion-story .wrap{position:relative;z-index:2}
+.motion-story-head{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.72fr);gap:80px;align-items:end}
+.motion-story-head .eyebrow{color:#78e9ff}
+.motion-story-head h2{max-width:920px;margin:10px 0 0;color:#fff;font-size:clamp(40px,4.7vw,72px);line-height:.96;letter-spacing:-.052em;text-wrap:balance}
+.motion-story-head p{margin:0;max-width:650px;color:#b9c9e0;font-size:16px;line-height:1.7}
+.motion-pipeline{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:44px;border:1px solid rgba(255,255,255,.11);border-radius:24px;overflow:hidden;background:rgba(255,255,255,.08)}
+.motion-pipeline::before{content:"";position:absolute;z-index:1;left:8%;right:8%;top:52px;height:2px;background:linear-gradient(90deg,#25dfff,#3b72ff,#925fff,#f15ab8,#ffad3f);opacity:.65}
+.pipeline-tracer{position:absolute;z-index:2;top:47px;left:7%;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff,0 0 28px #28dfff;animation:pipelineTravel 5.6s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes pipelineTravel{0%{left:7%;box-shadow:0 0 10px #fff,0 0 28px #28dfff}32%{box-shadow:0 0 10px #fff,0 0 28px #4375ff}64%{box-shadow:0 0 10px #fff,0 0 28px #b05eff}100%{left:92%;box-shadow:0 0 10px #fff,0 0 28px #ff9e40}}
+.motion-pipeline a{position:relative;z-index:3;min-height:230px;padding:31px 24px 25px;color:#fff;background:rgba(5,15,38,.73);border-right:1px solid rgba(255,255,255,.10);transition:transform .25s,background .25s,box-shadow .25s}
+.motion-pipeline a:last-child{border-right:0}
+.motion-pipeline a:hover{z-index:4;transform:translateY(-5px);background:rgba(17,33,71,.94);box-shadow:0 20px 45px rgba(0,0,0,.22)}
+.motion-pipeline a>span{position:relative;display:grid;place-items:center;width:44px;height:44px;margin-bottom:36px;border-radius:50%;background:#0c1b3a;border:1px solid #57e6ff;color:#93efff;font:700 10px 'IBM Plex Mono',monospace;box-shadow:0 0 0 6px rgba(40,211,255,.07)}
+.motion-pipeline a:nth-of-type(2)>span{border-color:#778aff;color:#bdc7ff}.motion-pipeline a:nth-of-type(3)>span{border-color:#ae73ff;color:#dabfff}.motion-pipeline a:nth-of-type(4)>span{border-color:#ff9f53;color:#ffd2aa}
+.motion-pipeline strong{display:block;font-size:25px;letter-spacing:-.035em;margin-bottom:10px}
+.motion-pipeline small{display:block;color:#9eb0cc;font-size:12px;line-height:1.55}
+.motion-story-cta{display:flex;justify-content:space-between;gap:28px;align-items:center;margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12)}
+.motion-story-cta>span{color:#aebed6;font-size:13px}
+.motion-story-cta .actions{margin:0;display:flex;gap:10px}
+.v19-motion-story .action:not(.primary){color:#fff;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);box-shadow:none}
+
+/* Persistent desktop conversion cue, paired with the separate mobile dock. */
+.project-beacon{position:fixed;z-index:115;right:22px;top:56%;display:flex;flex-direction:column;gap:3px;min-width:154px;padding:13px 15px;border-radius:18px;color:#071426;background:linear-gradient(120deg,#fff5c8,#ffd14b 42%,#ff8e43);border:1px solid rgba(255,255,255,.72);box-shadow:0 18px 46px rgba(3,12,32,.25),0 0 0 1px rgba(255,167,55,.15);opacity:0;pointer-events:none;transform:translate3d(18px,-50%,0) scale(.96);transition:opacity .25s,transform .25s,box-shadow .25s}
+.project-beacon.show{opacity:1;pointer-events:auto;transform:translate3d(0,-50%,0) scale(1)}
+.project-beacon:hover{box-shadow:0 24px 55px rgba(3,12,32,.30),0 0 28px rgba(255,163,55,.22)}
+.project-beacon span{font-size:9px;font-weight:760;text-transform:uppercase;letter-spacing:.07em}
+.project-beacon b{font-size:13px}
+.project-beacon:focus-visible{outline:3px solid #16d8ff;outline-offset:4px}
+
+/* Extra conversion energy without turning every surface into an action colour. */
+.conversion-cta .action.primary{position:relative;overflow:hidden}
+.conversion-cta .action.primary::after{content:"";position:absolute;inset:-80% -30%;background:linear-gradient(110deg,transparent 38%,rgba(255,255,255,.52) 48%,transparent 58%);transform:translateX(-75%);animation:ctaSheen 5.2s ease-in-out infinite}
+@keyframes ctaSheen{0%,58%{transform:translateX(-75%)}82%,100%{transform:translateX(75%)}}
+
+@media(max-width:980px){
+ .motion-story-head{grid-template-columns:1fr;gap:22px}.motion-pipeline{grid-template-columns:1fr 1fr}.motion-pipeline::before,.pipeline-tracer{display:none}.motion-pipeline a:nth-child(2){border-right:0}.project-beacon{display:none}
+}
+@media(max-width:700px){
+ .hero-film-video{inset:-2%;width:104%;height:104%;opacity:.62;object-position:center}.hero-film-shade{background:linear-gradient(180deg,rgba(3,10,26,.76),rgba(3,10,26,.42) 48%,rgba(3,10,26,.72))}
+ .motion-toggle{min-height:36px}.v19-motion-story{padding:62px 0}.motion-story-head h2{font-size:clamp(38px,11.6vw,56px)}
+ .motion-pipeline{grid-template-columns:1fr;border-radius:18px}.motion-pipeline a{min-height:170px;border-right:0;border-bottom:1px solid rgba(255,255,255,.10)}.motion-pipeline a:last-child{border-bottom:0}.motion-pipeline a>span{margin-bottom:24px}
+ .motion-story-cta{align-items:flex-start;flex-direction:column}.motion-story-cta .actions{width:100%;flex-direction:column}.motion-story-cta .action{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ .hero-film-video{display:none!important}.hero-film{background-image:url('media/zlt-silicon-film-poster.jpg')!important}.motion-toggle{display:none!important}
+ .v19-motion-story::after,.pipeline-tracer,.conversion-cta .action.primary::after{animation:none!important}
+}
