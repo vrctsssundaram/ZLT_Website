@@ -320,35 +320,54 @@ def render_sequence(W,H,t,duration,scene_names,palette):
         return Image.blend(current,other,0.5-0.5*math.cos(q*math.pi))
     return current
 
-def encode_clip(name,duration,scene_names,palette_name,W=960,H=540,fps=18,crf=29):
+def encode_clip(name,duration,scene_names,palette_name,W=1280,H=720,fps=18,crf=22):
     p=PALETTES[palette_name];frames=int(duration*fps)
-    poster=render_sequence(W,H,duration*.14,duration,scene_names,p)
-    poster.save(f"{OUT}/{name}-poster.jpg",quality=88,optimize=True,progressive=True)
-    webm=f"{OUT}/{name}.webm";mp4=f"{OUT}/{name}.mp4"
+    poster=render_sequence(W,H,duration*.18,duration,scene_names,p)
+    poster.save(f"{OUT}/{name}-poster.jpg",quality=94,optimize=True,progressive=True)
+    mp4=f"{OUT}/{name}.mp4";webm=f"{OUT}/{name}.webm"
     enc=subprocess.Popen([
       "ffmpeg","-y","-loglevel","error","-f","rawvideo","-pix_fmt","rgb24","-s",f"{W}x{H}","-r",str(fps),"-i","-",
-      "-an","-c:v","libvpx","-deadline","realtime","-cpu-used","7","-crf",str(crf),"-b:v","0","-pix_fmt","yuv420p",webm
+      "-an","-c:v","libx264","-preset","medium","-crf",str(crf),"-profile:v","high","-movflags","+faststart","-pix_fmt","yuv420p",mp4
     ],stdin=subprocess.PIPE)
     for i in range(frames):
         frame=render_sequence(W,H,i/fps,duration,scene_names,p)
         enc.stdin.write(frame.tobytes())
     enc.stdin.close()
-    if enc.wait()!=0: raise SystemExit(f"webm encode failed: {name}")
+    if enc.wait()!=0: raise SystemExit(f"mp4 encode failed: {name}")
     subprocess.check_call([
-      "ffmpeg","-y","-loglevel","error","-i",webm,"-an","-c:v","libx264","-preset","veryfast","-crf",str(crf-2),
-      "-movflags","+faststart","-pix_fmt","yuv420p",mp4
+      "ffmpeg","-y","-loglevel","error","-i",mp4,"-an","-c:v","libvpx-vp9","-row-mt","1","-deadline","good","-cpu-used","4",
+      "-crf",str(crf+9),"-b:v","0","-pix_fmt","yuv420p",webm
     ])
     print(name,os.path.getsize(webm),os.path.getsize(mp4))
 
-# Hero: 18-second complete semiconductor journey.
-hero=["wafer","lithography","interconnect","architecture","board","secure"]
-encode_clip("zlt-hero-semiconductor-journey",18,hero,"hero",960,540,18,29)
-encode_clip("zlt-hero-semiconductor-journey-mobile",18,hero,"hero",640,360,18,30)
+def derive_mobile(name):
+    src=f"{OUT}/{name}.mp4";dst=f"{OUT}/{name}-mobile.mp4";webm=f"{OUT}/{name}-mobile.webm"
+    subprocess.check_call([
+      "ffmpeg","-y","-loglevel","error","-i",src,"-an",
+      "-vf","crop=608:1080:(in_w-608)/2:0,scale=720:1280:flags=lanczos,unsharp=5:5:0.42:3:3:0.18",
+      "-c:v","libx264","-preset","medium","-crf","23","-profile:v","high","-movflags","+faststart","-pix_fmt","yuv420p",dst
+    ])
+    subprocess.check_call([
+      "ffmpeg","-y","-loglevel","error","-i",dst,"-an","-c:v","libvpx-vp9","-row-mt","1","-deadline","good","-cpu-used","4",
+      "-crf","33","-b:v","0","-pix_fmt","yuv420p",webm
+    ])
+    poster=Image.open(f"{OUT}/{name}-poster.jpg")
+    w,h=poster.size;cw=max(1,int(h*720/1280));left=max(0,(w-cw)//2)
+    poster.crop((left,0,left+cw,h)).resize((720,1280),Image.Resampling.LANCZOS).save(
+      f"{OUT}/{name}-mobile-poster.jpg",quality=94,optimize=True,progressive=True
+    )
 
-# Section films: 15 seconds each, deliberately distinct.
-encode_clip("zlt-film-ip",15,["wafer","interconnect","architecture"],"ip",960,540,16,30)
-encode_clip("zlt-film-engineering",15,["architecture","interconnect","board"],"engineering",960,540,16,30)
-encode_clip("zlt-film-applications",15,["board","network","vision"],"applications",960,540,16,30)
-encode_clip("zlt-film-research",15,["interconnect","secure","network"],"research",960,540,16,30)
+# V24 hero: a 64-second master that loops indefinitely in the browser.
+# The sequence moves from semiconductor-industry context into Zepto Logic's actual
+# engineering domain: architecture, implementation, FPGA, secure compute and applications.
+hero=["wafer","lithography","interconnect","architecture","board","secure","network","vision"]
+encode_clip("zlt-hero-semiconductor-journey",64,hero,"hero",1920,1080,18,22)
+derive_mobile("zlt-hero-semiconductor-journey")
 
-print("Generated V22 original semiconductor cinematic media.")
+# Higher-resolution domain films. These remain compact enough to load only when near view.
+encode_clip("zlt-film-ip",24,["wafer","interconnect","architecture","interconnect"],"ip",1280,720,18,23)
+encode_clip("zlt-film-engineering",24,["architecture","interconnect","board","architecture"],"engineering",1280,720,18,23)
+encode_clip("zlt-film-applications",24,["board","network","vision","network"],"applications",1280,720,18,23)
+encode_clip("zlt-film-research",24,["interconnect","secure","network","secure"],"research",1280,720,18,23)
+
+print("Generated V24 high-resolution semiconductor cinematic media.")
