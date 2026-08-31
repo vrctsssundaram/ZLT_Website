@@ -911,3 +911,52 @@ body.film-static .hero-film-video{opacity:.32}
 @media(max-width:980px){.v23-context-nav{top:66px}.v23-context-nav .wrap{width:100%;padding-inline:18px}.v23-resource-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.v23-context-label{display:none}.v23-context-nav .wrap{min-height:48px;padding-inline:12px}.v23-context-links a{min-height:38px;padding-inline:10px}.v23-resource-grid{grid-template-columns:1fr}.v23-resource-card{min-height:205px}.v23-evidence-foot{display:grid}.v23-evidence-foot a{width:100%}}
 @media(prefers-reduced-motion:reduce){.v23-context-links a,.v23-resource-card,.v23-resource-card::before,.v23-resource-card::after,.v23-evidence-foot a{transition:none!important;transform:none!important}}
+
+
+/* =====================================================================
+   V24 — HIGH-RESOLUTION CINEMATIC DELIVERY
+   64-second master loop; adaptive portrait mobile derivation.
+   ===================================================================== */
+.v19-hero{min-height:clamp(720px,86vh,980px)}
+.v19-hero .hero-film{background-image:url('media/zlt-hero-semiconductor-journey-poster.jpg');background-position:center;background-size:cover}
+.v19-hero .hero-film-video{
+  inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;
+  opacity:.94;filter:saturate(1.06) contrast(1.045) brightness(.91);
+  transform:translate3d(var(--film-x,0),var(--film-y,0),0) scale(1.012);
+  image-rendering:auto;backface-visibility:hidden;
+}
+.v19-hero .hero-film-shade{
+  background:
+    linear-gradient(90deg,rgba(3,9,24,.94) 0%,rgba(3,9,24,.79) 34%,rgba(3,9,24,.26) 66%,rgba(3,9,24,.42) 100%),
+    linear-gradient(180deg,rgba(3,9,24,.12),transparent 52%,rgba(3,9,24,.26));
+}
+.v19-hero .hero-film-spectrum{opacity:.62}
+.v19-hero .hero-stage{display:flex;align-items:flex-end;justify-content:stretch;min-height:420px}
+.v19-hero .hero-route-panel{
+  width:100%;margin-top:auto;
+  background:linear-gradient(145deg,rgba(3,12,30,.72),rgba(15,17,49,.58));
+  border-color:rgba(130,219,255,.24);box-shadow:0 26px 70px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.10);
+  backdrop-filter:blur(15px) saturate(1.14);
+}
+.v19-hero .motion-toggle{background:rgba(4,14,34,.58);border-color:rgba(255,255,255,.24);backdrop-filter:blur(12px)}
+.v22-section-film{filter:saturate(1.045) contrast(1.04) brightness(.98)}
+.v22-film-stage{background:#050f22;box-shadow:0 34px 80px rgba(8,25,55,.17),0 0 0 1px rgba(28,76,132,.11)}
+.v22-film-stage::after{content:"";position:absolute;z-index:3;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.025),transparent 34%,rgba(89,110,255,.018) 66%,transparent)}
+body.film-static .hero-film-video{opacity:.30}
+
+@media(max-width:980px){
+  .v19-hero{min-height:auto}
+  .v19-hero .hero-stage{min-height:290px}
+}
+@media(max-width:700px){
+  .v19-hero .hero-film{background-image:url('media/zlt-hero-semiconductor-journey-mobile-poster.jpg')}
+  .v19-hero .hero-film-video{object-position:center center;transform:translate3d(0,0,0) scale(1.006);opacity:.84}
+  .v19-hero .hero-film-shade{
+    background:linear-gradient(180deg,rgba(3,9,24,.84) 0%,rgba(3,9,24,.62) 45%,rgba(3,9,24,.67) 100%);
+  }
+  .v19-hero .hero-stage{min-height:250px}
+}
+@media(prefers-reduced-motion:reduce){
+  .v19-hero .hero-film-video{display:none!important}
+  .v19-hero .hero-film{background-image:url('media/zlt-hero-semiconductor-journey-poster.jpg')!important}
+}
