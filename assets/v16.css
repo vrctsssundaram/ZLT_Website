@@ -181,3 +181,44 @@ body.v16 .foot-grid h4{color:var(--z-ink)}
  .z-cta{padding:56px 0}.z-cta .actions{width:100%}.z-cta .action{width:100%}
 }
 @media(prefers-reduced-motion:reduce){body.v16 *,body.v16 *::before,body.v16 *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* V17 — conversion, accessibility and multi-input hardening */
+body.v16 a,body.v16 button,body.v16 input,body.v16 select,body.v16 textarea{touch-action:manipulation}
+body.v16 a,body.v16 button{-webkit-tap-highlight-color:rgba(22,70,200,.12)}
+body.v16 :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #1646c8;outline-offset:3px}
+body.v16 .site-head a:focus-visible,body.v16 .site-head button:focus-visible{border-radius:4px}
+body.v16 .z-card:focus-visible,body.v16 .z-app:focus-visible,body.v16 .listing-row .go:focus-visible{position:relative;z-index:2}
+body.v16 .z-app{display:block}
+body.v16 .z-app[href]{cursor:pointer;transition:background .16s,border-color .16s}
+body.v16 .buyer-routes .z-app h3{max-width:22ch}
+body.v16 .trust-reasons .z-card{min-height:250px}
+body.v16 .leadership-story img{object-position:center 18%}
+body.v16 .field-counter{display:block;margin-top:6px;font-size:11px;color:var(--z-muted)}
+body.v16 .field-counter.ready{color:var(--z-teal)}
+body.v16 .route-context{margin-bottom:20px;padding:14px 16px;border-left:3px solid var(--z-blue);background:var(--z-soft);font-size:13px;line-height:1.55}
+body.v16 .search-panel{max-height:min(760px,calc(100dvh - 40px));overflow:auto}
+body.v16 .search-result{min-height:48px}
+body.v16 .menu-toggle,body.v16 .search-button,body.v16 .project-link,body.v16 .action{min-height:44px}
+body.v16 input,body.v16 select,body.v16 textarea{min-height:44px}
+body.v16 textarea{min-height:150px}
+@media(hover:hover) and (pointer:fine){
+  body.v16 .z-app[href]:hover{background:#fafafa}
+  body.v16 .z-card[href]:hover{background:#fafafa}
+}
+@media(pointer:coarse){
+  body.v16 .head-links a,body.v16 .foot-contact a,body.v16 .foot-grid a{min-height:44px;display:flex;align-items:center}
+  body.v16 .listing-row .go{min-height:44px;display:flex;align-items:center;justify-content:flex-end}
+  body.v16 .ip-filter{min-height:44px;padding-inline:16px}
+}
+@media(max-width:700px){
+  body.v16 .field input,body.v16 .field select,body.v16 .field textarea,body.v16 .ip-search,body.v16 #siteSearch{font-size:16px}
+  body.v16 .mobile-dock{bottom:max(10px,env(safe-area-inset-bottom));left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right))}
+  body.v16{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+  body.v16 .z-page-hero .intro{font-size:17px}
+  body.v16 .z-app{min-height:175px}
+}
+@media(max-width:430px){
+  body.v16 .wordmark span{font-size:14px}
+  body.v16 .z-hero h1{font-size:clamp(42px,12.7vw,58px)}
+  body.v16 .z-page-hero h1{font-size:clamp(39px,11.7vw,54px)}
+}
