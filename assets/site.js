@@ -164,6 +164,7 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
 
 /* V20 — prism interactions, capability playground and section navigation. */
 (function v20PrismSystem(){
+  if(document.body.classList.contains('v16'))document.body.classList.add('v20');
   if(!document.body.classList.contains('v20'))return;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)');
   const fine=matchMedia('(hover:hover) and (pointer:fine)');
