@@ -6,7 +6,6 @@ on:
     branches: [main]
     paths:
       - scripts/generate_v22_media.py
-      - .github/workflows/generate-v22-media.yml
 
 permissions:
   contents: write
@@ -44,5 +43,6 @@ jobs:
             echo "V22 media already current."
           else
             git commit -m "V22 — render semiconductor process films"
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
