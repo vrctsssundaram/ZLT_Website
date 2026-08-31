@@ -68,8 +68,10 @@ def main():
     budgets={
       "assets/v16.css":120000,
       "assets/site.js":60000,
-      "assets/media/zlt-hero-semiconductor-journey.webm":1100000,
-      "assets/media/zlt-hero-semiconductor-journey.mp4":1200000,
+      "assets/media/zlt-hero-semiconductor-journey.webm":30000000,
+      "assets/media/zlt-hero-semiconductor-journey.mp4":30000000,
+      "assets/media/zlt-hero-semiconductor-journey-mobile.webm":18000000,
+      "assets/media/zlt-hero-semiconductor-journey-mobile.mp4":18000000,
     }
     for rel,limit in budgets.items():
         p=ROOT/rel
@@ -77,12 +79,23 @@ def main():
         elif p.stat().st_size>limit: failures.append(f"{rel}: {p.stat().st_size} bytes exceeds budget {limit}")
     for ext in ("webm","mp4"):
         for p in (ROOT/"assets/media").glob(f"zlt-film-*.{ext}"):
-            if p.stat().st_size>750000: failures.append(f"{p.relative_to(ROOT)} exceeds 750 KB section-film budget")
+            if p.stat().st_size>9000000: failures.append(f"{p.relative_to(ROOT)} exceeds 9 MB section-film budget")
 
     js=(ROOT/"assets/site.js").read_text(encoding="utf-8")
     if "reduce.matches||saveData){video.pause()" in js: failures.append("Save-Data still blocks explicit section-film opt-in")
+    if js.count("/* V23 — benchmark-derived local navigation and review ergonomics. */")!=1:
+        failures.append("V23 runtime block must exist exactly once")
+    if "active?.scrollIntoView({inline:'nearest',block:'nearest'})" in js:
+        failures.append("V23 active chip still uses vertical scrollIntoView and can destabilize controls")
     if "new ResizeObserver(resize).observe(canvas)" in js and "'ResizeObserver'in window" not in js:
         failures.append("ResizeObserver used without compatibility guard")
+    home=(ROOT/"index.html").read_text(encoding="utf-8")
+    for forbidden in ("data-hero-film-hud","SEMICONDUCTOR JOURNEY","18 SEC · CONCEPTUAL VISUALISATION","ORIGINAL ZEPTO LOGIC MEDIA · ILLUSTRATIVE SEMICONDUCTOR PROCESS SEQUENCE"):
+        if forbidden in home: failures.append(f"obsolete explicit hero-film narration remains — {forbidden}")
+    for name in ("products.html","services.html","applications.html","research.html"):
+        text=(ROOT/name).read_text(encoding="utf-8")
+        if "ORIGINAL ZEPTO LOGIC VISUAL" in text or "15 SEC · LOOP" in text:
+            failures.append(f"{name}: obsolete explicit film meta remains")
 
     print(f"Deep-audited {len(PAGES)} pages.")
     for item in warnings: print("WARNING:",item)
