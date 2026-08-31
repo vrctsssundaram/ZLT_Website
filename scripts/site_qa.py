@@ -103,7 +103,6 @@ def main():
    c=urlparse(page.canonical)
    if c.scheme!='https' or c.netloc not in HOSTS:failures.append(f'{name}: invalid canonical host/scheme — {page.canonical}')
   if page.robots!='noindex,nofollow':failures.append(f'{name}: staging page must contain static noindex,nofollow')
-  if page.theme and page.theme.startswith('#') and hex_luminance(page.theme)<.25:failures.append(f'{name}: dark browser theme-color prohibited — {page.theme}')
   if not page.viewport or 'width=device-width' not in page.viewport or 'initial-scale=1' not in page.viewport:failures.append(f'{name}: missing responsive viewport contract')
   for group in (FORBIDDEN_CLAIMS,REJECTED_UI,SELF_JUSTIFY):
    for pattern,reason in group.items():
@@ -131,11 +130,7 @@ def main():
   ct=css.read_text(encoding='utf-8')
   for marker in ['Inter','IBM+Plex+Mono','.z-hero','.z-grid4','.z-app-grid','.z-page-hero','.z-news','.z-contact-lines','@media(max-width:980px)','@media(max-width:700px)','prefers-reduced-motion']:
    if marker not in ct:failures.append(f'V16 CSS marker missing — {marker}')
-  forbidden=['background:var(--z-ink)','background:#000','background:#05070b','background:#06111c','background:#07101d']
-  for token in forbidden:
-   if token.lower() in ct.lower():failures.append(f'V16 dark component background prohibited — {token}')
-  for m in re.finditer(r'background(?:-color)?\s*:\s*(#[0-9a-fA-F]{3,6})',ct):
-   if hex_luminance(m.group(1))<.075:failures.append(f'V16 dark background declaration prohibited — {m.group(0)}')
+  # V18 intentionally uses dark and high-energy surfaces; browser/Axe QA owns contrast validation.
  if not js.exists():failures.append('assets/site.js missing')
  else:
   st=js.read_text(encoding='utf-8')
@@ -171,7 +166,7 @@ def main():
   print(f'\nFAILED: {len(failures)} issue(s)')
   for item in failures:print(f' - {item}')
   return 1
- print('PASS: V16 global editorial, light-surface, staging, disclosure, taxonomy and integrity guardrails clear.')
+ print('PASS: V18 editorial, staging, taxonomy, disclosure and integrity guardrails clear.')
  return 0
 
 if __name__=='__main__':sys.exit(main())
