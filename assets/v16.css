@@ -232,3 +232,7 @@ body.v16 .action{max-width:100%;white-space:normal;text-align:center}
   body.v16 .z-grid4,body.v16 .z-app-grid,body.v16 .z-flow{width:100%;max-width:100%;min-width:0}
   body.v16 .z-card,body.v16 .z-app,body.v16 .z-flow article{width:auto;max-width:100%;min-width:0}
 }
+
+
+/* V17.2 — decorative process connectors must never create page scroll */
+body.v16 .z-flow{overflow:clip}
