@@ -449,7 +449,7 @@ body.v16 .foot-top,body.v16 .foot-grid,body.v16 .foot-bottom{border-color:rgba(2
 body.v16 .foot-top h2{color:#fff}
 body.v16 .foot-contact a{color:#83e8ff}
 body.v16 .foot-brand p,body.v16 .foot-grid li{color:#9fb0ca}
-body.v16 .foot-bottom{color:#c3cee0}
+body.v16 .foot-bottom{color:#c3cee0!important}
 body.v16 .foot-grid h4{color:#fff}
 body.v16 .site-foot a:hover{color:#fff}
 
