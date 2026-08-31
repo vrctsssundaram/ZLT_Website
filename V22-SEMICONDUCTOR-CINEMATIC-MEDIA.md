@@ -1,13 +1,9 @@
 # V22 — Semiconductor Cinematic Media
 
-The previous six-second abstract homepage loop is replaced by an original 18-second conceptual semiconductor journey: wafer geometry, lithography/exposure, routed die/interconnect, architecture/RTL floorplan, FPGA-style hardware proof, and secure-compute acceleration.
+V22 introduced the first locally rendered Zepto Logic semiconductor films.
 
-Four additional original 15-second films are placed only where they materially support the page:
-- Products/IP — wafer geometry → interconnect → reusable block architecture
-- Engineering — architecture → routed digital logic → FPGA proof
-- Applications — FPGA-style hardware → connected data movement → vision/edge geometry
-- Applied R&D — specialised interconnect → secure compute → connected acceleration
+This media system has now been superseded by **V24 — High-Resolution Semiconductor Cinematic Media**.
 
-All rendered media is generated in-repository by scripts/generate_v22_media.py. No stock footage, external logo or watermark is used. The process imagery is explicitly framed as conceptual/illustrative and does not imply ownership of a semiconductor fabrication facility.
+See `V24-HIGH-RES-CINEMATIC-MEDIA.md` for the active media contract: the 64-second 1920×1080 hero master, portrait mobile derivation, higher-resolution domain films, reduced-motion behavior, Save-Data behavior and the removal of explanatory film overlays.
 
-WebM + MP4 and static posters are locally hosted. Section films play only while near the viewport and pause when hidden. Save-Data and prefers-reduced-motion receive static behavior.
+The retained V22 document exists only as release-history context; the live staging site uses the V24 presentation and media outputs.
