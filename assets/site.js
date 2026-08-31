@@ -29,3 +29,60 @@ const ENDPOINT='https://nujmuknvhgyoxhxuvscx.supabase.co/functions/v1/website-en
 form?.addEventListener('submit',async e=>{e.preventDefault();const d=new FormData(form),err=$('.form-error',form),notice=$('.notice',form),btn=$('button[type="submit"]',form),requirement=String(d.get('description')||'').trim(),email=String(d.get('email')||'').trim().toLowerCase(),domain=email.split('@')[1]||'';if(err){err.style.display='none';err.setAttribute('tabindex','-1')}if(notice)notice.textContent='';if(requirement.length<40){if(err){err.textContent='Please provide at least 40 characters of technical context.';err.style.display='block';err.focus()}return}const payload={name:String(d.get('name')||''),email:String(d.get('email')||''),company:String(d.get('company')||''),country:String(d.get('country')||''),project_type:String(d.get('projectType')||''),engineering_route:String(d.get('service')||''),technical_requirement:requirement,nda_requested:Boolean(d.get('nda')),selected_ip:params.get('ip')?(ipMap[params.get('ip')]||params.get('ip')):'',selected_stage:String(d.get('stage')||params.get('stage')||''),selected_outcome:String(d.get('outcome')||params.get('outcome')||''),route_context:params.get('ip')||params.get('service')||params.get('type')||'direct',source_url:location.href,utm,website:String(d.get('website')||'')},old=btn?.textContent||'Send enquiry';if(btn){btn.disabled=true;btn.textContent='Sending…'}if(notice)notice.textContent='Sending securely…';try{const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),out=await r.json().catch(()=>({}));if(!r.ok||!out.ok)throw new Error(out.error||`HTTP ${r.status}`);track('technical_enquiry_submitted',{project_type:payload.project_type,engineering_route:payload.engineering_route,...utm});const next=new URL('enquiry-received.html',location.href);if(out.enquiry_id)next.searchParams.set('id',out.enquiry_id);location.href=next.toString()}catch(ex){console.error(ex);if(err){err.textContent='Secure delivery could not be confirmed. Your email application will open with the enquiry prepared.';err.style.display='block'}emailFallback(d,requirement)}finally{if(btn){btn.disabled=false;btn.textContent=old}}});
 
 $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='contact_intent'});if(!$('.mobile-dock'))document.body.insertAdjacentHTML('beforeend','<div class="mobile-dock" aria-label="Quick contact"><a href="tel:+919626632233" data-track="mobile_call">Call</a><a href="contact.html" data-track="mobile_enquire">Start enquiry →</a></div>');function viewportMode(){const w=innerWidth;document.documentElement.dataset.viewport=w<=430?'compact-phone':w<=760?'phone':w<=980?'tablet':w<=1199?'laptop':w>=1600?'wide-desktop':'desktop'}viewportMode();addEventListener('resize',viewportMode,{passive:true});$$('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());wireTracking();
+
+/* V18 — colour, motion and interaction layer. Vanilla JS; progressive enhancement only. */
+(function v18Experience(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const fine=matchMedia('(hover:hover) and (pointer:fine)');
+  const raw=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'').toLowerCase();
+  const page=raw==='index'||raw===''?'home':raw.replace(/[^a-z0-9]+/g,'-');
+  document.body.classList.add('page-'+page);
+  document.documentElement.classList.add('v18');
+  if(!reduce.matches)document.body.classList.add('motion-ready');
+
+  if(!document.querySelector('.scroll-progress'))document.body.insertAdjacentHTML('afterbegin','<div class="scroll-progress" aria-hidden="true"><i></i></div>');
+  const progress=document.querySelector('.scroll-progress');
+  let scrollTick=false;
+  const syncProgress=()=>{const max=document.documentElement.scrollHeight-innerHeight,ratio=max>0?Math.min(1,Math.max(0,scrollY/max)):0;progress?.style.setProperty('--scroll',ratio.toFixed(4));scrollTick=false};
+  addEventListener('scroll',()=>{if(!scrollTick){scrollTick=true;requestAnimationFrame(syncProgress)}},{passive:true});syncProgress();
+
+  const revealTargets=[...document.querySelectorAll('main .z-head,main .z-card,main .z-app,main .z-topic,main .z-flow article,main .z-feature-story,main .listing-row,main .contact-shell')];
+  revealTargets.forEach((el,i)=>{el.classList.add('reveal-v18');el.style.transitionDelay=(i%4)*55+'ms'});
+  if(!reduce.matches&&'IntersectionObserver'in window){
+    const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}}),{threshold:.09,rootMargin:'0px 0px -5% 0px'});
+    revealTargets.forEach(el=>io.observe(el));
+  }else revealTargets.forEach(el=>el.classList.add('is-visible'));
+
+  if(fine.matches&&!reduce.matches){
+    document.querySelectorAll('.z-card[href],.z-app[href]').forEach(card=>{
+      card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');card.style.setProperty('--my',((e.clientY-r.top)/r.height*100).toFixed(1)+'%')},{passive:true});
+    });
+    const stage=document.querySelector('.silicon-scene');
+    stage?.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;stage.style.transform='perspective(900px) rotateX('+(-y*4).toFixed(2)+'deg) rotateY('+(x*5).toFixed(2)+'deg)'},{passive:true});
+    stage?.addEventListener('pointerleave',()=>stage.style.transform='');
+
+    document.querySelectorAll('.magnetic,.project-link').forEach(el=>{
+      el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;el.style.transform='translate('+(x*.08).toFixed(1)+'px,'+(y*.08).toFixed(1)+'px) translateY(-2px)'},{passive:true});
+      el.addEventListener('pointerleave',()=>el.style.transform='');
+    });
+
+    if(!document.querySelector('.cursor-glow')){
+      const glow=document.createElement('div');glow.className='cursor-glow';glow.setAttribute('aria-hidden','true');document.body.append(glow);
+      let px=innerWidth/2,py=innerHeight/2,gx=px,gy=py,raf=0;
+      const animate=()=>{gx+=(px-gx)*.12;gy+=(py-gy)*.12;glow.style.transform='translate3d('+gx+'px,'+gy+'px,0)';raf=requestAnimationFrame(animate)};
+      addEventListener('pointermove',e=>{px=e.clientX;py=e.clientY;glow.classList.add('on');if(!raf)animate()},{passive:true});
+      addEventListener('pointerleave',()=>glow.classList.remove('on'),{passive:true});
+    }
+  }
+
+  if(!reduce.matches&&'IntersectionObserver'in window){
+    const metrics=[...document.querySelectorAll('[data-count]')];
+    const counterIO=new IntersectionObserver(entries=>entries.forEach(entry=>{
+      if(!entry.isIntersecting)return;
+      const el=entry.target,target=Number(el.dataset.count)||0,start=performance.now(),duration=850;
+      const tick=now=>{const p=Math.min(1,(now-start)/duration),eased=1-Math.pow(1-p,3);el.textContent=String(Math.round(target*eased));if(p<1)requestAnimationFrame(tick)};
+      requestAnimationFrame(tick);counterIO.unobserve(el);
+    }),{threshold:.7});
+    metrics.forEach(el=>counterIO.observe(el));
+  }
+})();
