@@ -828,3 +828,44 @@ body.v20 .cursor-glow{width:440px;height:440px;margin:-220px 0 0 -220px;backgrou
  .v21-orbit-map::before,.v21-orbit-ring,.v21-orbit-core::before{animation:none!important}
  .v21-signal-canvas,.v21-constellation-canvas,.v21-pointer-spark{display:none!important}
 }
+
+
+/* =====================================================================
+   V22 — CINEMATIC SEMICONDUCTOR MEDIA
+   18-second hero journey + four 15-second domain films.
+   ===================================================================== */
+.hero-film{background-image:url('media/zlt-hero-semiconductor-journey-poster.jpg')}
+.hero-film-video{opacity:.88;filter:saturate(1.16) contrast(1.08) brightness(.91)}
+.hero-film-shade{background:linear-gradient(90deg,rgba(3,9,24,.93) 0%,rgba(3,9,24,.76) 34%,rgba(3,9,24,.27) 65%,rgba(3,9,24,.45) 100%)}
+body.film-static .hero-film-video{opacity:.32}
+.v22-film-hud{position:relative;overflow:hidden;min-height:340px;padding:18px;border:1px solid rgba(133,219,255,.22);border-radius:24px;background:linear-gradient(145deg,rgba(3,12,31,.62),rgba(20,13,54,.52));box-shadow:inset 0 1px rgba(255,255,255,.11),0 28px 70px rgba(0,0,0,.24);backdrop-filter:blur(12px)}
+.v22-film-hud::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 72% 16%,rgba(39,230,255,.12),transparent 31%),radial-gradient(circle at 16% 84%,rgba(255,79,163,.10),transparent 32%);pointer-events:none}
+.v22-film-hud-top,.v22-film-hud-foot{position:relative;display:flex;justify-content:space-between;gap:16px;align-items:center;color:#8fa7c7;font:650 8px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+.v22-film-hud-top span{color:#82efff}.v22-film-hud-top b{font-weight:650;color:#aebdd3}
+.v22-film-hud ol{position:relative;list-style:none;padding:0;margin:17px 0 14px;display:grid;gap:6px}
+.v22-film-hud li{display:grid;grid-template-columns:10px 1fr auto;gap:9px;align-items:center;min-height:40px;padding:7px 9px;border:1px solid rgba(255,255,255,.07);border-radius:10px;color:#9caec8;background:rgba(255,255,255,.025);transition:background .25s,border-color .25s,color .25s,transform .25s}
+.v22-film-hud li i{width:7px;height:7px;border-radius:50%;background:#42536f;box-shadow:0 0 0 4px rgba(255,255,255,.02);transition:.25s}
+.v22-film-hud li span{font-size:11px;font-weight:720}.v22-film-hud li small{font:600 8px 'IBM Plex Mono',monospace;color:#6f819d}
+.v22-film-hud li.active{color:#fff;border-color:rgba(80,220,255,.27);background:linear-gradient(90deg,rgba(39,230,255,.10),rgba(118,92,255,.08),rgba(255,79,163,.05));transform:translateX(3px)}
+.v22-film-hud li.active i{background:#fff;box-shadow:0 0 8px #fff,0 0 22px #27e6ff}.v22-film-hud li.active small{color:#a9ecff}
+.v22-film-progress{position:relative;height:2px;margin:10px 0 13px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}.v22-film-progress span{display:block;width:calc(var(--film-progress,0)*1%);height:100%;background:linear-gradient(90deg,#27e6ff,#536eff,#8c5cff,#ff4fa3,#ffc044);box-shadow:0 0 14px rgba(39,230,255,.35);transition:width .15s linear}
+.v22-film-hud-foot{justify-content:flex-start;line-height:1.45}
+.v22-film-band{position:relative;overflow:hidden;padding:72px 0;border-bottom:1px solid rgba(13,34,69,.12);background:radial-gradient(circle at 10% 16%,rgba(39,230,255,.09),transparent 27%),radial-gradient(circle at 90% 80%,rgba(140,92,255,.07),transparent 28%),linear-gradient(180deg,#f7fbff,#eef4fa)}
+.v22-film-engineering{background:radial-gradient(circle at 8% 20%,rgba(140,92,255,.10),transparent 28%),radial-gradient(circle at 93% 76%,rgba(255,79,163,.07),transparent 27%),linear-gradient(180deg,#faf8ff,#f3f4fb)}
+.v22-film-applications{background:radial-gradient(circle at 10% 18%,rgba(73,239,187,.11),transparent 28%),radial-gradient(circle at 91% 74%,rgba(39,230,255,.07),transparent 27%),linear-gradient(180deg,#f6fffb,#edf7f5)}
+.v22-film-research{color:#fff;background:radial-gradient(circle at 12% 18%,rgba(39,230,255,.16),transparent 26%),radial-gradient(circle at 88% 75%,rgba(255,79,163,.14),transparent 26%),linear-gradient(135deg,#071126,#17123c 66%,#0b1b30)}
+.v22-film-grid{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(320px,.82fr);gap:54px;align-items:center}
+.v22-film-stage{position:relative;overflow:hidden;aspect-ratio:16/9;border-radius:28px;background:#071329;box-shadow:0 30px 70px rgba(8,25,55,.19),0 0 0 1px rgba(28,76,132,.10);isolation:isolate}
+.v22-film-stage::before{content:"";position:absolute;z-index:5;inset:0;padding:1px;border-radius:inherit;background:linear-gradient(125deg,rgba(39,230,255,.8),rgba(83,110,255,.32),rgba(140,92,255,.55),rgba(255,79,163,.44),rgba(255,192,68,.55));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.v22-section-film{position:absolute;z-index:1;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(1.10) contrast(1.06);background-position:center;background-size:cover}
+.v22-film-vignette{position:absolute;z-index:2;inset:0;background:linear-gradient(180deg,rgba(2,7,18,.10),transparent 52%,rgba(2,7,18,.47)),radial-gradient(circle at 50% 48%,transparent 45%,rgba(2,8,20,.22))}
+.v22-film-corners{position:absolute;z-index:4;inset:15px;pointer-events:none}.v22-film-corners i{position:absolute;width:28px;height:28px;border-color:rgba(168,235,255,.48);border-style:solid}.v22-film-corners i:nth-child(1){left:0;top:0;border-width:1px 0 0 1px}.v22-film-corners i:nth-child(2){right:0;top:0;border-width:1px 1px 0 0}.v22-film-corners i:nth-child(3){left:0;bottom:0;border-width:0 0 1px 1px}.v22-film-corners i:nth-child(4){right:0;bottom:0;border-width:0 1px 1px 0}
+.v22-film-meta{position:absolute;z-index:4;left:20px;right:20px;bottom:17px;display:flex;justify-content:space-between;gap:16px;color:#d6e8f8;font:650 8px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-shadow:0 1px 9px #000}.v22-film-meta b{color:#8cefff}
+.v22-film-toggle{position:absolute;z-index:7;right:18px;top:18px;min-height:38px;padding:0 12px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(4,13,32,.62);color:#fff;font:650 9px 'IBM Plex Mono',monospace;letter-spacing:.05em;backdrop-filter:blur(10px)}.v22-film-toggle span{color:#7befff;margin-right:5px}.v22-film-toggle:focus-visible{outline:3px solid #27e6ff;outline-offset:3px}
+.v22-film-copy .eyebrow{color:#315fdc}.v22-film-research .v22-film-copy .eyebrow{color:#81edff}.v22-film-copy h2{margin:9px 0 17px;font-size:clamp(38px,4.4vw,64px);line-height:.97;letter-spacing:-.052em;text-wrap:balance}.v22-film-research .v22-film-copy h2{color:#fff}
+.v22-film-copy p{margin:0;color:#435168;font-size:15px;line-height:1.7}.v22-film-research .v22-film-copy p{color:#b5c5dd}.v22-film-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:21px}.v22-film-chips span{padding:7px 10px;border:1px solid #d1dbe7;border-radius:999px;background:rgba(255,255,255,.72);color:#34455d;font:650 9px 'IBM Plex Mono',monospace}.v22-film-research .v22-film-chips span{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#d9e7f8}.v22-film-copy .actions{margin-top:23px}
+@media(prefers-reduced-motion:reduce){
+ .hero-film{background-image:url('media/zlt-hero-semiconductor-journey-poster.jpg')!important}.v22-section-film{display:none!important}.v22-film-products .v22-film-stage{background:url('media/zlt-film-ip-poster.jpg') center/cover no-repeat}.v22-film-engineering .v22-film-stage{background:url('media/zlt-film-engineering-poster.jpg') center/cover no-repeat}.v22-film-applications .v22-film-stage{background:url('media/zlt-film-applications-poster.jpg') center/cover no-repeat}.v22-film-research .v22-film-stage{background:url('media/zlt-film-research-poster.jpg') center/cover no-repeat}.v22-film-toggle{display:none!important}
+}
+@media(max-width:980px){.v22-film-grid{grid-template-columns:1fr;gap:28px}.v22-film-stage{max-width:900px}.v22-film-copy{max-width:760px}}
+@media(max-width:700px){.hero-film{background-image:url('media/zlt-hero-semiconductor-journey-mobile-poster.jpg')}.v22-film-hud{min-height:auto}.v22-film-hud-top{align-items:flex-start;flex-direction:column;gap:5px}.v22-film-hud li{min-height:38px}.v22-film-band{padding:50px 0}.v22-film-stage{border-radius:20px}.v22-film-toggle{right:12px;top:12px}.v22-film-meta{left:14px;right:14px;bottom:12px}.v22-film-copy h2{font-size:clamp(37px,10.8vw,54px)}}

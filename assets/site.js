@@ -312,3 +312,23 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
     },{passive:true});
   }
 })();
+
+
+/* V22 — cinematic film lifecycle, controls and hero chapter synchronisation. */
+(function v22CinematicMedia(){
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+ const saveData=Boolean(navigator.connection&&navigator.connection.saveData);
+ const hero=document.querySelector('[data-hero-film]'),hud=document.querySelector('[data-hero-film-hud]');
+ if(hero&&hud){
+   const chapters=[...hud.querySelectorAll('li')];
+   const sync=()=>{const dur=Number.isFinite(hero.duration)&&hero.duration>0?hero.duration:18,p=Math.max(0,Math.min(1,(hero.currentTime||0)/dur));hud.style.setProperty('--film-progress',(p*100).toFixed(2));const idx=Math.min(chapters.length-1,Math.floor(p*chapters.length));chapters.forEach((li,i)=>li.classList.toggle('active',i===idx))};
+   hero.addEventListener('timeupdate',sync);hero.addEventListener('loadedmetadata',sync);hero.addEventListener('seeked',sync);sync();
+ }
+ document.querySelectorAll('[data-cinematic-video]').forEach(video=>{
+   const stage=video.closest('[data-film-stage]'),toggle=stage?.querySelector('[data-cinematic-toggle]');let userPaused=reduce.matches||saveData,visible=false;
+   const setState=()=>{if(reduce.matches||saveData){video.pause();if(toggle)toggle.hidden=reduce.matches;return}const run=visible&&!userPaused&&!document.hidden;if(run){const p=video.play();p?.catch?.(()=>{})}else video.pause();if(toggle){toggle.setAttribute('aria-pressed',String(userPaused));toggle.innerHTML=userPaused?'<span aria-hidden="true">▶</span> Play film':'<span aria-hidden="true">Ⅱ</span> Pause film'}};
+   toggle?.addEventListener('click',()=>{userPaused=!userPaused;setState();window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'section_film_toggle',state:userPaused?'paused':'playing',film:video.closest('section')?.className||''})});
+   if('IntersectionObserver'in window)new IntersectionObserver(e=>{visible=Boolean(e[0]?.isIntersecting);setState()},{threshold:.16,rootMargin:'160px 0px 160px'}).observe(video);else{visible=true;setState()}
+   document.addEventListener('visibilitychange',setState);
+ });
+})();
