@@ -281,7 +281,7 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
       }
       raf=requestAnimationFrame(frame);
     }
-    resize();frame();new ResizeObserver(resize).observe(canvas);
+    resize();frame();if('ResizeObserver'in window)new ResizeObserver(resize).observe(canvas);else addEventListener('resize',resize,{passive:true});
     if('IntersectionObserver'in window)new IntersectionObserver(e=>{active=Boolean(e[0]?.isIntersecting)},{threshold:.03}).observe(canvas);
   }
   wireSignalCanvas(document.querySelector('.v21-signal-canvas'),28);
@@ -326,9 +326,60 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
  }
  document.querySelectorAll('[data-cinematic-video]').forEach(video=>{
    const stage=video.closest('[data-film-stage]'),toggle=stage?.querySelector('[data-cinematic-toggle]');let userPaused=reduce.matches||saveData,visible=false;
-   const setState=()=>{if(reduce.matches||saveData){video.pause();if(toggle)toggle.hidden=reduce.matches;return}const run=visible&&!userPaused&&!document.hidden;if(run){const p=video.play();p?.catch?.(()=>{})}else video.pause();if(toggle){toggle.setAttribute('aria-pressed',String(userPaused));toggle.innerHTML=userPaused?'<span aria-hidden="true">▶</span> Play film':'<span aria-hidden="true">Ⅱ</span> Pause film'}};
+   const setState=()=>{if(reduce.matches){video.pause();if(toggle)toggle.hidden=true;return}const run=visible&&!userPaused&&!document.hidden;if(run){const p=video.play();p?.catch?.(()=>{})}else video.pause();if(toggle){toggle.hidden=false;toggle.setAttribute('aria-pressed',String(userPaused));toggle.innerHTML=userPaused?'<span aria-hidden="true">▶</span> Play film':'<span aria-hidden="true">Ⅱ</span> Pause film'}};
    toggle?.addEventListener('click',()=>{userPaused=!userPaused;setState();window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'section_film_toggle',state:userPaused?'paused':'playing',film:video.closest('section')?.className||''})});
    if('IntersectionObserver'in window)new IntersectionObserver(e=>{visible=Boolean(e[0]?.isIntersecting);setState()},{threshold:.16,rootMargin:'160px 0px 160px'}).observe(video);else{visible=true;setState()}
    document.addEventListener('visibilitychange',setState);
  });
+})();
+
+
+/* V23 — benchmark-derived local navigation and review ergonomics. */
+(function v23BenchmarkRefinement(){
+  if(!document.body.classList.contains('v16'))return;
+  document.body.classList.add('v23');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const file=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+  if(file==='index.html'||file==='')return;
+  const main=document.querySelector('main'),hero=main?.querySelector(':scope > .z-page-hero');
+  if(!main||!hero||main.querySelector(':scope > .v23-context-nav'))return;
+  const slug=s=>(s||'section').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,46)||'section';
+  const used=new Set([...document.querySelectorAll('[id]')].map(e=>e.id));
+  const rows=[];
+  [...main.querySelectorAll(':scope > section')].forEach(section=>{
+    if(section===hero)return;
+    const eyebrow=section.querySelector('.eyebrow'),heading=section.querySelector('h2,h3');
+    let label=(eyebrow?.textContent||heading?.textContent||'').trim().replace(/\s+/g,' ');
+    if(!label)return;
+    if(section.classList.contains('z-cta'))label='Get started';
+    label=label.slice(0,34);
+    if(!section.id){
+      let base='section-'+slug(label),id=base,n=2;
+      while(used.has(id))id=base+'-'+n++;
+      section.id=id;used.add(id);
+    }
+    rows.push({section,label,id:section.id});
+  });
+  if(!rows.length)return;
+  const nav=document.createElement('nav');nav.className='v23-context-nav';nav.setAttribute('aria-label','On this page');
+  const wrap=document.createElement('div');wrap.className='wrap';
+  const lab=document.createElement('span');lab.className='v23-context-label';lab.textContent='On this page';
+  const links=document.createElement('div');links.className='v23-context-links';
+  rows.slice(0,8).forEach(({label,id})=>{
+    const a=document.createElement('a');a.href='#'+id;a.textContent=label;
+    a.addEventListener('click',e=>{e.preventDefault();document.getElementById(id)?.scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'});history.replaceState(null,'','#'+id)});
+    links.append(a);
+  });
+  wrap.append(lab,links);nav.append(wrap);hero.after(nav);
+  if('IntersectionObserver'in window){
+    const anchors=[...links.querySelectorAll('a')],map=new Map(rows.slice(0,8).map((row,i)=>[row.section,anchors[i]]));
+    const io=new IntersectionObserver(entries=>{
+      const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if(!visible)return;
+      anchors.forEach(a=>a.classList.remove('active'));
+      const active=map.get(visible.target);active?.classList.add('active');
+      active?.scrollIntoView({inline:'nearest',block:'nearest'});
+    },{rootMargin:'-22% 0px -62% 0px',threshold:[0,.15,.35]});
+    map.forEach((_,section)=>io.observe(section));
+  }
 })();
