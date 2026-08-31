@@ -314,16 +314,10 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
 })();
 
 
-/* V22 — cinematic film lifecycle, controls and hero chapter synchronisation. */
+/* V24 — cinematic film lifecycle and controls. */
 (function v22CinematicMedia(){
  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
  const saveData=Boolean(navigator.connection&&navigator.connection.saveData);
- const hero=document.querySelector('[data-hero-film]'),hud=document.querySelector('[data-hero-film-hud]');
- if(hero&&hud){
-   const chapters=[...hud.querySelectorAll('li')];
-   const sync=()=>{const dur=Number.isFinite(hero.duration)&&hero.duration>0?hero.duration:18,p=Math.max(0,Math.min(1,(hero.currentTime||0)/dur));hud.style.setProperty('--film-progress',(p*100).toFixed(2));const idx=Math.min(chapters.length-1,Math.floor(p*chapters.length));chapters.forEach((li,i)=>li.classList.toggle('active',i===idx))};
-   hero.addEventListener('timeupdate',sync);hero.addEventListener('loadedmetadata',sync);hero.addEventListener('seeked',sync);sync();
- }
  document.querySelectorAll('[data-cinematic-video]').forEach(video=>{
    const stage=video.closest('[data-film-stage]'),toggle=stage?.querySelector('[data-cinematic-toggle]');let userPaused=reduce.matches||saveData,visible=false;
    const setState=()=>{if(reduce.matches){video.pause();if(toggle)toggle.hidden=true;return}const run=visible&&!userPaused&&!document.hidden;if(run){const p=video.play();p?.catch?.(()=>{})}else video.pause();if(toggle){toggle.hidden=false;toggle.setAttribute('aria-pressed',String(userPaused));toggle.innerHTML=userPaused?'<span aria-hidden="true">▶</span> Play film':'<span aria-hidden="true">Ⅱ</span> Pause film'}};
@@ -378,7 +372,13 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
       if(!visible)return;
       anchors.forEach(a=>a.classList.remove('active'));
       const active=map.get(visible.target);active?.classList.add('active');
-      active?.scrollIntoView({inline:'nearest',block:'nearest'});
+      if(active){
+        const strip=links.getBoundingClientRect(),chip=active.getBoundingClientRect();
+        if(chip.left<strip.left||chip.right>strip.right){
+          const target=links.scrollLeft+(chip.left+chip.width/2)-(strip.left+strip.width/2);
+          links.scrollTo({left:Math.max(0,target),behavior:reduce.matches?'auto':'smooth'});
+        }
+      }
     },{rootMargin:'-22% 0px -62% 0px',threshold:[0,.15,.35]});
     map.forEach((_,section)=>io.observe(section));
   }
