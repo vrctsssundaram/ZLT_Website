@@ -66,7 +66,7 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
       el.addEventListener('pointerleave',()=>el.style.transform='');
     });
 
-    if(!document.querySelector('.cursor-glow')){
+    if(document.body.classList.contains('v16')&&!document.querySelector('.cursor-glow')){
       const glow=document.createElement('div');glow.className='cursor-glow';glow.setAttribute('aria-hidden','true');document.body.append(glow);
       let px=innerWidth/2,py=innerHeight/2,gx=px,gy=py,raf=0;
       const animate=()=>{gx+=(px-gx)*.12;gy+=(py-gy)*.12;glow.style.transform='translate3d('+gx+'px,'+gy+'px,0)';raf=requestAnimationFrame(animate)};
