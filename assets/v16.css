@@ -222,3 +222,13 @@ body.v16 textarea{min-height:150px}
   body.v16 .z-hero h1{font-size:clamp(42px,12.7vw,58px)}
   body.v16 .z-page-hero h1{font-size:clamp(39px,11.7vw,54px)}
 }
+
+
+/* V17.1 — defensive intrinsic sizing for narrow viewports */
+body.v16 .z-hero .wrap>*,body.v16 .z-page-hero .wrap>*,body.v16 .z-head>*,body.v16 .z-grid4>*,body.v16 .z-app-grid>*,body.v16 .z-flow>*,body.v16 .z-feature>*,body.v16 .z-company>*,body.v16 .z-cta .wrap>*{min-width:0}
+body.v16 .z-card,body.v16 .z-app,body.v16 .z-flow article,body.v16 .z-topic,body.v16 .z-contact-line{overflow-wrap:anywhere}
+body.v16 .action{max-width:100%;white-space:normal;text-align:center}
+@media(max-width:700px){
+  body.v16 .z-grid4,body.v16 .z-app-grid,body.v16 .z-flow{width:100%;max-width:100%;min-width:0}
+  body.v16 .z-card,body.v16 .z-app,body.v16 .z-flow article{width:auto;max-width:100%;min-width:0}
+}
