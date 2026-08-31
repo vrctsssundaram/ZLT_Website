@@ -160,3 +160,81 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
     syncBeacon();
   }
 })();
+
+
+/* V20 — prism interactions, capability playground and section navigation. */
+(function v20PrismSystem(){
+  if(!document.body.classList.contains('v20'))return;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const fine=matchMedia('(hover:hover) and (pointer:fine)');
+
+  /* Give each major section a restrained colour chapter and visible index. */
+  const tones=['cyan','violet','coral','mint','cyan','violet','coral','mint'];
+  const sections=[...document.querySelectorAll('main>section')].filter(s=>!s.classList.contains('tech-marquee')&&!s.classList.contains('v20-color-rail')&&!s.classList.contains('z-proofline'));
+  sections.forEach((s,i)=>{
+    if(!s.dataset.v20Tone)s.dataset.v20Tone=tones[i%tones.length];
+    const head=s.querySelector('.z-head>div:first-child,.motion-story-head>div:first-child,.v20-playground-head>div:first-child');
+    if(head&&!head.querySelector('.v20-section-index')){
+      const badge=document.createElement('span');badge.className='v20-section-index';badge.textContent=String(i+1).padStart(2,'0');head.prepend(badge);
+    }
+  });
+
+  const playground=document.querySelector('[data-playground]');
+  if(playground){
+    const data={
+      ip:{a:'#27e6ff',b:'#3c67ff',stat:'13',label:'FPGA-validated blocks',kicker:'LICENSE',title:'Reuse a proven function.',copy:'Evaluate arithmetic or interface IP before committing time to rebuilding the same function inside your programme.',href:'products.html',link:'Explore the IP portfolio →'},
+      rtl:{a:'#8c5cff',b:'#ff4fa3',stat:'RTL',label:'Architecture to synthesizable logic',kicker:'IMPLEMENT',title:'Build the differentiating logic.',copy:'Translate a bounded requirement into microarchitecture, datapaths, control, interfaces and integration-ready RTL.',href:'contact.html?service=rtl',link:'Discuss RTL engineering →'},
+      verify:{a:'#ff4fa3',b:'#ff9b43',stat:'UVM',label:'Assertions · regression · coverage',kicker:'VERIFY',title:'Turn behavior into engineering evidence.',copy:'Strengthen new or inherited RTL with assertions, regression, coverage, lint and CDC/RDC work appropriate to the block.',href:'contact.html?service=verification',link:'Discuss verification →'},
+      fpga:{a:'#49efbb',b:'#27e6ff',stat:'FPGA',label:'Timing · bring-up · repeatable proof',kicker:'PROVE',title:'Take the design onto hardware.',copy:'Move RTL through constraints, implementation, timing closure, platform bring-up and repeatable hardware evidence.',href:'contact.html?service=fpga',link:'Discuss FPGA proof →'}
+    };
+    const tabs=[...playground.querySelectorAll('[data-play]')];
+    const stat=playground.querySelector('[data-play-stat]'),label=playground.querySelector('[data-play-stat-label]'),kicker=playground.querySelector('[data-play-kicker]'),title=playground.querySelector('[data-play-title]'),copy=playground.querySelector('[data-play-copy]'),link=playground.querySelector('[data-play-link]');
+    function activate(key,focus=false){
+      const d=data[key];if(!d)return;
+      playground.style.setProperty('--play-a',d.a);playground.style.setProperty('--play-b',d.b);
+      tabs.forEach(t=>{const on=t.dataset.play===key;t.classList.toggle('active',on);t.setAttribute('aria-selected',String(on));if(on&&focus)t.focus()});
+      if(stat)stat.textContent=d.stat;if(label)label.textContent=d.label;if(kicker)kicker.textContent=d.kicker;if(title)title.textContent=d.title;if(copy)copy.textContent=d.copy;if(link){link.href=d.href;link.textContent=d.link}
+      window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'capability_playground_selected',route:key,page:location.pathname});
+    }
+    tabs.forEach((tab,i)=>{
+      tab.addEventListener('click',()=>activate(tab.dataset.play));
+      tab.addEventListener('keydown',e=>{if(!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft'].includes(e.key))return;e.preventDefault();const delta=['ArrowDown','ArrowRight'].includes(e.key)?1:-1;const next=tabs[(i+delta+tabs.length)%tabs.length];activate(next.dataset.play,true)});
+    });
+  }
+
+  /* Desktop chapter dots — a compact navigation aid, not a second primary nav. */
+  if(document.body.classList.contains('page-home')&&innerWidth>980){
+    const nav=document.createElement('aside');nav.className='v20-section-nav';nav.setAttribute('aria-label','Homepage sections');
+    const navSections=[...document.querySelectorAll('main>section[id],main>section.v20-prism-playground,main>section.technology-section,main>section.applications-spectrum,main>section.research-spectrum,main>section.trust-reasons')].filter((s,i,a)=>a.indexOf(s)===i);
+    navSections.slice(0,8).forEach((s,i)=>{
+      if(!s.id)s.id='section-'+(i+1);
+      const heading=s.querySelector('h1,h2');const label=(heading?.textContent||'Section '+(i+1)).trim().slice(0,58);
+      const b=document.createElement('button');b.type='button';b.dataset.label=label;b.setAttribute('aria-label','Go to '+label);b.addEventListener('click',()=>s.scrollIntoView({behavior:reduce.matches?'auto':'smooth',block:'start'}));nav.append(b);
+    });
+    document.body.append(nav);
+    if('IntersectionObserver'in window){
+      const buttons=[...nav.querySelectorAll('button')];
+      const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){buttons.forEach(b=>b.classList.remove('active'));const idx=navSections.slice(0,8).indexOf(e.target);if(buttons[idx])buttons[idx].classList.add('active')}}),{threshold:.32,rootMargin:'-16% 0px -52% 0px'});
+      navSections.slice(0,8).forEach(s=>io.observe(s));
+    }
+  }
+
+  /* Restrained 3D tilt on interactive surfaces. */
+  if(fine.matches&&!reduce.matches){
+    const tilt=[...document.querySelectorAll('.v20-bento-card,.motion-pipeline a,.z-card[href],.z-app[href]')];
+    tilt.forEach(el=>{
+      el.classList.add('v20-tilt');
+      el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.setProperty('--tilt-y',(x*3.3).toFixed(2)+'deg');el.style.setProperty('--tilt-x',(-y*3.0).toFixed(2)+'deg')},{passive:true});
+      el.addEventListener('pointerleave',()=>{el.style.setProperty('--tilt-x','0deg');el.style.setProperty('--tilt-y','0deg')});
+    });
+  }
+
+  /* Small tactile ripple on major CTA surfaces. */
+  document.querySelectorAll('.action.primary,.project-link,.v20-core-link').forEach(el=>{
+    el.classList.add('v20-ripple-host');
+    el.addEventListener('pointerdown',e=>{
+      if(reduce.matches)return;
+      const r=el.getBoundingClientRect(),sp=document.createElement('span');sp.className='v20-ripple';sp.style.left=(e.clientX-r.left)+'px';sp.style.top=(e.clientY-r.top)+'px';el.append(sp);setTimeout(()=>sp.remove(),700);
+    });
+  });
+})();
