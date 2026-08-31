@@ -1,0 +1,48 @@
+name: Generate V22 Semiconductor Films
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/generate_v22_media.py
+      - .github/workflows/generate-v22-media.yml
+
+permissions:
+  contents: write
+
+jobs:
+  render-and-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install renderer dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python -m pip install --quiet pillow numpy
+      - name: Render V22 semiconductor films
+        run: python scripts/generate_v22_media.py
+      - name: Validate media
+        run: |
+          for f in             assets/media/zlt-hero-semiconductor-journey.webm             assets/media/zlt-hero-semiconductor-journey.mp4             assets/media/zlt-hero-semiconductor-journey-mobile.webm             assets/media/zlt-film-ip.webm             assets/media/zlt-film-engineering.webm             assets/media/zlt-film-applications.webm             assets/media/zlt-film-research.webm; do
+              test -s "$f"
+              ffprobe -v error -show_entries format=duration,size -of default=nw=1 "$f"
+          done
+      - name: Commit rendered films
+        run: |
+          git config user.name "Zepto Logic Motion Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/media/
+          if git diff --cached --quiet; then
+            echo "V22 media already current."
+          else
+            git commit -m "V22 — render semiconductor process films"
+            git push origin HEAD:main
+          fi
