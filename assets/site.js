@@ -239,3 +239,76 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
     });
   });
 })();
+
+
+/* V21 — spectacle layer: signal canvas, constellation, border beams and pointer sparks. */
+(function v21Spectacle(){
+  if(!document.body.classList.contains('v20'))return;
+  document.body.classList.add('v21');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const fine=matchMedia('(hover:hover) and (pointer:fine)');
+  const saveData=Boolean(navigator.connection&&navigator.connection.saveData);
+
+  /* Decorative border beams are DOM-light and appear only on interaction. */
+  document.querySelectorAll('.z-card[href],.z-app[href],.v20-bento-card[href],.motion-pipeline a').forEach(el=>{
+    if(!el.querySelector(':scope > .v21-border-beam')){const beam=document.createElement('span');beam.className='v21-border-beam';beam.setAttribute('aria-hidden','true');el.append(beam)}
+  });
+
+  /* Semiconductor signal-field canvas. One active hero canvas per page. */
+  const hero=document.querySelector('.v19-hero,.z-page-hero');
+  if(hero&&!hero.querySelector('.v21-signal-canvas')){
+    const canvas=document.createElement('canvas');canvas.className='v21-signal-canvas';canvas.setAttribute('aria-hidden','true');hero.prepend(canvas);
+  }
+  function wireSignalCanvas(canvas,density=24){
+    if(!canvas||reduce.matches||saveData)return;
+    const ctx=canvas.getContext('2d',{alpha:true});if(!ctx)return;
+    let w=0,h=0,dpr=1,raf=0,active=true;
+    let points=[];
+    const palette=['#27e6ff','#4773ff','#8c5cff','#ff4fa3','#49efbb','#ffc53d'];
+    function resize(){
+      const r=canvas.getBoundingClientRect();w=Math.max(1,r.width);h=Math.max(1,r.height);dpr=Math.min(devicePixelRatio||1,1.5);
+      canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+      const count=Math.max(12,Math.min(density,Math.round(w/55)));
+      points=Array.from({length:count},(_,i)=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.20,vy:(Math.random()-.5)*.20,r:1+Math.random()*1.5,c:palette[i%palette.length]}));
+    }
+    function frame(){
+      if(!active||document.hidden){raf=requestAnimationFrame(frame);return}
+      ctx.clearRect(0,0,w,h);
+      for(let i=0;i<points.length;i++){
+        const p=points[i];p.x+=p.vx;p.y+=p.vy;if(p.x<-20)p.x=w+20;if(p.x>w+20)p.x=-20;if(p.y<-20)p.y=h+20;if(p.y>h+20)p.y=-20;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.c+'B8';ctx.shadowColor=p.c;ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;
+        for(let j=i+1;j<points.length;j++){const q=points[j],dx=p.x-q.x,dy=p.y-q.y,dist=Math.hypot(dx,dy);if(dist<145){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle='rgba(105,183,255,'+(0.12*(1-dist/145)).toFixed(3)+')';ctx.lineWidth=.7;ctx.stroke()}}
+      }
+      raf=requestAnimationFrame(frame);
+    }
+    resize();frame();new ResizeObserver(resize).observe(canvas);
+    if('IntersectionObserver'in window)new IntersectionObserver(e=>{active=Boolean(e[0]?.isIntersecting)},{threshold:.03}).observe(canvas);
+  }
+  wireSignalCanvas(document.querySelector('.v21-signal-canvas'),28);
+
+  /* Constellation detail changes on pointer/focus while anchors retain native navigation. */
+  const constellation=document.querySelector('[data-constellation]');
+  if(constellation){
+    const info={
+      ip:{k:'REUSE',t:'Start from a validated building block.',c:'Evaluate one of 13 FPGA-validated arithmetic or interface soft IP blocks before rebuilding the same function.',h:'products.html',l:'Explore reusable IP →'},
+      architecture:{k:'ARCHITECT',t:'Define the hardware before committing RTL.',c:'Clarify partitioning, interfaces, clocks, resets, memories, data movement and implementation assumptions.',h:'contact.html?service=architecture',l:'Discuss architecture →'},
+      rtl:{k:'IMPLEMENT',t:'Translate the differentiator into synthesizable logic.',c:'Develop bounded datapaths, control logic, protocols and integration-ready RTL around the system requirement.',h:'contact.html?service=rtl',l:'Discuss RTL engineering →'},
+      verification:{k:'VERIFY',t:'Convert expected behavior into evidence.',c:'Use assertions, regressions, coverage, lint and CDC/RDC engineering to strengthen new or inherited RTL.',h:'contact.html?service=verification',l:'Discuss verification →'},
+      fpga:{k:'PROVE',t:'Take the design through real hardware constraints.',c:'Move through implementation, timing closure, board bring-up and repeatable FPGA evidence.',h:'contact.html?service=fpga',l:'Discuss FPGA proof →'},
+      rnd:{k:'CO-DEVELOP',t:'Explore hardware where standard IP is not enough.',c:'Work on cryptographic acceleration, secure compute, modular arithmetic and specialised digital architectures.',h:'research.html',l:'Explore applied R&D →'}
+    };
+    const kicker=constellation.querySelector('[data-constellation-kicker]'),title=constellation.querySelector('[data-constellation-title]'),copy=constellation.querySelector('[data-constellation-copy]'),link=constellation.querySelector('[data-constellation-link]');
+    const set=k=>{const d=info[k];if(!d)return;kicker.textContent=d.k;title.textContent=d.t;copy.textContent=d.c;link.href=d.h;link.textContent=d.l;const node=constellation.querySelector('[data-constellation-node="'+k+'"]');if(node){const cs=getComputedStyle(node);const c=cs.getPropertyValue('--node').trim();const core=constellation.querySelector('.v21-orbit-core');if(core&&c)core.style.setProperty('--constellation-accent',c)}};
+    constellation.querySelectorAll('[data-constellation-node]').forEach(node=>{node.addEventListener('pointerenter',()=>set(node.dataset.constellationNode));node.addEventListener('focus',()=>set(node.dataset.constellationNode));node.addEventListener('click',()=>{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'engineering_constellation_selected',route:node.dataset.constellationNode,page:location.pathname})})});
+  }
+  wireSignalCanvas(document.querySelector('.v21-constellation-canvas'),36);
+
+  /* Fine-pointer signal sparks: sparse, short lived and disabled for reduced data/motion. */
+  if(fine.matches&&!reduce.matches&&!saveData){
+    let last=0,idx=0;const colors=['#27e6ff','#4773ff','#8c5cff','#ff4fa3','#ffc53d','#49efbb'];
+    addEventListener('pointermove',e=>{
+      const now=performance.now();if(now-last<70)return;last=now;
+      const s=document.createElement('i');s.className='v21-pointer-spark';s.setAttribute('aria-hidden','true');s.style.left=e.clientX+'px';s.style.top=e.clientY+'px';s.style.setProperty('--spark',colors[idx++%colors.length]);s.style.setProperty('--dx',((Math.random()-.5)*18).toFixed(1)+'px');s.style.setProperty('--dy',(-18-Math.random()*24).toFixed(1)+'px');document.body.append(s);setTimeout(()=>s.remove(),760);
+    },{passive:true});
+  }
+})();
