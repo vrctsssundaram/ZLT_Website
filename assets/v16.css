@@ -705,3 +705,14 @@ body.v20 .z-page-hero::after{content:"";position:absolute;z-index:0;right:7%;bot
  .v20-hex,.v20-core-orbit,.v20-pulse,.v20-die,.v20-color-track,body.v20 .site-foot::before,body.v20 .z-page-hero::after{animation:none!important}
  .v20-section-nav{display:none!important}.v20-ripple{display:none!important}.v20-tilt{transform:none!important}
 }
+
+
+/* V20 accessibility polish: vivid rail contrast + full-size chapter targets. */
+.v20-color-track .c2,.v20-color-track .c3{color:#07101e}
+.v20-section-nav{gap:2px}
+.v20-section-nav button{position:relative;width:30px;height:30px;border:0;background:transparent;box-shadow:none;transform:none}
+.v20-section-nav button::after{content:"";position:absolute;left:9px;top:9px;width:12px;height:12px;border:1px solid rgba(255,255,255,.42);border-radius:50%;background:#122044;box-shadow:0 3px 12px rgba(0,0,0,.14);transition:transform .2s,background .2s,border-color .2s}
+.v20-section-nav button:hover::after,.v20-section-nav button:focus-visible::after{transform:scale(1.18);border-color:#fff}
+.v20-section-nav button.active{transform:none;background:transparent;border:0}
+.v20-section-nav button.active::after{transform:scale(1.32);border-color:#fff;background:linear-gradient(135deg,var(--v20-cyan),var(--v20-violet),var(--v20-pink))}
+.v20-section-nav button:focus-visible{outline:2px solid var(--v20-cyan);outline-offset:1px;border-radius:10px}
