@@ -32,3 +32,21 @@
 @media(max-width:980px){.page-intro-grid,.contact-shell,.value-give .wrap{grid-template-columns:1fr;gap:24px}.contact-direct{position:static}.submit-row{align-items:flex-start}.ip-explorer-tools{grid-template-columns:1fr auto}.ip-filter-group{grid-column:1/-1;width:max-content;max-width:100%}.ip-search-field{min-width:0}.engagement-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.engagement-step{border-bottom:1px solid #cfd6df}.engagement-step:nth-child(2n){border-right:0}.engagement-step:last-child{border-bottom:0}}
 @media(max-width:760px){.form{padding:18px}.submit-row{flex-direction:column}.submit-row .action{width:100%}.fact-line{grid-template-columns:76px 1fr}.value-give{padding:48px 0}.uncoded-listing-row{grid-template-columns:1fr auto!important}.plain-steps,.service-flow-track,.path-steps{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}.body-copy{overflow:hidden}.ip-explorer-tools{grid-template-columns:1fr;padding:10px}.ip-filter-group{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.ip-filter{padding:0 8px}.ip-explorer-count{justify-self:start}.engagement-steps{grid-template-columns:1fr}.engagement-step{min-height:0;border-right:0;border-bottom:1px solid #cfd6df;padding-bottom:22px}.disclosure summary{min-height:58px;padding-left:12px}.disclosure-body{padding-left:12px;padding-right:42px}.milestones[role="list"]::before,.milestones[role="list"] .milestone::before{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+
+/* V19 legacy specialist containment — keep long-form service pages inside the viewport. */
+body.page-ip-quality-audit main,
+body.page-ip-quality-audit main>section,
+body.page-ip-quality-audit .site-foot{max-width:100%;overflow-x:clip}
+body.page-ip-quality-audit .wrap,
+body.page-ip-quality-audit .page-intro-grid,
+body.page-ip-quality-audit .split,
+body.page-ip-quality-audit .section-head,
+body.page-ip-quality-audit .block-grid,
+body.page-ip-quality-audit .plain-steps,
+body.page-ip-quality-audit .faq{min-width:0;max-width:100%}
+body.page-ip-quality-audit .page-title,
+body.page-ip-quality-audit .big-copy,
+body.page-ip-quality-audit .body-copy,
+body.page-ip-quality-audit .faq summary,
+body.page-ip-quality-audit .faq p{overflow-wrap:anywhere}
