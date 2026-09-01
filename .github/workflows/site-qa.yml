@@ -13,6 +13,8 @@ on:
       - "robots.txt"
       - "scripts/site_qa.py"
       - "scripts/deep_qa.py"
+      - "scripts/prepare_production.py"
+      - "scripts/production_audit.py"
       - "playwright.config.js"
       - ".github/workflows/site-qa.yml"
 
@@ -58,14 +60,24 @@ jobs:
           echo $! >/tmp/zlt-site.pid
           sleep 2
           curl --fail --silent http://127.0.0.1:4173/index.html >/dev/null
-      - name: Verify live enquiry endpoint CORS contract without writing a lead
+      - name: Verify staging and production enquiry CORS without writing a lead
         run: |
-          code=$(curl --silent --show-error --output /tmp/enquiry-options.txt --write-out "%{http_code}" \
-            -X OPTIONS "https://nujmuknvhgyoxhxuvscx.supabase.co/functions/v1/website-enquiry" \
-            -H "Origin: https://vrctsssundaram.github.io" \
-            -H "Access-Control-Request-Method: POST" \
-            -H "Access-Control-Request-Headers: content-type")
-          test "$code" = "204"
+          check_origin () {
+            origin="$1"
+            headers=$(mktemp)
+            body=$(mktemp)
+            code=$(curl --silent --show-error --dump-header "$headers" --output "$body" --write-out "%{http_code}" \
+              -X OPTIONS "https://nujmuknvhgyoxhxuvscx.supabase.co/functions/v1/website-enquiry" \
+              -H "Origin: $origin" \
+              -H "Access-Control-Request-Method: POST" \
+              -H "Access-Control-Request-Headers: content-type")
+            test "$code" = "204"
+            allow=$(awk 'BEGIN{IGNORECASE=1} /^access-control-allow-origin:/ {gsub("\r",""); sub(/^[^:]+:[[:space:]]*/,""); print; exit}' "$headers")
+            test "$allow" = "*" -o "$allow" = "$origin"
+          }
+          check_origin "https://vrctsssundaram.github.io"
+          check_origin "https://zeptologic.com"
+          check_origin "https://www.zeptologic.com"
       - name: Run multi-device browser suite
         env:
           BASE_URL: http://127.0.0.1:4173
@@ -82,3 +94,27 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4173
         run: npx playwright test tests/cross-browser.spec.js --reporter=line --workers=2 --project=firefox --project=webkit
+
+
+  production-package:
+    name: Production package and migration readiness
+    needs: [static-qa, browser-qa]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Build production package without mutating staging
+        run: python scripts/prepare_production.py /tmp/zeptologic-production
+      - name: Audit production package
+        run: python scripts/production_audit.py /tmp/zeptologic-production
+      - name: Upload production-ready migration artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: zeptologic-production-ready
+          path: /tmp/zeptologic-production
+          if-no-files-found: error
+          retention-days: 14
