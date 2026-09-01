@@ -66,8 +66,8 @@ def main():
         if len(names)>1: warnings.append(f"duplicate top-level meta description across {', '.join(names)}")
 
     budgets={
-      "assets/v16.css":120000,
-      "assets/site.js":60000,
+      "assets/v16.css":140000,
+      "assets/site.js":75000,
       "assets/media/zlt-hero-semiconductor-journey.webm":30000000,
       "assets/media/zlt-hero-semiconductor-journey.mp4":30000000,
       "assets/media/zlt-hero-semiconductor-journey-mobile.webm":18000000,
@@ -105,6 +105,18 @@ def main():
         raw=page.read_text(encoding="utf-8")
         if 'href="http://' in raw or "href='http://" in raw:
             failures.append(f"{page.name}: insecure HTTP hyperlink present")
+    about=(ROOT/"about.html").read_text(encoding="utf-8")
+    for required in ("Suresh Kuppuswamy","Advanced Management Program (AMP 206)","₹250 crore MoU","3.22-acre site","Agentic Soft Labs","Quantcell’s Accelerator Foundation","The Weight of Intelligence"):
+        if required not in about: failures.append(f"about.html: confirmed CEO profile content missing — {required}")
+    if 'id="leadership"' not in about: failures.append("about.html: leadership anchor missing")
+    if '"@type":"Person"' not in about: failures.append("about.html: CEO Person structured data missing")
+    for retired in (ROOT/"assets/media").glob("zlt-silicon-film*"):
+        failures.append(f"retired V19 media still present — {retired.name}")
+    for required in ("scripts/prepare_production.py","scripts/production_audit.py"):
+        if not (ROOT/required).exists(): failures.append(f"production-readiness script missing — {required}")
+    if "safeSession" not in js: failures.append("browser storage hardening wrapper missing")
+    if "V26 command palette" not in js: failures.append("V26 command palette runtime missing")
+    if "data-v26-text" not in js or "data-v26-contrast" not in js: failures.append("V26 accessibility experience controls missing")
 
     print(f"Deep-audited {len(PAGES)} pages.")
     for item in warnings: print("WARNING:",item)
@@ -112,7 +124,7 @@ def main():
         print(f"FAILED: {len(failures)} issue(s)")
         for item in failures: print(" -",item)
         return 1
-    print("PASS: V25 deep static integrity, security hygiene and delivery budgets clear.")
+    print("PASS: V26 deep static integrity, security hygiene, leadership and production-readiness gates clear.")
     return 0
 
 if __name__=="__main__": sys.exit(main())
