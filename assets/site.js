@@ -16,8 +16,77 @@ if(document.body.classList.contains('v16')&&!$('#v16RuntimeStyle')){document.hea
 
 function track(event,detail={}){window.dataLayer=window.dataLayer||[];window.dataLayer.push({event,...detail})}function wireTracking(){$$('[data-track]').forEach(el=>{if(el.dataset.trackBound)return;el.dataset.trackBound='1';el.addEventListener('click',()=>track(el.dataset.track,{page:location.pathname,label:el.textContent.trim().slice(0,100)}))})}
 
-/* Search */
-let lastSearchFocus=null;const searchIndex=[['Semiconductor IP','products.html','semiconductor IP floating point arithmetic UART SPI I2C license evaluate reusable'],['Applications','applications.html','compute signal processing embedded control communications security edge research hardware'],['Floating-point IP','floating-point-ip.html','IEEE 754 add subtract multiplier divider reciprocal square root MAC complex matrix'],['RTL Design','rtl-design-services.html','Verilog SystemVerilog VHDL microarchitecture RTL design'],['Verification','verification-coverage-closure.html','UVM coverage regression assertions verification'],['FPGA Prototyping','fpga-prototyping-services.html','AMD Xilinx Zynq Alveo prototype timing bring-up'],['IP Quality','ip-quality-audit.html','lint CDC RDC reuse readiness RTL audit'],['Cryptographic Hardware','cryptographic-hardware-acceleration.html','zk SNARK PQC cryptography accelerator FPGA'],['Research to Hardware','research-to-hardware.html','research co-development architecture FPGA hardware'],['C-DOT Samarth','cdot-samarth-zksnark.html','C-DOT Samarth zk SNARK zero knowledge FPGA Stage II grant'],['Company','about.html','Zepto Logic company Coimbatore semiconductor'],['R&D','research.html','research secure hardware cryptography acceleration'],['Insights','news.html','news C-DOT Tamil Nadu TNRPF company milestones'],['Careers','careers.html','VLSI RTL verification FPGA careers internship'],['Contact','contact.html','technical enquiry phone WhatsApp email']];const dialog=$('.search-dialog'),input=$('#siteSearch'),results=$('.search-results');function openSearch(){setMenu(false);lastSearchFocus=document.activeElement;dialog?.classList.add('open');dialog?.setAttribute('aria-hidden','false');dialog?.setAttribute('role','dialog');dialog?.setAttribute('aria-modal','true');dialog?.setAttribute('aria-label','Search Zepto Logic');document.body.style.overflow='hidden';setTimeout(()=>input?.focus(),40)}function closeSearch(){const wasOpen=dialog?.classList.contains('open');dialog?.classList.remove('open');dialog?.setAttribute('aria-hidden','true');if(!document.body.classList.contains('nav-open'))document.body.style.overflow='';if(wasOpen&&lastSearchFocus instanceof HTMLElement)setTimeout(()=>lastSearchFocus.focus(),0)}function runSearch(v=''){if(!results)return;const terms=v.toLowerCase().trim().split(/\s+/).filter(Boolean);if(!terms.length){results.innerHTML='<p>Search semiconductor IP, engineering, applications, R&D or company information.</p>';return}const found=searchIndex.filter(([t,,x])=>terms.every(term=>(t+' '+x).toLowerCase().includes(term))).slice(0,9);results.innerHTML=found.length?found.map(([t,u])=>`<a class="search-result" href="${u}"><strong>${t}</strong><span>Open →</span></a>`).join(''):'<p>No direct match. <a href="contact.html">Contact Zepto Logic →</a></p>'}$$('.search-button').forEach(b=>{b.setAttribute('aria-label','Search site');b.addEventListener('click',openSearch)});$('.search-close')?.addEventListener('click',closeSearch);dialog?.addEventListener('click',e=>{if(e.target===dialog)closeSearch()});input?.addEventListener('input',e=>runSearch(e.target.value));document.addEventListener('keydown',e=>{if(e.key==='Escape'){setMenu(false);closeSearch()}if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')){e.preventDefault();openSearch()}if(e.key==='Tab'&&dialog?.classList.contains('open')){const focusable=$$('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',dialog).filter(x=>x.offsetParent!==null);if(focusable.length){const first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}}});
+/* V26 command palette — global technical search and quick navigation. */
+let lastSearchFocus=null,searchSelected=-1;
+const searchIndex=[
+ ['Semiconductor IP','products.html','semiconductor IP floating point arithmetic UART SPI I2C license evaluate reusable portfolio'],
+ ['Applications','applications.html','compute signal processing embedded control communications security edge research hardware workloads'],
+ ['Floating-point IP','floating-point-ip.html','IEEE 754 add subtract multiplier divider reciprocal square root MAC complex matrix'],
+ ['RTL Design','rtl-design-services.html','Verilog SystemVerilog VHDL microarchitecture RTL design datapath control'],
+ ['Verification','verification-coverage-closure.html','UVM coverage regression assertions verification lint CDC RDC'],
+ ['FPGA Prototyping','fpga-prototyping-services.html','AMD Xilinx Zynq Alveo prototype timing bring-up constraints'],
+ ['IP Quality','ip-quality-audit.html','lint CDC RDC reuse readiness RTL audit review'],
+ ['Cryptographic Hardware','cryptographic-hardware-acceleration.html','zk SNARK PQC cryptography accelerator FPGA secure compute'],
+ ['Research to Hardware','research-to-hardware.html','research co-development architecture FPGA hardware'],
+ ['C-DOT Samarth','cdot-samarth-zksnark.html','C-DOT Samarth zk SNARK zero knowledge FPGA Stage II grant'],
+ ['Company','about.html','Zepto Logic company Coimbatore semiconductor fabless'],
+ ['Leadership — Suresh Kuppuswamy','about.html#leadership','CEO managing director co-founder Suresh Kuppuswamy Harvard AMP 206 leadership'],
+ ['R&D','research.html','research secure hardware cryptography acceleration'],
+ ['Insights','news.html','news C-DOT Tamil Nadu TNRPF company milestones'],
+ ['Careers','careers.html','VLSI RTL verification FPGA careers internship'],
+ ['Contact','contact.html','technical enquiry phone WhatsApp email partnership']
+];
+const dialog=$('.search-dialog'),input=$('#siteSearch'),results=$('.search-results');
+function commandLinks(){return results?$$('.search-result',results):[]}
+function syncSearchSelection(next){
+  const links=commandLinks();if(!links.length){searchSelected=-1;return}
+  searchSelected=(next+links.length)%links.length;
+  links.forEach((a,i)=>a.classList.toggle('v26-selected',i===searchSelected));
+  links[searchSelected]?.scrollIntoView({block:'nearest'});
+}
+function renderSearchHints(){
+  if(!dialog||dialog.querySelector('.v26-command-hint'))return;
+  dialog.classList.add('v26-command');
+  const hint=document.createElement('div');hint.className='v26-command-hint';hint.setAttribute('aria-label','Quick technical routes');
+  [['IP','IP'],['RTL','RTL'],['Verification','Verification'],['FPGA','FPGA'],['CEO','Suresh Kuppuswamy'],['Contact','Contact']].forEach(([label,q])=>{
+    const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>{if(input){input.value=q;runSearch(q);input.focus()}});hint.append(b);
+  });
+  const shortcut=document.createElement('span');shortcut.className='v26-search-shortcut';shortcut.textContent='⌘/Ctrl K · /';hint.append(shortcut);
+  input?.closest('.search-row')?.after(hint);
+}
+function openSearch(){
+  setMenu(false);lastSearchFocus=document.activeElement;renderSearchHints();searchSelected=-1;
+  dialog?.classList.add('open');dialog?.setAttribute('aria-hidden','false');dialog?.setAttribute('role','dialog');dialog?.setAttribute('aria-modal','true');dialog?.setAttribute('aria-label','Search Zepto Logic');
+  document.body.style.overflow='hidden';setTimeout(()=>{input?.focus();input?.select()},40)
+}
+function closeSearch(){
+  const wasOpen=dialog?.classList.contains('open');dialog?.classList.remove('open');dialog?.setAttribute('aria-hidden','true');searchSelected=-1;
+  if(!document.body.classList.contains('nav-open'))document.body.style.overflow='';
+  if(wasOpen&&lastSearchFocus instanceof HTMLElement)setTimeout(()=>lastSearchFocus.focus(),0)
+}
+function runSearch(v=''){
+  if(!results)return;searchSelected=-1;
+  const terms=v.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  if(!terms.length){results.innerHTML='<p>Search semiconductor IP, engineering, applications, R&amp;D, leadership or company information.</p>';return}
+  const found=searchIndex.filter(([t,,x])=>terms.every(term=>(t+' '+x).toLowerCase().includes(term))).slice(0,9);
+  results.innerHTML=found.length?found.map(([t,u])=>'<a class="search-result" href="'+u+'"><strong>'+t+'</strong><span>Open →</span></a>').join(''):'<p>No direct match. <a href="contact.html">Contact Zepto Logic →</a></p>';
+}
+$$('.search-button').forEach(b=>{b.setAttribute('aria-label','Search site');b.setAttribute('title','Search · Ctrl/⌘ K');b.addEventListener('click',openSearch)});
+$('.search-close')?.addEventListener('click',closeSearch);dialog?.addEventListener('click',e=>{if(e.target===dialog)closeSearch()});input?.addEventListener('input',e=>runSearch(e.target.value));
+input?.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'){e.preventDefault();syncSearchSelection(searchSelected+1)}
+  else if(e.key==='ArrowUp'){e.preventDefault();syncSearchSelection(searchSelected-1)}
+  else if(e.key==='Enter'&&searchSelected>=0){e.preventDefault();commandLinks()[searchSelected]?.click()}
+});
+document.addEventListener('keydown',e=>{
+  const editable=/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'');
+  if(e.key==='Escape'){setMenu(false);closeSearch()}
+  if(((e.key.toLowerCase()==='k'&&(e.metaKey||e.ctrlKey))||(e.key==='/'&&!editable))&&!e.altKey){e.preventDefault();openSearch()}
+  if(e.key==='Tab'&&dialog?.classList.contains('open')){
+    const focusable=$$('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',dialog).filter(x=>x.offsetParent!==null);
+    if(focusable.length){const first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
+  }
+});
 
 /* IP catalogue filter — no injected FAQ or qualification copy. */
 if(location.pathname.endsWith('products.html')||location.pathname.endsWith('/products/')){const listings=$$('.listing'),rows=$$('.listing-row');listings.forEach((listing,i)=>$$('.listing-row',listing).forEach(r=>r.dataset.ipCategory=i===0?'arithmetic':'interface'));const first=listings[0];if(first&&rows.length){const tools=document.createElement('div');tools.className='ip-explorer-tools';tools.setAttribute('role','region');tools.setAttribute('aria-label','IP portfolio filter');tools.innerHTML='<div class="ip-filter-group" role="group" aria-label="Filter IP by category"><button type="button" class="ip-filter active" data-filter="all" aria-pressed="true">All</button><button type="button" class="ip-filter" data-filter="arithmetic" aria-pressed="false">Arithmetic</button><button type="button" class="ip-filter" data-filter="interface" aria-pressed="false">Interfaces</button></div><label class="ip-search-field"><span class="sr-only">Search IP portfolio</span><input class="ip-search" type="search" aria-label="Search IP portfolio" placeholder="Search the portfolio"></label><span class="ip-explorer-count" role="status" aria-live="polite"></span>';first.closest('.z-section,.section')?.querySelector('.z-head,.section-head')?.after(tools);let filter='all';const search=$('.ip-search',tools),count=$('.ip-explorer-count',tools);function apply(){const q=(search.value||'').trim().toLowerCase();let visible=0;rows.forEach(r=>{const show=(filter==='all'||r.dataset.ipCategory===filter)&&(!q||r.textContent.toLowerCase().includes(q));r.hidden=!show;r.style.display=show?'':'none';if(show)visible++});count.textContent=`${visible} of ${rows.length} blocks`}$$('.ip-filter',tools).forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;$$('.ip-filter',tools).forEach(x=>{const active=x===b;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))});apply();track('ip_portfolio_filtered',{filter})}));search.addEventListener('input',apply);apply()}}
