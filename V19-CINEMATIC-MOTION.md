@@ -1,30 +1,13 @@
 # V19 — Original Cinematic Motion
 
-## Purpose
-Add a fully original, Zepto Logic-specific semiconductor film and a stronger kinetic conversion system without external stock footage, third-party branding, watermarks, or copied visual assets.
+V19 introduced the first procedural Zepto Logic semiconductor motion system. It is retained as release-history documentation only.
 
-## Original motion film
-The deterministic in-repository renderer produces a 6-second seamless abstract semiconductor sequence:
-- central die / compute core
-- circuit routes and moving signal pulses
-- orbiting data paths
-- perspective signal grid
-- cyan, blue, violet, magenta, teal and controlled amber energy cues
-- desktop and lightweight mobile encodes
-- WebM + MP4 fallbacks and static posters
+The original six-second `zlt-silicon-film*` encodes, `scripts/generate_v19_media.py`, and the dedicated V19 generation workflow were retired and removed in V26 after the V24 high-resolution cinematic system fully superseded them.
 
-The source is `scripts/generate_v19_media.py`; rendered files live in `assets/media/`.
+Current active media and experience contracts are documented in:
 
-## Experience layer
-- full-bleed hero film with readable HTML overlay
-- pointer parallax on fine-pointer devices
-- accessible pause/play control
-- automatic pause outside the viewport and when the tab is hidden
-- data-saver starts static until the visitor explicitly enables motion
-- prefers-reduced-motion receives the static poster instead of autoplay
-- architecture → RTL → verification → FPGA kinetic pipeline
-- animated conversion CTA sheen
-- desktop project beacon paired with the existing mobile enquiry dock
+- `V24-HIGH-RES-CINEMATIC-MEDIA.md`
+- `V25-ULTIMATE-FUSION.md`
+- the current `ASSET-MANIFEST.json`
 
-## Release discipline
-All staging noindex/nofollow and production canonical safeguards remain unchanged.
+Staging noindex/nofollow and production canonical safeguards remain part of the release discipline.
