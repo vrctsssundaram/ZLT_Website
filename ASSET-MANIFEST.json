@@ -1,66 +1,53 @@
 {
-  "version": "v8-total-brand-reset",
+  "version": "v26-production-ready-fusion",
   "status": "staging-release-candidate",
+  "canonical_origin": "https://zeptologic.com",
   "brand": [
-    {
-      "file": "assets/brand/zepto-logo.png",
-      "type": "transparent PNG logo",
-      "use": "Wordmark in header and footer"
-    },
-    {
-      "file": "assets/brand/og-image.jpg",
-      "type": "social sharing image",
-      "use": "Open Graph and social cards"
-    },
-    {
-      "file": "assets/brand/favicon-32.png",
-      "type": "32x32 PNG favicon",
-      "use": "Browser tab icon"
-    }
+    {"file":"assets/brand/zepto-logo.png","type":"transparent PNG logo","use":"Header and footer wordmark"},
+    {"file":"assets/brand/og-image.jpg","type":"social sharing image","use":"Open Graph and social cards"},
+    {"file":"assets/brand/favicon-32.png","type":"32x32 PNG favicon","use":"Browser tab icon"},
+    {"file":"assets/people/suresh-kuppuswamy.jpg","type":"approved leadership portrait","use":"CEO leadership profile"}
   ],
   "interface": [
-    {
-      "file": "assets/style.css",
-      "type": "V8 editorial-commercial design system",
-      "use": "Warm paper canvas, oversized editorial typography, asymmetrical layouts, photographic proof, responsive forms and navigation"
-    },
-    {
-      "file": "assets/site.js",
-      "type": "V8 interaction layer",
-      "use": "Mobile navigation, site search, UTM/context handling, analytics hooks and Supabase-backed technical enquiry submission with email fallback"
-    }
+    {"file":"assets/style.css","type":"base site styles","use":"Core layout and shared controls"},
+    {"file":"assets/stature.css","type":"specialist-page styles","use":"Technical landing-page structure"},
+    {"file":"assets/v16.css","type":"V16-V26 visual experience system","use":"Responsive enterprise layout, cinematic colour, V25 engineering theatre, V26 editorial leadership and accessibility controls"},
+    {"file":"assets/site.js","type":"progressive interaction layer","use":"Navigation, command palette, IP explorer, contextual enquiry routing, Supabase submission, cinematic lifecycle, motion/accessibility controls and performance hooks"}
   ],
-  "typography": [
-    "Libre Caslon Display",
-    "Plus Jakarta Sans",
-    "IBM Plex Mono"
+  "active_media": [
+    "assets/media/zlt-hero-semiconductor-journey.webm",
+    "assets/media/zlt-hero-semiconductor-journey.mp4",
+    "assets/media/zlt-hero-semiconductor-journey-mobile.webm",
+    "assets/media/zlt-hero-semiconductor-journey-mobile.mp4",
+    "assets/media/zlt-film-ip.webm",
+    "assets/media/zlt-film-engineering.webm",
+    "assets/media/zlt-film-applications.webm",
+    "assets/media/zlt-film-research.webm"
   ],
   "current_ui_features": [
-    "Editorial hero and project routes",
-    "Asymmetrical commercial offer layouts",
-    "Real programme photography",
-    "Direct phone, email and WhatsApp paths",
-    "Responsive site-wide navigation",
-    "Keyboard-accessible search",
-    "Persistent technical enquiry intake",
-    "UTM and contextual enquiry routing",
-    "Reduced-motion support"
+    "64-second adaptive semiconductor cinematic hero",
+    "V25 five-stage interactive engineering theatre",
+    "Capability playground and engineering constellation",
+    "V26 Ctrl/Cmd+K technical command palette",
+    "Full / Calm / Still motion control",
+    "Default / Larger text control",
+    "Standard / High contrast control",
+    "Responsive page-local navigation",
+    "Keyboard and reduced-motion accessibility",
+    "13-block FPGA-validated IP explorer",
+    "Supabase-backed technical enquiry with email fallback",
+    "Local performance dataLayer instrumentation",
+    "Production-package and migration-readiness automation"
   ],
-  "explicitly_removed_legacy_systems": [
-    "V3 home stylesheet",
-    "V4 shared stylesheet",
-    "V4 page stylesheet",
-    "Topology diagram",
-    "Project composer",
-    "Scroll telemetry rail",
-    "Theme toggle",
-    "Status-chip and evidence-ledger visual language"
+  "retired_assets": [
+    "V19 zlt-silicon-film media encodes",
+    "V19 dedicated media generator and workflow"
   ],
   "asset_policy": [
-    "No AI-generated people, facilities or hardware",
-    "No stock facility imagery",
-    "Use genuine programme photography already owned by the repository",
+    "No stock or third-party visual assets in the semiconductor cinematic system",
     "No third-party logo artwork without written permission",
-    "Leadership portraits remain unpublished until titles, bios, portraits and links are approved"
+    "Leadership portrait and biography are published only after CEO confirmation",
+    "Staging remains noindex/nofollow until controlled production packaging",
+    "Production artifact contains only the active site assets required for deployment"
   ]
 }
