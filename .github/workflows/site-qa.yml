@@ -18,6 +18,10 @@ on:
       - "playwright.config.js"
       - ".github/workflows/site-qa.yml"
 
+concurrency:
+  group: website-release-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
