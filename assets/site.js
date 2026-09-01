@@ -172,7 +172,8 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
 
   function setFilmState(running){
     if(!film)return;
-    const shouldRun=running&&!reduce.matches&&inView&&!document.hidden;
+    const globalStill=document.documentElement.dataset.motionLevel==='still';
+    const shouldRun=running&&!reduce.matches&&!globalStill&&inView&&!document.hidden;
     if(shouldRun){
       const p=film.play();
       if(p&&p.catch)p.catch(()=>{document.body.classList.add('film-static')});
@@ -184,8 +185,9 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
       document.body.classList.add('film-static');
     }
     if(toggle){
-      toggle.setAttribute('aria-pressed',String(!running));
-      toggle.innerHTML=running?'<span aria-hidden="true">Ⅱ</span> Pause motion':'<span aria-hidden="true">▶</span> Play motion';
+      toggle.disabled=globalStill;
+      toggle.setAttribute('aria-pressed',String(!running||globalStill));
+      toggle.innerHTML=globalStill?'<span aria-hidden="true">■</span> Motion disabled':running?'<span aria-hidden="true">Ⅱ</span> Pause motion':'<span aria-hidden="true">▶</span> Play motion';
     }
   }
 
@@ -205,6 +207,7 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
     io.observe(hero);
   }
   document.addEventListener('visibilitychange',()=>setFilmState(!userPaused));
+  document.addEventListener('zlt:motion-level',()=>setFilmState(!userPaused));
   reduce.addEventListener?.('change',e=>{if(e.matches)userPaused=true;setFilmState(!userPaused)});
 
   if(fine.matches&&!reduce.matches){
@@ -389,10 +392,11 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
  const saveData=Boolean(navigator.connection&&navigator.connection.saveData);
  document.querySelectorAll('[data-cinematic-video]').forEach(video=>{
    const stage=video.closest('[data-film-stage]'),toggle=stage?.querySelector('[data-cinematic-toggle]');let userPaused=reduce.matches||saveData,visible=false;
-   const setState=()=>{if(reduce.matches){video.pause();if(toggle)toggle.hidden=true;return}const run=visible&&!userPaused&&!document.hidden;if(run){const p=video.play();p?.catch?.(()=>{})}else video.pause();if(toggle){toggle.hidden=false;toggle.setAttribute('aria-pressed',String(userPaused));toggle.innerHTML=userPaused?'<span aria-hidden="true">▶</span> Play film':'<span aria-hidden="true">Ⅱ</span> Pause film'}};
+   const setState=()=>{const globalStill=document.documentElement.dataset.motionLevel==='still';if(reduce.matches){video.pause();if(toggle)toggle.hidden=true;return}const run=visible&&!userPaused&&!document.hidden&&!globalStill;if(run){const p=video.play();p?.catch?.(()=>{})}else video.pause();if(toggle){toggle.hidden=false;toggle.disabled=globalStill;toggle.setAttribute('aria-pressed',String(userPaused||globalStill));toggle.innerHTML=globalStill?'<span aria-hidden="true">■</span> Motion disabled':userPaused?'<span aria-hidden="true">▶</span> Play film':'<span aria-hidden="true">Ⅱ</span> Pause film'}};
    toggle?.addEventListener('click',()=>{userPaused=!userPaused;setState();window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'section_film_toggle',state:userPaused?'paused':'playing',film:video.closest('section')?.className||''})});
    if('IntersectionObserver'in window)new IntersectionObserver(e=>{visible=Boolean(e[0]?.isIntersecting);setState()},{threshold:.16,rootMargin:'160px 0px 160px'}).observe(video);else{visible=true;setState()}
    document.addEventListener('visibilitychange',setState);
+   document.addEventListener('zlt:motion-level',setState);
  });
 })();
 
@@ -469,30 +473,49 @@ $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='c
     const geo=document.createElement('div');geo.className='v25-page-geometry';geo.setAttribute('aria-hidden','true');geo.innerHTML='<i class="g1"></i><i class="g2"></i><i class="g3"></i>';hero.prepend(geo);
   });
 
-  const stored=localStorage.getItem('zlt_motion_level');
+  const store={
+    get(key){try{return localStorage.getItem(key)}catch(_){return null}},
+    set(key,value){try{localStorage.setItem(key,value)}catch(_){}}
+  };
+  const stored=store.get('zlt_motion_level');
   let level=stored||(reduce.matches?'still':'full');
   const control=document.createElement('div');control.className='v25-experience';
-  control.innerHTML='<button class="v25-experience-toggle" type="button" aria-expanded="false" aria-controls="v25ExperienceMenu"><i aria-hidden="true"></i><span>Motion</span><b></b></button><div class="v25-experience-menu" id="v25ExperienceMenu" role="menu" hidden><button type="button" role="menuitemradio" data-v25-level="full">Full</button><button type="button" role="menuitemradio" data-v25-level="calm">Calm</button><button type="button" role="menuitemradio" data-v25-level="still">Still</button></div>';
+  control.innerHTML='<button class="v25-experience-toggle" type="button" aria-expanded="false" aria-controls="v25ExperienceMenu"><i aria-hidden="true"></i><span>Experience</span><b></b></button><div class="v25-experience-menu" id="v25ExperienceMenu" role="menu" hidden><div class="v26-experience-group" data-exp-group="motion"><span>Motion</span><button type="button" role="menuitemradio" data-v25-level="full">Full</button><button type="button" role="menuitemradio" data-v25-level="calm">Calm</button><button type="button" role="menuitemradio" data-v25-level="still">Still</button></div><div class="v26-experience-group" data-exp-group="text"><span>Text size</span><button type="button" role="menuitemradio" data-v26-text="default">Default</button><button type="button" role="menuitemradio" data-v26-text="large">Larger</button></div><div class="v26-experience-group" data-exp-group="contrast"><span>Contrast</span><button type="button" role="menuitemradio" data-v26-contrast="standard">Standard</button><button type="button" role="menuitemradio" data-v26-contrast="high">High</button></div></div>';
   document.body.append(control);
   const ctl=control.querySelector('.v25-experience-toggle'),menu=control.querySelector('.v25-experience-menu'),label=ctl.querySelector('b');
-  const applyLevel=next=>{
+  const applyLevel=(next,persist=true)=>{
     if(!['full','calm','still'].includes(next))next='full';level=next;
     document.body.classList.toggle('v25-motion-calm',level==='calm');
     document.body.classList.toggle('v25-motion-still',level==='still');
     document.documentElement.dataset.motionLevel=level;
     label.textContent=level.charAt(0).toUpperCase()+level.slice(1);
     control.querySelectorAll('[data-v25-level]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v25Level===level)));
-    localStorage.setItem('zlt_motion_level',level);
-    document.querySelectorAll('video').forEach(v=>{if(level==='still')v.pause();else if(v.autoplay&&document.visibilityState==='visible')v.play().catch(()=>{})});
+    if(persist)store.set('zlt_motion_level',level);
+    if(level==='still')document.querySelectorAll('video').forEach(v=>v.pause());
     window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'experience_motion_level',level:level,page:location.pathname});
     document.dispatchEvent(new CustomEvent('zlt:motion-level',{detail:{level:level}}));
   };
-  applyLevel(level);
-  ctl.addEventListener('click',()=>{const open=menu.hidden;menu.hidden=!open;ctl.setAttribute('aria-expanded',String(open))});
-  control.querySelectorAll('[data-v25-level]').forEach(b=>b.addEventListener('click',()=>{applyLevel(b.dataset.v25Level);menu.hidden=true;ctl.setAttribute('aria-expanded','false');ctl.focus()}));
+  const applyText=(next,persist=true)=>{
+    const value=next==='large'?'large':'default';document.body.classList.toggle('v26-text-large',value==='large');document.documentElement.dataset.textSize=value;
+    control.querySelectorAll('[data-v26-text]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v26Text===value)));if(persist)store.set('zlt_text_size',value)
+  };
+  const applyContrast=(next,persist=true)=>{
+    const value=next==='high'?'high':'standard';document.body.classList.toggle('v26-high-contrast',value==='high');document.documentElement.dataset.contrast=value;
+    control.querySelectorAll('[data-v26-contrast]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v26Contrast===value)));if(persist)store.set('zlt_contrast',value)
+  };
+  applyLevel(level,false);applyText(store.get('zlt_text_size')||'default',false);applyContrast(store.get('zlt_contrast')||'standard',false);
+  ctl.addEventListener('click',()=>{const open=menu.hidden;menu.hidden=!open;ctl.setAttribute('aria-expanded',String(open));if(open)menu.querySelector('[aria-checked="true"]')?.focus()});
+  control.querySelectorAll('[data-v25-level]').forEach(b=>b.addEventListener('click',()=>applyLevel(b.dataset.v25Level,true)));
+  control.querySelectorAll('[data-v26-text]').forEach(b=>b.addEventListener('click',()=>applyText(b.dataset.v26Text,true)));
+  control.querySelectorAll('[data-v26-contrast]').forEach(b=>b.addEventListener('click',()=>applyContrast(b.dataset.v26Contrast,true)));
+  menu.addEventListener('keydown',e=>{
+    if(!['ArrowDown','ArrowUp'].includes(e.key))return;e.preventDefault();
+    const items=[...menu.querySelectorAll('button')],idx=items.indexOf(document.activeElement),delta=e.key==='ArrowDown'?1:-1;items[(idx+delta+items.length)%items.length]?.focus()
+  });
   document.addEventListener('pointerdown',e=>{if(!control.contains(e.target)){menu.hidden=true;ctl.setAttribute('aria-expanded','false')}});
   control.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;ctl.setAttribute('aria-expanded','false');ctl.focus()}});
-  reduce.addEventListener?.('change',e=>{if(e.matches&&!localStorage.getItem('zlt_motion_level'))applyLevel('still')});
+  reduce.addEventListener?.('change',e=>{if(!store.get('zlt_motion_level'))applyLevel(e.matches?'still':'full',false)});
+
 
   const theatre=document.querySelector('[data-v25-theatre]');
   if(theatre){
