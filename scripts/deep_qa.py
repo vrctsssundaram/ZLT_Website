@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V23 deep static QA: HTML integrity, external leakage, asset contracts and delivery budgets."""
+"""V25 deep static QA: HTML integrity, security hygiene, experience contracts and delivery budgets."""
 from __future__ import annotations
 from collections import Counter
 from html.parser import HTMLParser
@@ -96,6 +96,15 @@ def main():
         text=(ROOT/name).read_text(encoding="utf-8")
         if "ORIGINAL ZEPTO LOGIC VISUAL" in text or "15 SEC · LOOP" in text:
             failures.append(f"{name}: obsolete explicit film meta remains")
+    if home.count('data-v25-theatre')!=1: failures.append("V25 engineering theatre must exist exactly once")
+    if home.count('data-v25-step=')!=5: failures.append("V25 engineering theatre must expose exactly five stages")
+    if "V25 — ultimate fusion" not in js: failures.append("V25 runtime block missing")
+    if "site_performance_sample" not in js: failures.append("V25 local performance telemetry hook missing")
+    if "zlt_motion_level" not in js: failures.append("V25 motion preference control missing")
+    for page in PAGES:
+        raw=page.read_text(encoding="utf-8")
+        if 'href="http://' in raw or "href='http://" in raw:
+            failures.append(f"{page.name}: insecure HTTP hyperlink present")
 
     print(f"Deep-audited {len(PAGES)} pages.")
     for item in warnings: print("WARNING:",item)
@@ -103,7 +112,7 @@ def main():
         print(f"FAILED: {len(failures)} issue(s)")
         for item in failures: print(" -",item)
         return 1
-    print("PASS: V23 deep static integrity and delivery budgets clear.")
+    print("PASS: V25 deep static integrity, security hygiene and delivery budgets clear.")
     return 0
 
 if __name__=="__main__": sys.exit(main())
