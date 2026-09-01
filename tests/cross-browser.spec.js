@@ -17,3 +17,20 @@ for(const file of PAGES)test(`cross-browser smoke — ${file}`,async({page})=>{
   expect(dup).toEqual([]);
   if(file!=='index.html')await expect(page.locator('.v23-context-nav')).toHaveCount(1);
 });
+
+
+test('V26 interaction smoke',async({page})=>{
+  await page.setViewportSize({width:1280,height:800});
+  await page.goto(BASE+'/index.html',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('[data-v25-theatre]')).toBeVisible();
+  const exp=page.locator('.v25-experience-toggle');
+  await expect(exp).toBeVisible();await exp.click();
+  await page.locator('[data-v25-level="still"]').click();
+  await expect(page.locator('body')).toHaveClass(/v25-motion-still/);
+  await page.locator('.search-button').click();
+  await page.locator('#siteSearch').fill('Suresh Kuppuswamy');
+  await expect(page.locator('.search-results')).toContainText('Leadership — Suresh Kuppuswamy');
+  await page.goto(BASE+'/about.html',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#leadership')).toBeVisible();
+  await expect(page.locator('.v26-leadership-milestones>div')).toHaveCount(6);
+});
