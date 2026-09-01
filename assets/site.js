@@ -1,4 +1,4 @@
-const $=(s,c=document)=>c.querySelector(s);const $=(s,c=document)=>[...c.querySelectorAll(s)];
+const $=(s,c=document)=>c.querySelector(s);const $$=(s,c=document)=>[...c.querySelectorAll(s)];
 const safeSession={get(k){try{return sessionStorage.getItem(k)}catch(_){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(_){}},remove(k){try{sessionStorage.removeItem(k)}catch(_){}}};
 const header=$('.site-head'),menuBtn=$('.menu-toggle'),nav=$('.head-links');
 
