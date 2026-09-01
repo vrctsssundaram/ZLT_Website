@@ -62,7 +62,6 @@ try:
     root=ET.parse(DEST/"sitemap.xml").getroot()
     ns={"s":"http://www.sitemaps.org/schemas/sitemap/0.9"}
     urls={el.text.strip() for el in root.findall("s:url/s:loc",ns) if el.text}
-    public_canon={u for p,u in [(p,A()) for p in []]}  # placeholder keeps parser dependency explicit
     expected=set()
     for page in pages:
         if page.name in KEEP_NOINDEX:continue
