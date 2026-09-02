@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;750&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 /* V16 — global enterprise semiconductor system. Light surfaces only. */
 body.v16{--z-bg:#ffffff;--z-soft:#f4f5f6;--z-soft2:#eceff2;--z-ink:#151a22;--z-copy:#3f4957;--z-muted:#556170;--z-line:#d7dce2;--z-line2:#b9c1cb;--z-blue:#1646c8;--z-blue2:#0f389f;--z-teal:#08756d;--z-gold:#8a6412;--z-max:1500px;background:#fff;color:var(--z-ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
@@ -498,7 +498,7 @@ body.v16 .search-result:hover{background:linear-gradient(90deg,#eff6ff,#f7f2ff)}
 .v19-hero .wrap{position:relative;z-index:5}
 .v19-hero::before{z-index:3;opacity:.16}
 .v19-hero .hero-aurora{z-index:2;opacity:.72}
-.hero-film{position:absolute;z-index:1;inset:0;overflow:hidden;pointer-events:none;background:#061226 url('media/zlt-silicon-film-poster.jpg') center/cover no-repeat}
+.hero-film{position:absolute;z-index:1;inset:0;overflow:hidden;pointer-events:none;background:#061226 url('media/zlt-hero-semiconductor-journey-poster.jpg') center/cover no-repeat}
 .hero-film-video{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;object-position:center;opacity:.72;filter:saturate(1.28) contrast(1.08) brightness(.82);transform:translate3d(var(--film-x,0),var(--film-y,0),0) scale(1.035);transition:transform .22s ease-out,opacity .35s ease}
 .hero-film-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,10,26,.90) 0%,rgba(3,10,26,.72) 35%,rgba(3,10,26,.28) 64%,rgba(3,10,26,.54) 100%)}
 .hero-film-spectrum{position:absolute;inset:0;background:radial-gradient(circle at 18% 54%,rgba(47,99,255,.28),transparent 30%),radial-gradient(circle at 84% 22%,rgba(240,75,182,.18),transparent 26%),linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.26));mix-blend-mode:screen}
@@ -1063,3 +1063,129 @@ body.v25 .wordmark img{transition:transform .28s cubic-bezier(.2,.8,.2,1),filter
 .v26-search-shortcut{margin-left:auto;color:#8795a8;font:600 8px 'IBM Plex Mono',monospace}
 @media(max-width:760px){.v26-leadership-grid{grid-template-columns:1fr}.v26-leadership-portrait{position:relative;top:auto}.v26-leadership-image{max-width:420px}.v26-leadership-milestones,.v26-leadership-credentials{grid-template-columns:1fr}.v26-leadership-subhead{grid-template-columns:1fr;gap:7px}.v26-leadership::after{display:none}.search-dialog.v26-command .search-panel{border-radius:20px}.v25-experience-menu{width:196px}}
 @media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none!important}.v26-leadership-image>span{animation:none!important}.v26-leadership-image img,.v26-leadership-milestones>div{transition:none!important}}
+
+
+/* =====================================================================
+   V26 — TYPOGRAPHY, ALIGNMENT & READABILITY STABILISATION
+   Unified responsive scale; no justified body copy; stronger dark UI.
+   ===================================================================== */
+body.v16{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:16px;line-height:1.6;font-kerning:normal;font-synthesis:none;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+body.v16 .wrap{width:min(var(--z-max),calc(100% - clamp(32px,6vw,72px)))}
+body.v16 main h1,body.v16 main h2,body.v16 main h3,body.v16 main h4{
+  text-wrap:balance;overflow-wrap:normal;word-break:normal;hyphens:none;
+}
+body.v16 main p,body.v16 main li,body.v16 main dd{
+  text-align:left;text-wrap:pretty;overflow-wrap:break-word;word-break:normal;
+}
+body.v16 .z-page-hero .wrap,body.v16 .z-head,body.v16 .v20-playground-head,body.v16 .v21-constellation-head,body.v16 .v25-theatre-head{
+  align-items:start;
+}
+body.v16 .z-head{grid-template-columns:minmax(0,.9fr) minmax(300px,1.1fr);gap:clamp(28px,4vw,64px)}
+body.v16 .z-head>div,body.v16 .z-head>p,body.v16 .z-page-hero .wrap>*,body.v16 .v25-theatre-head>*{min-width:0}
+body.v16 .z-head p{max-width:64ch;margin-top:3px}
+body.v16 .z-page-hero h1{font-size:clamp(42px,4.65vw,72px);line-height:1.01;letter-spacing:-.045em;font-weight:700;max-width:18ch}
+body.v16 .z-page-hero .intro{font-size:clamp(16px,1.15vw,18px);line-height:1.72;max-width:62ch}
+body.v16 .z-hero h1,body.v16 .v18-hero h1{font-size:clamp(46px,5.15vw,78px);line-height:.99;letter-spacing:-.048em}
+body.v16 .z-head h2{font-size:clamp(32px,3.55vw,54px);line-height:1.04;letter-spacing:-.042em;font-weight:700;max-width:20ch}
+body.v16 .v20-playground-head h2,body.v16 .v21-constellation-head h2,body.v16 .v25-theatre-head h2{
+  font-size:clamp(34px,4vw,58px);line-height:1;letter-spacing:-.045em;
+}
+body.v16 .z-card h3{font-size:clamp(21px,1.55vw,26px);line-height:1.16}
+body.v16 .z-app h3{font-size:clamp(20px,1.4vw,24px);line-height:1.18}
+body.v16 .z-card p,body.v16 .z-app p,body.v16 .z-feature-story p,body.v16 .z-flow article p,
+body.v16 .z-record p,body.v16 .z-company p,body.v16 .contact-shell p,body.v16 .v23-resource-card p{
+  font-size:clamp(14.5px,.22vw + 13.7px,16px);line-height:1.68;
+}
+body.v16 .z-card p,body.v16 .z-app p{max-width:42ch}
+body.v16 .z-card li,body.v16 .listing-row .desc,body.v16 .z-fact span{
+  font-size:clamp(13px,.16vw + 12.6px,14.5px);line-height:1.58;
+}
+body.v16 .action,body.v16 .project-link,body.v16 .search-button,body.v16 .menu-toggle{
+  font-size:13px;font-weight:700;
+}
+body.v16 .eyebrow,body.v16 .kicker,body.v16 .z-card .tag,body.v16 .z-app>span,
+body.v16 .cap-state,body.v16 .flow-state,body.v16 .flow-stage span,body.v16 .maturity-label{
+  font-size:11px;line-height:1.35;letter-spacing:.095em;
+}
+body.v16 .z-card .tail,body.v16 .listing-row .go,body.v16 .listing-row .code,
+body.v16 .v23-context-links a,body.v16 .v23-resource-card b,body.v16 .v23-evidence-foot a{
+  font-size:12.5px;line-height:1.4;
+}
+body.v16 .form-help,body.v16 .form .mono,body.v16 .field-counter{
+  font-size:12.5px;line-height:1.5;
+}
+body.v16 .hero-trust span{font-size:12.5px;line-height:1.45}
+body.v16 .motion-toggle{min-height:42px;font-size:11px}
+body.v16 .v20-play-tab>small,body.v16 .v20-bento-card span,body.v16 .v21-node small{
+  font-size:12px;line-height:1.48;
+}
+body.v16 .v20-core-copy p,body.v16 .v21-constellation-foot,body.v16 .v25-object-readout p,
+body.v16 .v25-story-card small,body.v16 .v25-story-action>span{
+  font-size:13px;line-height:1.58;
+}
+body.v16 .v20-core-link,body.v16 .v21-orbit-core>a,body.v16 .v25-story-action a,
+body.v16 .v25-experience-toggle,body.v16 .v25-experience-menu button{
+  font-size:12px;
+}
+body.v16 .v26-command-hint button{font-size:11.5px;min-height:40px}
+body.v16 .v26-search-shortcut{font-size:10px}
+
+/* Dark surfaces use a brighter, unified reading palette. */
+body.v16 .v19-hero{color:#f7fbff}
+body.v16 .v20-prism-playground p,body.v16 .v20-prism-playground small,body.v16 .v20-prism-playground .v20-bento-card span,
+body.v16 .v21-constellation p,body.v16 .v21-constellation small,body.v16 .v21-constellation .v21-constellation-foot,
+body.v16 .v25-theatre p,body.v16 .v25-theatre small,body.v16 .v25-theatre .v25-story-action>span{
+  color:#c7d5e9;
+}
+body.v16 .v20-prism-playground .eyebrow,body.v16 .v21-constellation .eyebrow,body.v16 .v25-theatre .eyebrow{
+  color:#9ef1ff;
+}
+body.v16 .v25-object-readout{color:#f5f9ff}
+body.v16 .v25-object-readout p,body.v16 .v25-story-card small{color:#c2d1e6}
+body.v16 .v25-story-card span{color:#9befff}
+body.v16 .v25-experience-menu button{color:#c3d1e4}
+body.v16 .v25-experience-menu button:hover,body.v16 .v25-experience-menu button[aria-checked="true"]{color:#fff}
+
+/* Equal rhythm and predictable alignment across cards/sections. */
+body.v16 .z-grid4,body.v16 .z-app-grid,body.v16 .z-facts,body.v16 .z-record{align-items:stretch}
+body.v16 .z-card,body.v16 .z-app{height:100%}
+body.v16 .z-card .tag,body.v16 .z-app>span{margin-bottom:clamp(24px,3vw,42px)}
+body.v16 .z-section{padding-block:clamp(68px,7vw,104px)}
+body.v16 .z-section .actions{align-items:center;flex-wrap:wrap}
+body.v16 .leadership-story,body.v16 .z-feature-story{align-items:stretch}
+
+/* Forms remain comfortably readable and touchable. */
+body.v16 input,body.v16 select,body.v16 textarea,body.v16 button{
+  font:inherit;
+}
+body.v16 .field label{font-size:13px;line-height:1.45}
+body.v16 input,body.v16 select{min-height:48px}
+body.v16 textarea{min-height:150px;line-height:1.6}
+
+/* Mobile/tablet typography is deliberately restrained rather than miniature. */
+@media(max-width:980px){
+  body.v16 .z-page-hero .wrap,body.v16 .z-head,body.v16 .v20-playground-head,body.v16 .v21-constellation-head,body.v16 .v25-theatre-head{
+    grid-template-columns:1fr;gap:20px;
+  }
+  body.v16 .z-page-hero h1{font-size:clamp(39px,7vw,58px);max-width:20ch}
+  body.v16 .z-head h2{font-size:clamp(30px,5.6vw,46px)}
+  body.v16 .z-head p,body.v16 .z-page-hero .intro{max-width:70ch}
+}
+@media(max-width:560px){
+  body.v16{font-size:16px}
+  body.v16 .wrap{width:calc(100% - 32px)}
+  body.v16 .z-page-hero{padding-block:58px 48px}
+  body.v16 .z-page-hero h1{font-size:clamp(36px,10.4vw,48px);line-height:1.03}
+  body.v16 .z-head h2{font-size:clamp(29px,8.2vw,39px);line-height:1.07}
+  body.v16 .v20-playground-head h2,body.v16 .v21-constellation-head h2,body.v16 .v25-theatre-head h2{
+    font-size:clamp(31px,9vw,42px);line-height:1.04;
+  }
+  body.v16 .z-card,body.v16 .z-app{padding:22px 20px}
+  body.v16 .z-card p,body.v16 .z-app p,body.v16 .z-flow article p{font-size:15px}
+  body.v16 .eyebrow,body.v16 .kicker,body.v16 .z-card .tag,body.v16 .z-app>span{font-size:11px}
+}
