@@ -1189,3 +1189,31 @@ body.v16 textarea{min-height:150px;line-height:1.6}
   body.v16 .z-card p,body.v16 .z-app p,body.v16 .z-flow article p{font-size:15px}
   body.v16 .eyebrow,body.v16 .kicker,body.v16 .z-card .tag,body.v16 .z-app>span{font-size:11px}
 }
+
+
+/* V26 specialist-page typography parity — legacy specialist templates use the
+   same readable scale and top alignment as the primary commercial pages. */
+body.v16 .page-intro-grid,body.v16 .section-head{align-items:start;gap:clamp(28px,4vw,56px)}
+body.v16 .display{font-size:clamp(44px,4.8vw,72px);line-height:1;letter-spacing:-.046em;font-weight:700;max-width:18ch}
+body.v16 .page-title{font-size:clamp(40px,4.4vw,66px);line-height:1.02;letter-spacing:-.044em;font-weight:700;max-width:19ch}
+body.v16 .section h2{font-size:clamp(30px,3.25vw,50px);line-height:1.06;letter-spacing:-.04em;font-weight:700}
+body.v16 .section h3{font-size:clamp(20px,1.55vw,27px);line-height:1.18}
+body.v16 .section-head p,body.v16 .lead,body.v16 .body-copy,body.v16 .section p{
+  font-size:clamp(15px,.22vw + 14.2px,17px);line-height:1.7;text-align:left;text-wrap:pretty;
+}
+body.v16 .proof-kpi small,body.v16 .institution-strip strong,body.v16 .institution-names span,
+body.v16 .flow-legend,body.v16 .crumbs,body.v16 .ip-explorer-count,body.v16 .engagement-step::before,
+body.v16 .fact-line dt{font-size:11.5px;line-height:1.4}
+body.v16 .proof-kpi span,body.v16 .give-item span,body.v16 .engagement-step span{font-size:13px;line-height:1.58}
+body.v16 .proof-kpi strong{font-size:clamp(32px,3.25vw,50px)}
+body.v16 .ip-filter{font-size:13px}
+@media(max-width:980px){
+  body.v16 .page-intro-grid,body.v16 .section-head{grid-template-columns:1fr;gap:18px}
+  body.v16 .display{font-size:clamp(39px,7vw,58px)}
+  body.v16 .page-title{font-size:clamp(37px,6.5vw,54px)}
+}
+@media(max-width:560px){
+  body.v16 .display{font-size:clamp(36px,10.2vw,47px);line-height:1.04}
+  body.v16 .page-title{font-size:clamp(34px,9.6vw,45px);line-height:1.05}
+  body.v16 .section h2{font-size:clamp(28px,8vw,39px)}
+}
