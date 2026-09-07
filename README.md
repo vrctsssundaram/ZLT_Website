@@ -1,38 +1,42 @@
-# Zepto Logic Website 2.0 — V27 Executive Precision Candidate
+# Zepto Logic Website 2.0 — V28 Boardroom Precision Candidate
 
 This repository is the controlled staging implementation of Zepto Logic Website 2.0.
 
 - Staging: https://vrctsssundaram.github.io/ZLT_Website/
 - Production canonical origin: https://zeptologic.com/
 
-The staging branch remains intentionally separate from production. Source pages retain `noindex,nofollow`; the release workflow creates a separate audited production artifact with indexing enabled.
+Staging remains separate from production. Source pages retain `noindex,nofollow`; the release workflow builds a separate audited production artifact with indexing enabled.
 
-## V27 design direction
+## V28 design direction
 
-V27 is a deliberate executive reset following leadership review. The website no longer uses the earlier cyberpunk / Matrix-like spectacle language.
+V28 is the boardroom-precision reset following leadership review. The public experience is deliberately white-first, restrained and technical rather than cinematic or cyberpunk.
 
-The visible system is now based on:
+The visible system is based on:
 
 - white and light-neutral enterprise surfaces
-- restrained navy/blue technical accents
-- consistent typography, spacing and alignment
-- high-resolution semiconductor media used as supporting evidence rather than a full-screen atmosphere
-- concise content hierarchy and fewer overlapping explanations
-- purposeful interaction only
+- restrained navy, blue, teal, violet, amber and coral accents
+- consistent responsive typography, spacing and top alignment
+- original inline semiconductor technical diagrams instead of video
+- only very low-amplitude node-opacity motion; disabled under reduced-motion
+- concise content hierarchy
+- conventional cards, listings and engineering review paths
 - a five-stage Define → Architect → Implement → Verify → Prove engineering path
-- collaboration language used where it reflects a real engagement model: **co-creation, collaboration, co-development, co-engineering and co-opting specialist capability**
+- collaboration language where it reflects a real engagement model: **co-creation, collaboration, co-development, co-engineering and co-opting specialist capability**
 
-Explicitly retired from the default experience:
+Explicitly retired from the public experience:
 
+- cinematic/autoplay hero and domain videos
+- user-facing Motion / Full / Calm / Still controls
+- user-facing Text Size / Contrast panel
+- repeated phone/call UI outside the dedicated Contact page
 - neon/cyberpunk full-page colour systems
-- prism playground
-- animated colour rail
-- constellation and signal-canvas experience
+- prism playground and colour rail
+- constellation/signal canvas
 - pointer sparks, card tilt and ripple spectacle
-- chapter-dot navigation
-- decorative faux-3D silicon object, orbit geometry, self-drawing signal path and Bauhaus motion
+- orbiting/faux-3D silicon spectacle and self-drawing signal-path animation
+- decorative chapter-dot navigation
 
-## Current product and interaction capability
+## Current capability
 
 - 13 FPGA-validated soft IP blocks
 - 9 arithmetic / complex-compute blocks
@@ -41,12 +45,9 @@ Explicitly retired from the default experience:
 - approved CEO leadership profile and structured Person metadata
 - Ctrl/Cmd+K and `/` command palette
 - simple page-local navigation
-- Full / Calm / Still motion control
-- Default / Larger text control
-- Standard / High contrast control
-- reduced-motion and Save-Data support
-- high-resolution local hero and technical domain films
+- original static/minimal-motion semiconductor SVG diagrams
 - Supabase-backed technical enquiry with email fallback
+- direct phone and WhatsApp shown only on `contact.html`
 - local performance instrumentation
 - deterministic production-package builder and migration audit
 
@@ -59,24 +60,28 @@ Explicitly retired from the default experience:
 - research, grants, land, MoU and future-infrastructure statements retain explicit status language
 - proprietary implementation mechanisms remain non-public
 - no third-party logo artwork without written permission
-- fabrication/manufacturing imagery is illustrative industry context and does not represent an owned wafer fab
 
 ## Release verification
 
 Every migration candidate must pass:
 
-1. zero-dependency static QA
-2. V27 anti-spectacle / executive-precision static contract
-3. deep integrity, SEO, disclosure and asset-budget QA
-4. JavaScript syntax validation
-5. Chromium multi-device functional/accessibility/conversion suite
-6. explicit Matrix/cyberpunk-removal assertions
-7. responsive typography, overflow and background checks
-8. Firefox and WebKit cross-browser smoke
-9. live enquiry-endpoint CORS checks for staging, `zeptologic.com`, and `www.zeptologic.com`
-10. deterministic production package generation
-11. production-package audit
-12. production-ready artifact creation
+1. zero-dependency V28 static QA
+2. deep integrity, SEO, disclosure, collaboration-language and phone-isolation QA
+3. JavaScript syntax validation
+4. Chromium functional/accessibility/conversion suite
+5. phone portrait and landscape checks
+6. tablet portrait and landscape checks
+7. laptop and desktop checks
+8. 25%, 50%, 75%, 100%, 125%, 150%, 175% and 200% zoom/reflow matrix across all HTML pages
+9. internal page and fragment link graph validation
+10. absence of retired video/motion/experience UI
+11. static technical-SVG contract
+12. representative screenshot artifact across devices and zoom extremes
+13. Firefox and WebKit cross-browser smoke
+14. live enquiry-endpoint CORS checks for staging, `zeptologic.com`, and `www.zeptologic.com`
+15. deterministic production package generation
+16. V28 production-package audit
+17. production-ready artifact creation
 
 The release workflow is `.github/workflows/site-qa.yml`.
 
@@ -94,7 +99,7 @@ The production builder does **not** mutate staging. It:
 - changes public pages from staging `noindex,nofollow` to production indexing directives
 - keeps `404.html` and `enquiry-received.html` non-indexable
 - creates production `robots.txt`
-- copies active website assets
+- copies the active website assets
 - adds Apache/LiteSpeed/Hostinger-compatible clean-route rewrites
 - adds conservative response-security/cache headers
 - writes a release manifest
@@ -107,6 +112,6 @@ The staging source keeps physical `.html` links because GitHub Pages directly se
 
 ## Migration policy
 
-Do not overwrite production from an unverified staging checkout. Use the audited `zeptologic-production-ready` workflow artifact or regenerate it from a release commit that has passed the complete QA workflow.
+Do not overwrite production from an unverified staging checkout. Use the audited `zeptologic-v28-production-ready` workflow artifact from the exact commit that passed the complete release workflow.
 
 Production migration remains a separate controlled action.
