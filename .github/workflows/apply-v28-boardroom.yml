@@ -1,0 +1,57 @@
+name: Apply V28 Boardroom Precision
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/apply_v28_boardroom.py
+      - .github/workflows/apply-v28-boardroom.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-v28-main
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Apply V28 boardroom migration
+        run: python scripts/apply_v28_boardroom.py
+      - name: Verify migration invariants before commit
+        run: |
+          node --check assets/site.js
+          test -f assets/v28-boardroom.css
+          ! grep -R --include='*.html' -n '<video' .
+          ! grep -R --include='*.html' -n 'Motion disabled' .
+          ! grep -n 'v25-experience' assets/site.js
+          ! grep -n 'tel:+919626632233' assets/site.js
+          for f in *.html; do
+            if [ "$f" != "contact.html" ]; then
+              ! grep -q '96266 32233\|919626632233' "$f"
+            fi
+          done
+          grep -q '+91 96266 32233' contact.html
+          grep -q 'assets/v28-boardroom.css' index.html
+      - name: Commit transformed site
+        run: |
+          git config user.name "Zepto Logic Release Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "V28 already applied."
+            exit 0
+          fi
+          git commit -m "V28 — remove cinematic UI and apply boardroom precision"
+          git pull --rebase origin main
+          git push origin HEAD:main
