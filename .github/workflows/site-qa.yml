@@ -36,17 +36,17 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: Run zero-dependency site QA
+      - name: Run zero-dependency V28 site QA
         run: python scripts/site_qa.py
-      - name: Run deep integrity and asset-budget QA
+      - name: Run deep V28 integrity and production-readiness QA
         run: python scripts/deep_qa.py
       - name: Validate JavaScript syntax
         run: node --check assets/site.js
 
   browser-qa:
-    name: Responsive browser, accessibility and conversion QA
+    name: Responsive browser, accessibility, zoom and conversion QA
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -82,15 +82,15 @@ jobs:
           check_origin "https://vrctsssundaram.github.io"
           check_origin "https://zeptologic.com"
           check_origin "https://www.zeptologic.com"
-      - name: Run multi-device browser suite
+      - name: Run Chromium functional, accessibility and V28 orientation/zoom matrix
         env:
           BASE_URL: http://127.0.0.1:4173
-        run: npx playwright test tests/site.spec.js --reporter=line --workers=4 --project=chromium
+        run: npx playwright test tests/site.spec.js tests/v28-boardroom.spec.js --reporter=line --workers=4 --project=chromium
       - name: Upload responsive review screenshots
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: responsive-review-screenshots
+          name: v28-responsive-zoom-review-screenshots
           path: test-results/screens
           if-no-files-found: ignore
           retention-days: 14
@@ -98,7 +98,6 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4173
         run: npx playwright test tests/cross-browser.spec.js --reporter=line --workers=2 --project=firefox --project=webkit
-
 
   production-package:
     name: Production package and migration readiness
@@ -113,12 +112,12 @@ jobs:
           python-version: "3.12"
       - name: Build production package without mutating staging
         run: python scripts/prepare_production.py /tmp/zeptologic-production
-      - name: Audit production package
+      - name: Audit V28 production package
         run: python scripts/production_audit.py /tmp/zeptologic-production
       - name: Upload production-ready migration artifact
         uses: actions/upload-artifact@v7
         with:
-          name: zeptologic-production-ready
+          name: zeptologic-v28-production-ready
           path: /tmp/zeptologic-production
           if-no-files-found: error
           retention-days: 14
