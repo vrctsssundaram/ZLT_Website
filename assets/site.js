@@ -1,15 +1,13 @@
 /* Zepto Logic Website — V27 Executive Precision runtime.
    Purposeful interaction only: navigation, search, IP filtering, contact
-   routing, media lifecycle, engineering stages, accessibility controls,
+   routing, engineering stages, responsive navigation,
    performance sampling and light reveal/navigation ergonomics. */
 'use strict';
 
 const $=(s,c=document)=>c.querySelector(s);
 const $$=(s,c=document)=>[...c.querySelectorAll(s)];
-const safeLocal={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}}};
 const safeSession={get(k){try{return sessionStorage.getItem(k)}catch(_){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(_){}},remove(k){try{sessionStorage.removeItem(k)}catch(_){}}};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');
-const saveData=Boolean(navigator.connection&&navigator.connection.saveData);
 const dataLayer=window.dataLayer=window.dataLayer||[];
 function track(event,detail={}){dataLayer.push({event,page:location.pathname,...detail})}
 
@@ -19,8 +17,8 @@ function track(event,detail={}){dataLayer.push({event,page:location.pathname,...
 (function base(){
   const raw=(location.pathname.split('/').pop()||'index.html').replace(/\.html$/,'').toLowerCase();
   const page=raw==='index'||raw===''?'home':raw.replace(/[^a-z0-9]+/g,'-');
-  document.body.classList.add('page-'+page,'v27');
-  document.documentElement.classList.add('v27');
+  document.body.classList.add('page-'+page,'v27','v28');
+  document.documentElement.classList.add('v27','v28');
   $$('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());
   const viewport=()=>{const w=innerWidth;document.documentElement.dataset.viewport=w<=430?'compact-phone':w<=760?'phone':w<=980?'tablet':w<=1199?'laptop':w>=1600?'wide-desktop':'desktop'};
   viewport();addEventListener('resize',viewport,{passive:true});
@@ -245,53 +243,14 @@ document.addEventListener('keydown',e=>{
 })();
 
 /* ---------------------------------------------------------------------
-   Media lifecycle — cinematic assets retained as supporting visual evidence
+   Static technical visuals require no media or motion-control runtime.
    --------------------------------------------------------------------- */
-let currentMotionLevel=safeLocal.get('zlt_motion_level')||(reduce.matches?'still':'full');
-function globallyStill(){return currentMotionLevel==='still'||reduce.matches}
-(function heroMedia(){
-  const film=$('[data-hero-film]'),toggle=$('[data-film-toggle]');if(!film)return;
-  let userPaused=saveData,visible=true;
-  function render(){const global=globallyStill(),run=!userPaused&&!global&&visible&&!document.hidden;if(run){const p=film.play();p?.catch?.(()=>{})}else film.pause();film.dataset.motion=run?'running':'paused';if(toggle){toggle.disabled=global;toggle.setAttribute('aria-pressed',String(userPaused||global));toggle.innerHTML=global?'<span aria-hidden="true">■</span> Motion disabled':userPaused?'<span aria-hidden="true">▶</span> Play motion':'<span aria-hidden="true">Ⅱ</span> Pause motion'}}
-  toggle?.addEventListener('click',()=>{if(globallyStill())return;userPaused=!userPaused;render();track('hero_motion_toggle',{paused:userPaused})});
-  if('IntersectionObserver'in window)new IntersectionObserver(e=>{visible=Boolean(e[0]?.isIntersecting);render()},{threshold:.03}).observe(film);
-  document.addEventListener('visibilitychange',render);document.addEventListener('zlt:motion-level',render);render();
-})();
-(function sectionMedia(){
-  $$('[data-cinematic-video]').forEach(video=>{
-    const stage=video.closest('[data-film-stage]'),toggle=stage?.querySelector('[data-cinematic-toggle]');let visible=true,userPaused=saveData;
-    function render(){const global=globallyStill(),run=visible&&!userPaused&&!global&&!document.hidden;if(run){const p=video.play();p?.catch?.(()=>{})}else video.pause();if(toggle){toggle.hidden=false;toggle.disabled=global;toggle.setAttribute('aria-pressed',String(userPaused||global));toggle.innerHTML=global?'<span aria-hidden="true">■</span> Motion disabled':userPaused?'<span aria-hidden="true">▶</span> Play film':'<span aria-hidden="true">Ⅱ</span> Pause film'}}
-    toggle?.addEventListener('click',()=>{if(globallyStill())return;userPaused=!userPaused;render()});
-    if('IntersectionObserver'in window)new IntersectionObserver(e=>{visible=Boolean(e[0]?.isIntersecting);render()},{threshold:.03}).observe(video);
-    document.addEventListener('visibilitychange',render);document.addEventListener('zlt:motion-level',render);render();
-  });
-})();
-
-/* ---------------------------------------------------------------------
-   Experience control — accessibility preference, not a spectacle control
-   --------------------------------------------------------------------- */
-(function experience(){
-  const control=document.createElement('div');control.className='v25-experience';
-  control.innerHTML='<button class="v25-experience-toggle" type="button" aria-expanded="false" aria-controls="v25ExperienceMenu"><i aria-hidden="true"></i><span>Experience</span><b></b></button><div class="v25-experience-menu" id="v25ExperienceMenu" role="menu" hidden><div class="v26-experience-group"><span>Motion</span><button type="button" role="menuitemradio" data-v25-level="full">Full</button><button type="button" role="menuitemradio" data-v25-level="calm">Calm</button><button type="button" role="menuitemradio" data-v25-level="still">Still</button></div><div class="v26-experience-group"><span>Text size</span><button type="button" role="menuitemradio" data-v26-text="default">Default</button><button type="button" role="menuitemradio" data-v26-text="large">Larger</button></div><div class="v26-experience-group"><span>Contrast</span><button type="button" role="menuitemradio" data-v26-contrast="standard">Standard</button><button type="button" role="menuitemradio" data-v26-contrast="high">High</button></div></div>';
-  document.body.append(control);
-  const ctl=$('.v25-experience-toggle',control),menu=$('.v25-experience-menu',control),label=$('b',ctl);
-  function motion(next,persist=true){if(!['full','calm','still'].includes(next))next='full';currentMotionLevel=next;document.body.classList.toggle('v25-motion-calm',next==='calm');document.body.classList.toggle('v25-motion-still',next==='still');document.documentElement.dataset.motionLevel=next;label.textContent=next[0].toUpperCase()+next.slice(1);$$('[data-v25-level]',control).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v25Level===next)));if(persist)safeLocal.set('zlt_motion_level',next);if(next==='still')$$('video').forEach(v=>v.pause());document.dispatchEvent(new CustomEvent('zlt:motion-level',{detail:{level:next}}));track('experience_motion_level',{level:next})}
-  function textSize(next,persist=true){const v=next==='large'?'large':'default';document.body.classList.toggle('v26-text-large',v==='large');$$('[data-v26-text]',control).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v26Text===v)));if(persist)safeLocal.set('zlt_text_size',v)}
-  function contrast(next,persist=true){const v=next==='high'?'high':'standard';document.body.classList.toggle('v26-high-contrast',v==='high');$$('[data-v26-contrast]',control).forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v26Contrast===v)));if(persist)safeLocal.set('zlt_contrast',v)}
-  motion(currentMotionLevel,false);textSize(safeLocal.get('zlt_text_size')||'default',false);contrast(safeLocal.get('zlt_contrast')||'standard',false);
-  ctl.addEventListener('click',()=>{const open=menu.hidden;menu.hidden=!open;ctl.setAttribute('aria-expanded',String(open));if(open)menu.querySelector('[aria-checked="true"]')?.focus()});
-  $$('[data-v25-level]',control).forEach(b=>b.addEventListener('click',()=>motion(b.dataset.v25Level)));
-  $$('[data-v26-text]',control).forEach(b=>b.addEventListener('click',()=>textSize(b.dataset.v26Text)));
-  $$('[data-v26-contrast]',control).forEach(b=>b.addEventListener('click',()=>contrast(b.dataset.v26Contrast)));
-  menu.addEventListener('keydown',e=>{if(!['ArrowDown','ArrowUp'].includes(e.key))return;e.preventDefault();const items=$$('button',menu),i=items.indexOf(document.activeElement),d=e.key==='ArrowDown'?1:-1;items[(i+d+items.length)%items.length]?.focus()});
-  document.addEventListener('pointerdown',e=>{if(!control.contains(e.target)){menu.hidden=true;ctl.setAttribute('aria-expanded','false')}});control.addEventListener('keydown',e=>{if(e.key==='Escape'){menu.hidden=true;ctl.setAttribute('aria-expanded','false');ctl.focus()}});
-})();
 
 /* ---------------------------------------------------------------------
    Quick mobile contact and interaction tracking
    --------------------------------------------------------------------- */
 $$('a[href*="contact.html"]').forEach(a=>{if(!a.dataset.track)a.dataset.track='contact_intent'});
-if(!$('.mobile-dock'))document.body.insertAdjacentHTML('beforeend','<div class="mobile-dock" aria-label="Quick contact"><a href="tel:+919626632233" data-track="mobile_call">Call</a><a href="contact.html" data-track="mobile_enquire">Start enquiry →</a></div>');
+if(!$('.mobile-dock'))document.body.insertAdjacentHTML('beforeend','<div class="mobile-dock" aria-label="Quick enquiry"><a href="contact.html" data-track="mobile_enquire">Start enquiry →</a></div>');
 document.addEventListener('click',e=>{const a=e.target.closest('[data-track]');if(a)track(a.dataset.track,{href:a.getAttribute('href')||''})});
 
 /* ---------------------------------------------------------------------

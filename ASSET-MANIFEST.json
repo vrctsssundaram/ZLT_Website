@@ -1,40 +1,65 @@
 {
-  "version": "v27-executive-precision",
+  "version": "v28-boardroom-precision",
   "status": "staging-release-candidate",
   "canonical_origin": "https://zeptologic.com",
   "brand": [
-    {"file":"assets/brand/zepto-logo.png","type":"transparent PNG logo","use":"Header and footer wordmark"},
-    {"file":"assets/brand/og-image.jpg","type":"social sharing image","use":"Open Graph and social cards"},
-    {"file":"assets/brand/favicon-32.png","type":"32x32 PNG favicon","use":"Browser tab icon"},
-    {"file":"assets/people/suresh-kuppuswamy.jpg","type":"approved leadership portrait","use":"CEO leadership profile"}
+    {
+      "file": "assets/brand/zepto-logo.png",
+      "type": "transparent PNG logo",
+      "use": "Header and footer wordmark"
+    },
+    {
+      "file": "assets/brand/og-image.jpg",
+      "type": "social sharing image",
+      "use": "Open Graph and social cards"
+    },
+    {
+      "file": "assets/brand/favicon-32.png",
+      "type": "32x32 PNG favicon",
+      "use": "Browser tab icon"
+    },
+    {
+      "file": "assets/people/suresh-kuppuswamy.jpg",
+      "type": "approved leadership portrait",
+      "use": "CEO leadership profile"
+    }
   ],
   "interface": [
-    {"file":"assets/style.css","type":"base site styles","use":"Core layout and shared controls"},
-    {"file":"assets/stature.css","type":"specialist-page styles and V27 import","use":"Technical landing-page structure and global executive precision entry point"},
-    {"file":"assets/v16.css","type":"legacy responsive component layer","use":"Existing accessible component/layout contracts retained beneath V27"},
-    {"file":"assets/v27-executive.css","type":"V27 executive precision design system","use":"Restrained light enterprise semiconductor visual language; removes Matrix/cyberpunk spectacle"},
-    {"file":"assets/site.js","type":"V27 lean progressive interaction layer","use":"Navigation, command palette, IP explorer, contextual enquiry routing, Supabase submission, media lifecycle, five-stage engineering path, accessibility controls and performance hooks"}
+    {
+      "file": "assets/style.css",
+      "type": "base site styles",
+      "use": "Core layout and shared controls"
+    },
+    {
+      "file": "assets/stature.css",
+      "type": "specialist-page styles and V27 import",
+      "use": "Technical landing-page structure and global executive precision entry point"
+    },
+    {
+      "file": "assets/v16.css",
+      "type": "legacy responsive component layer",
+      "use": "Existing accessible component/layout contracts retained beneath V27"
+    },
+    {
+      "file": "assets/v27-executive.css",
+      "type": "V27 executive precision design system",
+      "use": "Restrained light enterprise semiconductor visual language; removes Matrix/cyberpunk spectacle"
+    },
+    {
+      "file": "assets/site.js",
+      "type": "V27 lean progressive interaction layer",
+      "use": "Navigation, command palette, IP explorer, contextual enquiry routing, Supabase submission, media lifecycle, five-stage engineering path, accessibility controls and performance hooks"
+    }
   ],
-  "active_media": [
-    "assets/media/zlt-hero-semiconductor-journey.webm",
-    "assets/media/zlt-hero-semiconductor-journey.mp4",
-    "assets/media/zlt-hero-semiconductor-journey-mobile.webm",
-    "assets/media/zlt-hero-semiconductor-journey-mobile.mp4",
-    "assets/media/zlt-film-ip.webm",
-    "assets/media/zlt-film-engineering.webm",
-    "assets/media/zlt-film-applications.webm",
-    "assets/media/zlt-film-research.webm"
-  ],
+  "active_media": [],
   "current_ui_features": [
-    "High-resolution semiconductor hero film used as a supporting visual rather than a full cyberpunk backdrop",
-    "Five-stage Define / Architect / Implement / Verify / Prove engineering review path",
-    "Ctrl/Cmd+K technical command palette",
-    "Full / Calm / Still motion control",
-    "Default / Larger text control",
-    "Standard / High contrast control",
-    "Simple responsive page-local navigation",
-    "Keyboard and reduced-motion accessibility",
+    "White-first executive semiconductor visual system",
+    "Original inline static/minimal-motion semiconductor diagrams",
+    "Five-stage engineering review path",
     "13-block FPGA-validated IP explorer",
+    "Ctrl/Cmd+K technical command palette",
+    "Responsive page-local navigation",
+    "Keyboard and reduced-motion accessibility",
     "Supabase-backed technical enquiry with email fallback",
     "Local performance dataLayer instrumentation",
     "Production-package and migration-readiness automation"
@@ -57,5 +82,10 @@
     "Leadership portrait and biography are published only after CEO confirmation",
     "Staging remains noindex/nofollow until controlled production packaging",
     "Production artifact contains only the active site assets required for deployment"
+  ],
+  "retired_assets": [
+    "V19/V22/V24 cinematic video assets and generators",
+    "V25/V26 user-facing Experience/Motion control",
+    "Mobile Call dock"
   ]
 }
