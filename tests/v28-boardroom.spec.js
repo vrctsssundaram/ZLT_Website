@@ -14,15 +14,15 @@ async function reveal(page){await page.evaluate(()=>document.querySelectorAll('.
 async function zoom(page,z){await page.evaluate(v=>{document.documentElement.style.zoom=String(v/100)},z);await page.waitForTimeout(15)}
 async function layoutHealth(page,label){
  const d=await page.evaluate(()=>{
-   const de=document.documentElement,b=document.body,cw=de.clientWidth;
+   const de=document.documentElement,b=document.body,cw=de.clientWidth,visual=window.visualViewport?.width||innerWidth;
    const fixed=[...document.querySelectorAll('header,.mobile-dock,.search-dialog.open')].filter(e=>getComputedStyle(e).display!=='none').map(e=>{const r=e.getBoundingClientRect();return{tag:e.tagName,cls:String(e.className),left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}});
-   const clipped=[...document.querySelectorAll('main h1,main h2,.action,.project-link,.menu-toggle,.search-button')].filter(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&(r.width<1||r.height<1||r.right<0||r.left>innerWidth)}).map(e=>(e.textContent||e.className||e.tagName).trim().slice(0,80));
-   return{doc:de.scrollWidth,body:b.scrollWidth,cw,fixed,clipped};
+   const clipped=[...document.querySelectorAll('main h1,main h2,.action,.project-link,.menu-toggle,.search-button')].filter(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&(r.width<1||r.height<1||r.right<0||r.left>visual)}).map(e=>(e.textContent||e.className||e.tagName).trim().slice(0,80));
+   return{doc:de.scrollWidth,body:b.scrollWidth,cw,visual,fixed,clipped};
  });
  expect(d.doc,`${label}: document overflow`).toBeLessThanOrEqual(d.cw+3);
  expect(d.body,`${label}: body overflow`).toBeLessThanOrEqual(d.cw+3);
  expect(d.clipped,`${label}: clipped critical controls/headings`).toEqual([]);
- for(const f of d.fixed){expect(f.left,`${label}: fixed item left ${JSON.stringify(f)}`).toBeGreaterThanOrEqual(-3);expect(f.right,`${label}: fixed item right ${JSON.stringify(f)}`).toBeLessThanOrEqual(d.cw+3)}
+ for(const f of d.fixed){expect(f.left,`${label}: fixed item left ${JSON.stringify(f)}`).toBeGreaterThanOrEqual(-3);expect(f.right,`${label}: fixed item right ${JSON.stringify(f)}`).toBeLessThanOrEqual(d.visual+3)}
 }
 
 test('V28 entire-site device orientation and 25–200% zoom/reflow matrix',async({page})=>{
