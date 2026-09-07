@@ -1,3 +1,4 @@
+@import url('v27-executive.css');
 /* V14 compatibility and accessibility rules. All surfaces remain light. */
 :root{--muted:#475467}
 .eyebrow,.signal-cell span,.block p,.op-card p,.proof-kpi span,.photo-caption,.proof-label span,.service-node small,.path-step p,.plain-step p,.portfolio-fact span,.maturity-note,.form-help,.notice,.fact-line dt,.give-item span,.form .mono,.foot-bottom{color:#475467!important}
