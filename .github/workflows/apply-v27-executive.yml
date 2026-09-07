@@ -1,0 +1,52 @@
+name: Apply V27 Executive Precision
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/apply_v27_executive.py
+      - assets/v27-executive.css
+      - .github/workflows/apply-v27-executive.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-v27-executive-main
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply executive precision cleanup
+        run: python scripts/apply_v27_executive.py
+      - name: Verify no Matrix-style homepage spectacle remains
+        run: |
+          grep -q 'assets/v27-executive.css' index.html
+          ! grep -q 'class="tech-marquee"' index.html
+          ! grep -q 'class="v20-prism-playground"' index.html
+          ! grep -q 'class="v20-color-rail"' index.html
+          ! grep -q 'class="v21-constellation"' index.html
+          grep -q 'Co-creation' index.html
+          grep -q 'Collaboration' index.html
+          grep -q 'Co-opting' index.html
+      - name: Commit refined source
+        run: |
+          git config user.name 'Zepto Logic Release Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add '*.html' tests/site.spec.js
+          if git diff --cached --quiet; then
+            echo 'V27 source already applied.'
+            exit 0
+          fi
+          git commit -m 'V27 — apply executive precision across website'
+          git pull --rebase origin main
+          git push origin HEAD:main
