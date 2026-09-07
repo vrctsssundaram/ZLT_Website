@@ -1,5 +1,5 @@
 {
-  "version": "v26-production-ready-fusion",
+  "version": "v27-executive-precision",
   "status": "staging-release-candidate",
   "canonical_origin": "https://zeptologic.com",
   "brand": [
@@ -10,9 +10,10 @@
   ],
   "interface": [
     {"file":"assets/style.css","type":"base site styles","use":"Core layout and shared controls"},
-    {"file":"assets/stature.css","type":"specialist-page styles","use":"Technical landing-page structure"},
-    {"file":"assets/v16.css","type":"V16-V26 visual experience system","use":"Responsive enterprise layout, cinematic colour, V25 engineering theatre, V26 editorial leadership and accessibility controls"},
-    {"file":"assets/site.js","type":"progressive interaction layer","use":"Navigation, command palette, IP explorer, contextual enquiry routing, Supabase submission, cinematic lifecycle, motion/accessibility controls and performance hooks"}
+    {"file":"assets/stature.css","type":"specialist-page styles and V27 import","use":"Technical landing-page structure and global executive precision entry point"},
+    {"file":"assets/v16.css","type":"legacy responsive component layer","use":"Existing accessible component/layout contracts retained beneath V27"},
+    {"file":"assets/v27-executive.css","type":"V27 executive precision design system","use":"Restrained light enterprise semiconductor visual language; removes Matrix/cyberpunk spectacle"},
+    {"file":"assets/site.js","type":"V27 lean progressive interaction layer","use":"Navigation, command palette, IP explorer, contextual enquiry routing, Supabase submission, media lifecycle, five-stage engineering path, accessibility controls and performance hooks"}
   ],
   "active_media": [
     "assets/media/zlt-hero-semiconductor-journey.webm",
@@ -25,23 +26,30 @@
     "assets/media/zlt-film-research.webm"
   ],
   "current_ui_features": [
-    "64-second adaptive semiconductor cinematic hero",
-    "V25 five-stage interactive engineering theatre",
-    "Capability playground and engineering constellation",
-    "V26 Ctrl/Cmd+K technical command palette",
+    "High-resolution semiconductor hero film used as a supporting visual rather than a full cyberpunk backdrop",
+    "Five-stage Define / Architect / Implement / Verify / Prove engineering review path",
+    "Ctrl/Cmd+K technical command palette",
     "Full / Calm / Still motion control",
     "Default / Larger text control",
     "Standard / High contrast control",
-    "Responsive page-local navigation",
+    "Simple responsive page-local navigation",
     "Keyboard and reduced-motion accessibility",
     "13-block FPGA-validated IP explorer",
     "Supabase-backed technical enquiry with email fallback",
     "Local performance dataLayer instrumentation",
     "Production-package and migration-readiness automation"
   ],
-  "retired_assets": [
-    "V19 zlt-silicon-film media encodes",
-    "V19 dedicated media generator and workflow"
+  "retired_experience_systems": [
+    "V19 original zlt-silicon-film media pipeline",
+    "V20 prism playground",
+    "V20 animated colour rail and chapter-dot navigation",
+    "V21 constellation, signal canvas, pointer sparks and spectacle runtime",
+    "V25 decorative faux-3D silicon object, self-drawing signal path and Bauhaus geometry"
+  ],
+  "content_principles": [
+    "Precise semiconductor engineering language with bounded verified claims",
+    "Co-creation, collaboration, co-development, co-engineering and co-opting specialist capability appear only where they describe a genuine engagement model",
+    "No unsupported customer, silicon-validation, foundry-ready, patent or performance claims"
   ],
   "asset_policy": [
     "No stock or third-party visual assets in the semiconductor cinematic system",
