@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deep static QA for V28 boardroom precision and production readiness."""
+"""Deep static QA for V29 executive clarity and production readiness."""
 from __future__ import annotations
 from collections import Counter
 from html.parser import HTMLParser
@@ -63,7 +63,7 @@ def main():
  for desc,names in descs.items():
   if desc and len(names)>1:warn.append(f'duplicate description across {", ".join(names)}')
 
- budgets={'assets/v16.css':150000,'assets/v27-executive.css':36000,'assets/v28-boardroom.css':36000,'assets/site.js':46000}
+ budgets={'assets/v16.css':150000,'assets/v27-executive.css':36000,'assets/v28-boardroom.css':36000,'assets/v29-clarity.css':30000,'assets/site.js':46000}
  for rel,limit in budgets.items():
   p=ROOT/rel
   if not p.exists():fail.append(f'budget asset missing — {rel}')
@@ -75,7 +75,11 @@ def main():
  for forbidden in ('tech-marquee','v20-prism-playground','v20-color-rail','v21-constellation','v20-section-nav','v21-signal-canvas','v21-pointer-spark','hero-aurora','v25-frame-word','v25-bauhaus','v25-selfdraw','data-playground','data-constellation'):
   if forbidden in home:fail.append(f'homepage retained spectacle DOM — {forbidden}')
  if home.count('data-v25-theatre')!=1 or home.count('data-v25-step=')!=5:fail.append('engineering path must contain one five-stage theatre')
- if 'hero-technical-visual' not in home:fail.append('homepage static semiconductor visual missing')
+ if 'v29-hero-offer' not in home:fail.append('homepage direct offerings panel missing')
+ if home.count('v29-pillar')<3:fail.append('homepage three-pillar offer missing')
+ if home.count('v29-offering')<6:fail.append('homepage offering menu incomplete')
+ for term in ('Semiconductor consultation','IP licensing &amp; evaluation','Design verification','FPGA prototyping &amp; validation'):
+  if term not in home:fail.append(f'homepage direct offering missing — {term}')
  for term in ('Co-creation · Collaboration','Co-opting specialist capability','co-development'):
   if term not in home:fail.append(f'homepage collaboration vocabulary missing — {term}')
 
@@ -111,13 +115,13 @@ def main():
  if media.exists() and any(media.iterdir()):fail.append('retired media directory is not empty')
  for retired in ('scripts/generate_v22_media.py','.github/workflows/generate-v22-media.yml'):
   if (ROOT/retired).exists():fail.append(f'retired cinematic pipeline remains — {retired}')
- for required in ('scripts/prepare_production.py','scripts/production_audit.py','PRODUCTION-MIGRATION.md','assets/v28-boardroom.css'):
+ for required in ('scripts/prepare_production.py','scripts/production_audit.py','PRODUCTION-MIGRATION.md','assets/v28-boardroom.css','assets/v29-clarity.css'):
   if not (ROOT/required).exists():fail.append(f'production-readiness resource missing — {required}')
 
  print(f'Deep-audited {len(PAGES)} pages.')
  for item in warn:print('WARNING:',item)
  if fail:
   print(f'FAILED: {len(fail)} issue(s)');[print(' -',x) for x in fail];return 1
- print('PASS: V28 boardroom precision, anti-spectacle, phone isolation, leadership, integrity and production-readiness gates clear.')
+ print('PASS: V29 executive clarity, simple offerings, phone isolation, leadership, integrity and production-readiness gates clear.')
  return 0
 if __name__=='__main__':sys.exit(main())
