@@ -59,7 +59,7 @@ jobs:
           grep -q 'Co-opting specialist capability' index.html
           grep -q 'Consultation' services.html
           grep -q 'Design &amp; prototyping lab' services.html
-          ! grep -R --include='*.html' -n 'href=["'"']products\.html' .
+          ! grep -R --include='*.html' -n 'products\.html' .
           ! grep -n '/products/' sitemap.xml
           ! grep -n 'products\.html' assets/site.js
           ! grep -R --include='*.html' -n '<video' .
