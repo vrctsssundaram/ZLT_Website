@@ -1,10 +1,11 @@
-name: Apply V29 Executive Clarity
+name: Apply V29 Executive Clarity + V30 IP Cleanup
 
 on:
   push:
     branches: [main]
     paths:
       - scripts/apply_v29_clarity.py
+      - scripts/apply_v30_ip_cleanup.py
       - .github/workflows/apply-v29-clarity.yml
   workflow_dispatch:
 
@@ -28,6 +29,8 @@ jobs:
           python-version: "3.12"
       - name: Apply V29 executive clarity migration
         run: python scripts/apply_v29_clarity.py
+      - name: Apply V30 copy and IP-route cleanup
+        run: python scripts/apply_v30_ip_cleanup.py
       - name: Guarantee V29 stylesheet on every HTML shell
         run: |
           python - <<'PY'
@@ -42,16 +45,23 @@ jobs:
                   text=text.replace('</head>',css+'</head>',1)
                   p.write_text(text,encoding='utf-8')
           PY
-      - name: Verify V29 invariants before commit
+      - name: Verify V30 invariants before commit
         run: |
           node --check assets/site.js
           test -f assets/v29-clarity.css
-          grep -q 'Semiconductor IP. Engineering services. Applied R&amp;D.' index.html
+          test ! -e products.html
+          grep -q 'Semiconductor IP services and Applied R&amp;D.' index.html
+          grep -q 'Three ways to engage.' index.html
+          grep -q 'Three core offerings.' index.html
+          grep -q 'What you can engage us for.' index.html
           grep -q 'Semiconductor consultation' index.html
           grep -q 'Co-creation · Collaboration' index.html
           grep -q 'Co-opting specialist capability' index.html
           grep -q 'Consultation' services.html
           grep -q 'Design &amp; prototyping lab' services.html
+          ! grep -R --include='*.html' -n 'href=["'"']products\.html' .
+          ! grep -n '/products/' sitemap.xml
+          ! grep -n 'products\.html' assets/site.js
           ! grep -R --include='*.html' -n '<video' .
           for f in *.html; do
             grep -q 'assets/v29-clarity.css' "$f"
@@ -62,9 +72,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
-            echo "V29 already applied."
+            echo "V29/V30 already applied."
             exit 0
           fi
-          git commit -m "V29 — simplify semiconductor offerings and navigation"
+          git commit -m "V30 — simplify homepage copy and retire standalone IP page"
           git pull --rebase origin main
           git push origin HEAD:main
