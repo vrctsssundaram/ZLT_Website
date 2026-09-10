@@ -16,7 +16,6 @@ ROOT=Path(__file__).resolve().parents[1]
 
 NAV_ITEMS=[
     ('index.html','Home'),
-    ('products.html','IP'),
     ('services.html','Services'),
     ('research.html','R&D'),
     ('about.html','Company'),
@@ -47,14 +46,14 @@ HOME_MAIN='''<main id="main">
   <div class="wrap v29-hero-grid">
     <div class="hero-copy">
       <div class="hero-kicker-row"><div class="eyebrow">Fabless semiconductor design company · Coimbatore, India</div></div>
-      <h1>Semiconductor IP. Engineering services. Applied R&amp;D.</h1>
+      <h1>Semiconductor IP services and Applied R&amp;D.</h1>
       <p class="lead">We help chip builders and product teams reduce execution risk with reusable FPGA-validated IP, custom digital design, verification, FPGA prototyping and collaborative R&amp;D.</p>
       <div class="actions"><a class="action primary" data-track="home_offerings" href="#offerings">View our offerings →</a><a class="action ghost" data-track="home_contact" href="contact.html">Talk to us</a></div>
       <div class="hero-trust" aria-label="Engineering highlights"><span><b>13</b> FPGA-validated IP blocks</span><span><b>RTL → FPGA</b> connected engineering</span><span><b>India</b> direct technical access</span></div>
     </div>
     <aside class="v29-hero-offer" aria-label="What Zepto Logic offers">
-      <header><span>What we offer</span><strong>Three clear ways to engage.</strong></header>
-      <a href="products.html"><span class="num">01</span><span><b>Semiconductor IP</b><small>Reusable arithmetic and interface IP.</small></span><span class="arrow">→</span></a>
+      <header><span>What we offer</span><strong>Three ways to engage.</strong></header>
+      <a href="services.html"><span class="num">01</span><span><b>Semiconductor IP</b><small>Reusable arithmetic and interface IP.</small></span><span class="arrow">→</span></a>
       <a href="services.html"><span class="num">02</span><span><b>Engineering Services</b><small>Architecture, RTL, verification and FPGA.</small></span><span class="arrow">→</span></a>
       <a href="research.html"><span class="num">03</span><span><b>Applied R&amp;D</b><small>Co-creation for specialised hardware.</small></span><span class="arrow">→</span></a>
     </aside>
@@ -63,9 +62,9 @@ HOME_MAIN='''<main id="main">
 
 <section class="z-section" id="offerings">
   <div class="wrap">
-    <div class="z-head"><div><div class="eyebrow">What we do</div><h2>Three core offerings. Clearly defined.</h2></div><p>Start with IP, a focused engineering service or an R&amp;D objective. We keep the scope clear and connect stages only when the programme needs it.</p></div>
+    <div class="z-head"><div><div class="eyebrow">What we do</div><h2>Three core offerings.</h2></div><p>Start with IP, a focused engineering service or an R&amp;D objective. We keep the scope clear and connect stages only when the programme needs it.</p></div>
     <div class="v29-pillars">
-      <a class="v29-pillar" href="products.html"><div class="eyebrow">IP</div><h3>Reusable semiconductor IP</h3><p>13 FPGA-validated soft IP blocks covering floating-point, complex arithmetic and digital interfaces, with source RTL and integration collateral.</p><span class="tail">View IP portfolio →</span></a>
+      <a class="v29-pillar" href="services.html"><div class="eyebrow">IP</div><h3>Reusable semiconductor IP</h3><p>13 FPGA-validated soft IP blocks covering floating-point, complex arithmetic and digital interfaces, with source RTL and integration collateral.</p><span class="tail">View IP portfolio →</span></a>
       <a class="v29-pillar" href="services.html"><div class="eyebrow">Services</div><h3>Semiconductor engineering</h3><p>Architecture, synthesizable RTL, UVM verification, lint, CDC/RDC, FPGA implementation, timing closure and board-level proof.</p><span class="tail">View engineering services →</span></a>
       <a class="v29-pillar" href="research.html"><div class="eyebrow">R&amp;D</div><h3>Applied hardware R&amp;D</h3><p>Research-to-hardware work for specialised compute and secure hardware through feasibility, architecture, RTL, verification and FPGA evidence.</p><span class="tail">View R&amp;D →</span></a>
     </div>
@@ -74,7 +73,7 @@ HOME_MAIN='''<main id="main">
 
 <section class="z-section soft" id="services-menu">
   <div class="wrap">
-    <div class="z-head"><div><div class="eyebrow">Our offerings</div><h2>A simple menu of what you can engage us for.</h2></div><p>Choose the closest requirement. A technical discussion can narrow the scope, evidence and commercial route.</p></div>
+    <div class="z-head"><div><div class="eyebrow">Our offerings</div><h2>What you can engage us for.</h2></div><p>Choose the closest requirement. A technical discussion can narrow the scope, evidence and commercial route.</p></div>
     <div class="v29-offerings">
       <article class="v29-offering"><span class="mark">01</span><div><h3>IP licensing &amp; evaluation</h3><p>Evaluate an FPGA-validated arithmetic or interface core against your device, clock, throughput and integration target.</p></div></article>
       <article class="v29-offering"><span class="mark">02</span><div><h3>Semiconductor consultation</h3><p>Architecture review, IP selection, verification strategy and FPGA planning for a defined technical decision.</p></div></article>
@@ -162,9 +161,6 @@ def update_html():
         elif path.name=='services.html':
             text=replace_main(text,SERVICES_MAIN)
             text=text.replace('<title>RTL, Verification & FPGA Engineering | Zepto Logic</title>','<title>Semiconductor Engineering Services & Consultation | Zepto Logic</title>')
-        elif path.name=='products.html':
-            text=text.replace('<div class="eyebrow">Semiconductor IP</div><h1>License a proven block instead of rebuilding the function.</h1>','<div class="eyebrow">IP portfolio</div><h1>Reusable semiconductor IP for faster digital hardware development.</h1>')
-            text=text.replace('Choose from 13 FPGA-validated soft IP blocks for floating-point, complex arithmetic and serial interfaces. Tell us the target device, clock, throughput, latency and integration context so the evaluation is relevant to your design.','Choose from 13 FPGA-validated soft IP blocks for floating-point, complex arithmetic and digital interfaces. Use our IP to reduce rebuild effort and keep custom engineering focused on what differentiates your system.')
         elif path.name=='research.html':
             text=text.replace('<div class="eyebrow">Applied R&amp;D</div><h1>Turn specialised computation into testable hardware evidence.</h1>','<div class="eyebrow">Applied R&amp;D</div><h1>Collaborative R&amp;D for specialised semiconductor hardware.</h1>')
             text=text.replace('Zepto Logic works on selected algorithms and security-sensitive workloads where architecture, reusable arithmetic, RTL, verification and FPGA proof are needed to evaluate the hardware path.','We co-create hardware solutions for selected algorithms and secure-compute workloads where feasibility, architecture, RTL, verification and FPGA evidence are needed before deeper implementation.')
@@ -175,8 +171,8 @@ def update_html():
 def update_tests():
     path=ROOT/'tests/site.spec.js'
     text=path.read_text(encoding='utf-8')
-    text=re.sub(r"test\('global taxonomy is consistent across top-level pages'.*?\n\n(?=test\('mobile navigation)","test('V29 primary navigation is simple and consistent',async({page})=>{for(const file of KEY_PAGES){await page.goto(`${BASE}/${file}`);const labels=await page.locator('.head-links a').allTextContents();expect(labels,`${file}: navigation`).toEqual(['Home','IP','Services','R&D','Company','Contact'])}});\n\n",text,count=1,flags=re.S)
-    text=re.sub(r"test\('V28 hero uses a static precision semiconductor diagram with no video controls'.*?\n\n(?=test\('V27 engineering path)","test('V29 homepage states the offer directly with three engagement routes',async({page})=>{await page.setViewportSize({width:1440,height:900});await page.goto(BASE+'/index.html',{waitUntil:'domcontentloaded'});await expect(page.locator('h1')).toContainText('Semiconductor IP. Engineering services. Applied R&D.');await expect(page.locator('.v29-hero-offer>a')).toHaveCount(3);await expect(page.locator('.v29-pillars>a')).toHaveCount(3);await expect(page.locator('.v29-offering')).toHaveCount(6);await expect(page.locator('video,[data-hero-film],[data-film-toggle],.motion-toggle,.v25-experience')).toHaveCount(0)});\n\n",text,count=1,flags=re.S)
+    text=re.sub(r"test\('global taxonomy is consistent across top-level pages'.*?\n\n(?=test\('mobile navigation)","test('V29 primary navigation is simple and consistent',async({page})=>{for(const file of KEY_PAGES){await page.goto(`${BASE}/${file}`);const labels=await page.locator('.head-links a').allTextContents();expect(labels,`${file}: navigation`).toEqual(['Home','Services','R&D','Company','Contact'])}});\n\n",text,count=1,flags=re.S)
+    text=re.sub(r"test\('V28 hero uses a static precision semiconductor diagram with no video controls'.*?\n\n(?=test\('V27 engineering path)","test('V29 homepage states the offer directly with three engagement routes',async({page})=>{await page.setViewportSize({width:1440,height:900});await page.goto(BASE+'/index.html',{waitUntil:'domcontentloaded'});await expect(page.locator('h1')).toContainText('Semiconductor IP services and Applied R&D.');await expect(page.locator('.v29-hero-offer>a')).toHaveCount(3);await expect(page.locator('.v29-pillars>a')).toHaveCount(3);await expect(page.locator('.v29-offering')).toHaveCount(6);await expect(page.locator('video,[data-hero-film],[data-film-toggle],.motion-toggle,.v25-experience')).toHaveCount(0)});\n\n",text,count=1,flags=re.S)
     text=text.replace("await page.locator('[data-v25-next]').click();await expect(page.locator('[data-v25-step=\"implement\"]')).toHaveAttribute('aria-pressed','true')", "await page.keyboard.press('ArrowRight');await expect(page.locator('[data-v25-step=\"implement\"]')).toHaveAttribute('aria-pressed','true')")
     path.write_text(text,encoding='utf-8')
 

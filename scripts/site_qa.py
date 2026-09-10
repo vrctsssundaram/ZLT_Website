@@ -9,7 +9,7 @@ import re,sys,xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[1]
 HTML_FILES=sorted(ROOT.glob('*.html'))
 HOSTS={'zeptologic.com','www.zeptologic.com'}
-TOP={'index.html','products.html','services.html','applications.html','research.html','about.html','news.html','careers.html','contact.html'}
+TOP={'index.html','services.html','applications.html','research.html','about.html','news.html','careers.html','contact.html'}
 FORBIDDEN_CLAIMS={
  r'\b15\+\s*(?:FPGA[- ]validated\s*)?(?:IP|cores?|blocks?)\b':'legacy 15+ IP-count claim',
  r'\bsilicon[- ]validated\b':'silicon-validation claim',r'\bpatent\s+pending\b':'patent-pending claim',
@@ -63,7 +63,7 @@ def main():
    if 'v16' not in p.body.split():fail.append(f'{name}: body.v16 missing')
    for sheet in ('assets/v16.css','assets/v27-executive.css','assets/v28-boardroom.css','assets/v29-clarity.css'):
     if sheet not in raw:fail.append(f'{name}: stylesheet missing — {sheet}')
-   for href in ('index.html','products.html','services.html','research.html','about.html','contact.html'):
+   for href in ('index.html','services.html','research.html','about.html','contact.html'):
     if href not in raw:fail.append(f'{name}: primary route missing — {href}')
   for pattern,reason in FORBIDDEN_CLAIMS.items():
    if re.search(pattern,raw,re.I):fail.append(f'{name}: {reason}')
@@ -89,14 +89,14 @@ def main():
  contact=(ROOT/'contact.html').read_text(encoding='utf-8')
  if '+91 96266 32233' not in contact or 'tel:+919626632233' not in contact:fail.append('contact.html: approved direct phone missing')
  home=(ROOT/'index.html').read_text(encoding='utf-8')
- for required in ('Semiconductor IP. Engineering services. Applied R&amp;D.','v29-hero-offer','v29-pillars','v29-offerings','Semiconductor consultation','Design verification','FPGA prototyping &amp; validation'):
+ for required in ('Semiconductor IP services and Applied R&amp;D.','v29-hero-offer','v29-pillars','v29-offerings','Semiconductor consultation','Design verification','FPGA prototyping &amp; validation'):
   if required not in home:fail.append(f'index.html: V29 direct-offering contract missing — {required}')
  if home.count('v29-pillar')<3:fail.append('index.html: three core offering pillars missing')
  if home.count('v29-offering')<6:fail.append('index.html: six-item offering menu incomplete')
  services=(ROOT/'services.html').read_text(encoding='utf-8')
  for required in ('Consultation','Design &amp; prototyping lab','Architecture &amp; specification','Design verification','FPGA prototyping'):
   if required not in services:fail.append(f'services.html: direct service contract missing — {required}')
- for name in ('products.html','applications.html','research.html'):
+ for name in ('applications.html','research.html'):
   if 'v28-technical-visual' not in (ROOT/name).read_text(encoding='utf-8'):fail.append(f'{name}: supporting technical visual missing')
  for term in ('Co-creation','Collaboration','Co-opting'):
   if term not in home:fail.append(f'index.html: required collaboration term missing — {term}')
@@ -104,7 +104,7 @@ def main():
  js=(ROOT/'assets/site.js').read_text(encoding='utf-8') if (ROOT/'assets/site.js').exists() else ''
  for forbidden in ('v25-experience','data-hero-film','data-cinematic-video','tel:+919626632233','saveData','heroMedia','sectionMedia'):
   if forbidden in js:fail.append(f'assets/site.js: retired runtime remains — {forbidden}')
- for needed in ('engineeringPath','ipExplorer','website-enquiry','searchHints','site_performance_sample'):
+ for needed in ('engineeringPath','website-enquiry','searchHints','site_performance_sample'):
   if needed not in js:fail.append(f'assets/site.js: required runtime missing — {needed}')
 
  media=ROOT/'assets/media'

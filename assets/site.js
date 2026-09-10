@@ -1,5 +1,5 @@
 /* Zepto Logic Website — V27 Executive Precision runtime.
-   Purposeful interaction only: navigation, search, IP filtering, contact
+   Purposeful interaction only: navigation, search, contact
    routing, engineering stages, responsive navigation,
    performance sampling and light reveal/navigation ergonomics. */
 'use strict';
@@ -52,7 +52,7 @@ if(menuToggle){
    --------------------------------------------------------------------- */
 const searchDialog=$('.search-dialog'),siteSearch=$('#siteSearch'),searchResults=$('.search-results');
 const searchIndex=[
- ['Semiconductor IP','products.html','semiconductor IP floating point arithmetic UART SPI I2C license evaluate reusable portfolio'],
+ ['Semiconductor IP services','services.html','semiconductor IP floating point arithmetic UART SPI I2C license evaluate reusable services'],
  ['Applications','applications.html','compute signal processing embedded communications security edge research hardware workloads'],
  ['Floating-point IP','floating-point-ip.html','IEEE 754 add subtract multiplier divider reciprocal square root MAC complex matrix'],
  ['Engineering','services.html','architecture RTL UVM verification FPGA lint CDC RDC engineering'],
@@ -152,21 +152,6 @@ document.addEventListener('keydown',e=>{
   const targets=$$('main .z-head,main .z-card,main .z-app,main .z-flow article,main .z-feature-story,main .listing-row,main .contact-shell');
   targets.forEach(el=>el.classList.add('reveal-v18'));
   if(!reduce.matches&&'IntersectionObserver'in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}}),{threshold:.06,rootMargin:'0px 0px -3% 0px'});targets.forEach(el=>io.observe(el))}else targets.forEach(el=>el.classList.add('is-visible'));
-})();
-
-/* ---------------------------------------------------------------------
-   IP explorer — 13 public blocks, filtered without changing source claims
-   --------------------------------------------------------------------- */
-(function ipExplorer(){
-  if(!document.body.classList.contains('page-products'))return;
-  const rows=$$('.listing-row');if(!rows.length)return;
-  rows.forEach(row=>{const label=row.closest('.z-section')?.querySelector('.eyebrow')?.textContent?.toLowerCase()||'';row.dataset.ipCategory=label.includes('interface')?'interface':'arithmetic'});
-  const first=$('.listing');if(!first)return;
-  const tools=document.createElement('div');tools.className='ip-explorer-tools';tools.innerHTML='<div class="ip-filter-group" aria-label="Filter IP portfolio"><button class="ip-filter active" type="button" data-filter="all" aria-pressed="true">All</button><button class="ip-filter" type="button" data-filter="arithmetic" aria-pressed="false">Arithmetic</button><button class="ip-filter" type="button" data-filter="interface" aria-pressed="false">Interfaces</button></div><label class="ip-search-field"><span class="sr-only">Search IP portfolio</span><input class="ip-search" type="search" placeholder="Search IP blocks"></label><span class="ip-explorer-count">13 of 13 blocks</span>';
-  first.before(tools);
-  const filters=$$('.ip-filter',tools),input=$('.ip-search',tools),count=$('.ip-explorer-count',tools);let category='all';
-  const apply=()=>{const q=(input?.value||'').trim().toLowerCase();let shown=0;rows.forEach(r=>{const passCat=category==='all'||r.dataset.ipCategory===category,passText=!q||r.textContent.toLowerCase().includes(q),show=passCat&&passText;r.style.display=show?'':'none';if(show)shown++});count.textContent=`${shown} of ${rows.length} blocks`};
-  filters.forEach(b=>b.addEventListener('click',()=>{category=b.dataset.filter;filters.forEach(x=>{const on=x===b;x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on))});apply()}));input?.addEventListener('input',apply);apply();
 })();
 
 /* ---------------------------------------------------------------------

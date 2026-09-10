@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const BASE=process.env.BASE_URL||'http://127.0.0.1:4173';
-const PAGES=['index.html','products.html','services.html','applications.html','research.html','about.html','news.html','careers.html','contact.html'];
+const PAGES=['index.html','services.html','applications.html','research.html','about.html','news.html','careers.html','contact.html'];
 
 for(const file of PAGES)test(`cross-browser smoke — ${file}`,async({page})=>{
   const errors=[],bad=[];

@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 const fs=require('fs');const path=require('path');
 const ROOT=path.resolve(__dirname,'..'),BASE=process.env.BASE_URL||'http://127.0.0.1:4173';
 const ALL_PAGES=fs.readdirSync(ROOT).filter(f=>f.endsWith('.html')).sort();
-const KEY=['index.html','products.html','services.html','applications.html','research.html','about.html','news.html','contact.html','careers.html'];
+const KEY=['index.html','services.html','applications.html','research.html','about.html','news.html','contact.html','careers.html'];
 const DEVICES=[
  ['phone-portrait',390,844],['phone-landscape',844,390],
  ['tablet-portrait',768,1024],['tablet-landscape',1024,768],
@@ -64,7 +64,7 @@ test('V28 no retired media motion or experience widgets are present',async({page
 });
 
 test('V28 static technical visuals are relevant and minimally animated',async({page})=>{
- const cases=[['index.html','.hero-technical-visual'],['products.html','.v28-visual-ip'],['services.html','.v28-visual-engineering'],['applications.html','.v28-visual-applications'],['research.html','.v28-visual-research']];
+ const cases=[['index.html','.hero-technical-visual'],['.v28-visual-ip'],['services.html','.v28-visual-engineering'],['applications.html','.v28-visual-applications'],['research.html','.v28-visual-research']];
  for(const [file,sel] of cases){await page.goto(`${BASE}/${file}`,{waitUntil:'domcontentloaded'});const v=page.locator(sel);await expect(v).toBeVisible();await expect(v.locator('svg')).toHaveCount(1);await expect(v.locator('animate,animateTransform')).toHaveCount(0);const count=await v.locator('.v28-svg-spark').count();expect(count).toBeGreaterThan(0);const anim=await v.locator('.v28-svg-spark').first().evaluate(e=>getComputedStyle(e).animationName);expect(['v28QuietSpark','none']).toContain(anim)}
 });
 
@@ -79,6 +79,6 @@ test('V28 screenshots cover portrait landscape laptop desktop and zoom extremes'
 
 test('V28 critical interactive flows survive phone landscape and 200% zoom',async({page})=>{
  await page.setViewportSize({width:844,height:390});await page.goto(`${BASE}/index.html`,{waitUntil:'domcontentloaded'});await zoom(page,200);await page.locator('.menu-toggle').click();await expect(page.locator('.head-links')).toHaveClass(/open/);await page.keyboard.press('Escape');await page.locator('.search-button').click();await expect(page.locator('.search-dialog')).toHaveClass(/open/);await page.keyboard.press('Escape');
- await page.goto(`${BASE}/products.html`,{waitUntil:'domcontentloaded'});await zoom(page,200);await page.locator('.ip-filter[data-filter="interface"]').click();await expect(page.locator('.ip-explorer-count')).toHaveText('4 of 13 blocks');
+ await page.goto(`${BASE}/services.html`,{waitUntil:'domcontentloaded'});await zoom(page,200);await page.locator('.ip-filter[data-filter="interface"]').click();await expect(page.locator('.ip-explorer-count')).toHaveText('4 of 13 blocks');
  await page.goto(`${BASE}/contact.html?service=rtl`,{waitUntil:'domcontentloaded'});await zoom(page,200);await expect(page.locator('#projectType')).toHaveValue('RTL design');await expect(page.locator('#technicalEnquiry')).toBeVisible();await layoutHealth(page,'contact/phone-landscape/200%')
 });

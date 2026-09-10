@@ -9,7 +9,7 @@ import sys,re
 
 ROOT=Path(__file__).resolve().parents[1]
 PAGES=sorted(ROOT.glob('*.html'))
-TOP={'index.html','products.html','services.html','applications.html','research.html','about.html','news.html','careers.html','contact.html'}
+TOP={'index.html','services.html','applications.html','research.html','about.html','news.html','careers.html','contact.html'}
 BENCH={'winfomi.com','www.winfomi.com','in.micron.com','micron.com','www.micron.com','qualcomm.com','www.qualcomm.com','asml.com','www.asml.com','philips.com','www.philips.com','amd.com','www.amd.com','questglobal.com','www.questglobal.com'}
 
 class Audit(HTMLParser):
@@ -85,7 +85,7 @@ def main():
 
  for forbidden in ('v25-experience','zlt_motion_level','safeLocal','heroMedia','sectionMedia','data-hero-film','data-cinematic-video','mobile_call','tel:+919626632233'):
   if forbidden in js:fail.append(f'retired runtime remains — {forbidden}')
- for required in ('V27 Executive Precision runtime','engineeringPath','searchHints','ipExplorer','website-enquiry','site_performance_sample','safeSession'):
+ for required in ('V27 Executive Precision runtime','engineeringPath','searchHints','website-enquiry','site_performance_sample','safeSession'):
   if required not in js:fail.append(f'lean runtime contract missing — {required}')
 
  about=(ROOT/'about.html').read_text(encoding='utf-8')
