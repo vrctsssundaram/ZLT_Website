@@ -1,0 +1,149 @@
+/* V29 — Executive Content Clarity
+   Simple, direct semiconductor-company presentation inspired by recurring
+   patterns across Indian and global semiconductor sites: clear offering,
+   short proof, direct CTA, restrained visual hierarchy. */
+
+:root{
+  --v29-ink:#0f1c31;
+  --v29-copy:#41526b;
+  --v29-muted:#6d7c91;
+  --v29-line:#dce4ed;
+  --v29-soft:#f7f9fc;
+  --v29-blue:#1f5f9c;
+  --v29-teal:#257b76;
+  --v29-violet:#66549a;
+  --v29-amber:#966b32;
+  --v29-navy:#123b67;
+}
+
+/* Primary navigation — fewer choices, clearer language. */
+body.v16 .site-head{min-height:70px!important}
+body.v16 .head-links{gap:clamp(16px,1.7vw,28px)!important}
+body.v16 .head-links a{font-size:13.5px!important;font-weight:650!important}
+body.v16 .head-actions .project-link{padding-inline:18px!important}
+
+/* Home hero — content first. */
+body.page-home .v19-hero>.wrap,
+body.page-home .v18-hero>.wrap,
+body.page-home .z-hero>.wrap{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.08fr) minmax(360px,.72fr)!important;
+  gap:clamp(44px,6vw,92px)!important;
+  align-items:center!important;
+  min-height:600px!important;
+}
+body.page-home .hero-technical-visual{display:none!important}
+body.page-home .hero-copy{max-width:720px!important}
+body.page-home .v19-hero h1,
+body.page-home .v18-hero h1{
+  max-width:12.5ch!important;
+  font-size:clamp(44px,4.7vw,66px)!important;
+  letter-spacing:-.042em!important;
+}
+body.page-home .v19-hero .lead,
+body.page-home .v18-hero .lead{max-width:61ch!important;font-size:17px!important}
+body.page-home .hero-trust{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:0!important}
+body.page-home .hero-trust span{margin:0!important;padding:0 18px!important;border-right:1px solid var(--v29-line)!important}
+body.page-home .hero-trust span:first-child{padding-left:0!important}
+body.page-home .hero-trust span:last-child{border-right:0!important}
+
+.v29-hero-offer{
+  border:1px solid var(--v29-line);
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 22px 60px rgba(17,45,79,.08);
+  overflow:hidden;
+}
+.v29-hero-offer>header{padding:22px 24px 18px;border-bottom:1px solid var(--v29-line);background:var(--v29-soft)}
+.v29-hero-offer>header span{display:block;color:var(--v29-blue);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.v29-hero-offer>header strong{display:block;margin-top:6px;color:var(--v29-ink);font-size:20px;letter-spacing:-.02em}
+.v29-hero-offer>a{display:grid;grid-template-columns:54px 1fr auto;gap:16px;align-items:center;padding:20px 24px;border-bottom:1px solid var(--v29-line);color:var(--v29-ink);transition:background .18s ease}
+.v29-hero-offer>a:last-child{border-bottom:0}
+.v29-hero-offer>a:hover,.v29-hero-offer>a:focus-visible{background:#f8fbfe}
+.v29-hero-offer .num{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#eef5fb;color:var(--v29-blue);font:700 12px 'IBM Plex Mono',monospace}
+.v29-hero-offer>a:nth-of-type(2) .num{background:#eef8f6;color:var(--v29-teal)}
+.v29-hero-offer>a:nth-of-type(3) .num{background:#f5f1fb;color:var(--v29-violet)}
+.v29-hero-offer b{display:block;font-size:17px;line-height:1.25}
+.v29-hero-offer small{display:block;margin-top:4px;color:var(--v29-muted);font-size:13px;line-height:1.45}
+.v29-hero-offer .arrow{color:var(--v29-blue);font-size:18px}
+
+/* Clear three-part company offer. */
+.v29-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.v29-pillar{position:relative;display:flex;flex-direction:column;min-height:300px;padding:30px;border:1px solid var(--v29-line);border-radius:10px;background:#fff;color:var(--v29-ink)}
+.v29-pillar::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:var(--v29-blue)}
+.v29-pillar:nth-child(2)::before{background:var(--v29-teal)}
+.v29-pillar:nth-child(3)::before{background:var(--v29-violet)}
+.v29-pillar .eyebrow{margin-bottom:36px}
+.v29-pillar h3{margin:0 0 14px;font-size:26px!important}
+.v29-pillar p{margin:0 0 28px;max-width:38ch;font-size:15.5px!important}
+.v29-pillar .tail{margin-top:auto;color:var(--v29-blue);font-size:13px;font-weight:700}
+
+/* Offerings are a menu card, not another visual spectacle. */
+.v29-offerings{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--v29-line);border-radius:10px;overflow:hidden;background:#fff}
+.v29-offering{display:grid;grid-template-columns:52px minmax(0,1fr);gap:18px;padding:25px 26px;border-bottom:1px solid var(--v29-line)}
+.v29-offering:nth-child(odd){border-right:1px solid var(--v29-line)}
+.v29-offering:nth-last-child(-n+2){border-bottom:0}
+.v29-offering .mark{display:grid;place-items:center;width:40px;height:40px;border:1px solid #cbd7e4;border-radius:8px;color:var(--v29-blue);font:700 11px 'IBM Plex Mono',monospace}
+.v29-offering h3{margin:0 0 7px;font-size:19px!important}
+.v29-offering p{margin:0;font-size:14.5px!important;max-width:46ch}
+
+/* Engagement language specifically requested by leadership. */
+.v29-engagement{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.v29-engagement>article{padding:26px;border:1px solid var(--v29-line);border-radius:9px;background:#fff}
+.v29-engagement>article span{display:block;margin-bottom:22px;color:var(--v29-blue);font:700 11px 'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase}
+.v29-engagement>article h3{margin:0 0 10px;font-size:21px!important}
+.v29-engagement>article p{margin:0;font-size:14.5px!important}
+
+.v29-proof{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--v29-line);border-radius:10px;overflow:hidden;background:#fff}
+.v29-proof>div{padding:23px;border-right:1px solid var(--v29-line)}
+.v29-proof>div:last-child{border-right:0}
+.v29-proof strong{display:block;color:var(--v29-navy);font-size:21px}
+.v29-proof span{display:block;margin-top:5px;color:var(--v29-muted);font-size:13px;line-height:1.45}
+
+/* Services page: concise consultation and lab blocks. */
+.v29-service-list{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--v29-line);border-radius:10px;overflow:hidden}
+.v29-service-list>article{padding:26px;background:#fff;border-bottom:1px solid var(--v29-line)}
+.v29-service-list>article:nth-child(odd){border-right:1px solid var(--v29-line)}
+.v29-service-list>article:nth-last-child(-n+2){border-bottom:0}
+.v29-service-list span{display:block;margin-bottom:12px;color:var(--v29-blue);font:700 11px 'IBM Plex Mono',monospace}
+.v29-service-list h3{margin:0 0 8px;font-size:20px!important}
+.v29-service-list p{margin:0;font-size:14.5px!important}
+
+/* Remove remaining 'circus' behavior from old engineering theatre. */
+body.v16 .v25-arrow-controls,body.v16 .v25-rail-controls{display:none!important}
+body.v16 .v25-story-rail{display:grid!important;grid-template-columns:repeat(5,1fr)!important;overflow:visible!important}
+body.v16 .v25-story-card{min-width:0!important;min-height:220px!important;padding:24px 22px!important;cursor:default!important}
+body.v16 .v25-story-card:hover{transform:none!important;box-shadow:none!important}
+body.v16 .v25-story-card.active,body.v16 .v25-story-card[aria-pressed="true"]{background:#fff!important;box-shadow:none!important}
+body.v16 .v25-story-card::after{display:none!important}
+body.v16 .v25-story-card strong{margin-top:28px!important;font-size:19px!important}
+body.v16 .v25-story-card small{font-size:12.5px!important}
+body.v16 .v25-story-action{display:none!important}
+
+/* Keep secondary pages quieter. */
+body.v16 .v22-film-band{padding-block:58px!important}
+body.v16 .v22-film-copy h2{max-width:18ch!important}
+body.v16 .z-section{padding-block:clamp(60px,5vw,78px)!important}
+body.v16 .z-head{margin-bottom:26px!important}
+
+@media(max-width:1050px){
+  body.page-home .v19-hero>.wrap,body.page-home .v18-hero>.wrap,body.page-home .z-hero>.wrap{grid-template-columns:1fr!important;min-height:0!important;padding-block:72px!important}
+  .v29-hero-offer{max-width:760px}
+  body.v16 .v25-story-rail{grid-template-columns:repeat(2,1fr)!important}
+  .v29-pillars,.v29-engagement{grid-template-columns:1fr 1fr}
+  .v29-pillar:last-child,.v29-engagement>article:last-child{grid-column:1/-1}
+}
+@media(max-width:720px){
+  body.page-home .hero-trust{grid-template-columns:1fr!important}
+  body.page-home .hero-trust span{border-right:0!important;border-bottom:1px solid var(--v29-line)!important;padding:11px 0!important}
+  body.page-home .hero-trust span:last-child{border-bottom:0!important}
+  .v29-hero-offer>a{grid-template-columns:44px 1fr auto;padding:17px 18px;gap:12px}
+  .v29-pillars,.v29-offerings,.v29-engagement,.v29-proof,.v29-service-list{grid-template-columns:1fr}
+  .v29-pillar:last-child,.v29-engagement>article:last-child{grid-column:auto}
+  .v29-offering,.v29-offering:nth-child(odd),.v29-service-list>article,.v29-service-list>article:nth-child(odd){border-right:0}
+  .v29-offering:nth-last-child(2),.v29-service-list>article:nth-last-child(2){border-bottom:1px solid var(--v29-line)}
+  .v29-proof>div{border-right:0;border-bottom:1px solid var(--v29-line)}
+  .v29-proof>div:last-child{border-bottom:0}
+  body.v16 .v25-story-rail{grid-template-columns:1fr!important}
+  body.v16 .v25-story-card{min-height:0!important}
+}
