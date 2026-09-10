@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zero-dependency release QA for the V28 boardroom-precision staging site."""
+"""Zero-dependency release QA for the V29 executive-clarity staging site."""
 from __future__ import annotations
 from html.parser import HTMLParser
 from pathlib import Path
@@ -61,10 +61,10 @@ def main():
   if not p.viewport or 'width=device-width' not in p.viewport or 'initial-scale=1' not in p.viewport:fail.append(f'{name}: responsive viewport contract missing')
   if name in TOP:
    if 'v16' not in p.body.split():fail.append(f'{name}: body.v16 missing')
-   for sheet in ('assets/v16.css','assets/v27-executive.css','assets/v28-boardroom.css'):
+   for sheet in ('assets/v16.css','assets/v27-executive.css','assets/v28-boardroom.css','assets/v29-clarity.css'):
     if sheet not in raw:fail.append(f'{name}: stylesheet missing — {sheet}')
-   for href in ('products.html','services.html','applications.html','research.html','about.html','news.html'):
-    if href not in raw:fail.append(f'{name}: taxonomy link missing — {href}')
+   for href in ('index.html','products.html','services.html','research.html','about.html','contact.html'):
+    if href not in raw:fail.append(f'{name}: primary route missing — {href}')
   for pattern,reason in FORBIDDEN_CLAIMS.items():
    if re.search(pattern,raw,re.I):fail.append(f'{name}: {reason}')
   if '<video' in raw.lower():fail.append(f'{name}: video element remains')
@@ -89,9 +89,15 @@ def main():
  contact=(ROOT/'contact.html').read_text(encoding='utf-8')
  if '+91 96266 32233' not in contact or 'tel:+919626632233' not in contact:fail.append('contact.html: approved direct phone missing')
  home=(ROOT/'index.html').read_text(encoding='utf-8')
- if 'hero-technical-visual' not in home or 'v28-svg-chip' not in home:fail.append('index.html: V28 technical hero visual missing')
- for name in ('products.html','services.html','applications.html','research.html'):
-  if 'v28-technical-visual' not in (ROOT/name).read_text(encoding='utf-8'):fail.append(f'{name}: static technical visual missing')
+ for required in ('Semiconductor IP. Engineering services. Applied R&amp;D.','v29-hero-offer','v29-pillars','v29-offerings','Semiconductor consultation','Design verification','FPGA prototyping &amp; validation'):
+  if required not in home:fail.append(f'index.html: V29 direct-offering contract missing — {required}')
+ if home.count('v29-pillar')<3:fail.append('index.html: three core offering pillars missing')
+ if home.count('v29-offering')<6:fail.append('index.html: six-item offering menu incomplete')
+ services=(ROOT/'services.html').read_text(encoding='utf-8')
+ for required in ('Consultation','Design &amp; prototyping lab','Architecture &amp; specification','Design verification','FPGA prototyping'):
+  if required not in services:fail.append(f'services.html: direct service contract missing — {required}')
+ for name in ('products.html','applications.html','research.html'):
+  if 'v28-technical-visual' not in (ROOT/name).read_text(encoding='utf-8'):fail.append(f'{name}: supporting technical visual missing')
  for term in ('Co-creation','Collaboration','Co-opting'):
   if term not in home:fail.append(f'index.html: required collaboration term missing — {term}')
 
@@ -105,7 +111,7 @@ def main():
  if media.exists() and any(media.iterdir()):fail.append('assets/media: retired cinematic assets remain')
  for retired in ('scripts/generate_v22_media.py','.github/workflows/generate-v22-media.yml'):
   if (ROOT/retired).exists():fail.append(f'retired media pipeline remains — {retired}')
- for required in ('assets/v28-boardroom.css','scripts/prepare_production.py','scripts/production_audit.py','tests/site.spec.js','.github/workflows/site-qa.yml'):
+ for required in ('assets/v28-boardroom.css','assets/v29-clarity.css','scripts/prepare_production.py','scripts/production_audit.py','tests/site.spec.js','.github/workflows/site-qa.yml'):
   if not (ROOT/required).exists():fail.append(f'required release resource missing — {required}')
 
  robots=ROOT/'robots.txt'
@@ -124,6 +130,6 @@ def main():
  print(f'Checked {len(HTML_FILES)} HTML pages.')
  if fail:
   print(f'FAILED: {len(fail)} issue(s)');[print(' -',x) for x in fail];return 1
- print('PASS: V28 static boardroom site, phone isolation, no-media contract, links, claims and staging guardrails clear.')
+ print('PASS: V29 executive clarity, direct offerings, phone isolation, no-media contract, links, claims and staging guardrails clear.')
  return 0
 if __name__=='__main__':sys.exit(main())
