@@ -2,7 +2,7 @@
 """Build a production-ready static package without mutating the staging source tree."""
 from __future__ import annotations
 from pathlib import Path
-import json, shutil, sys, os
+import json, shutil, sys, os, re
 
 ROOT=Path(__file__).resolve().parents[1]
 DEST=Path(sys.argv[1]).resolve() if len(sys.argv)>1 else (ROOT/"dist-production")
@@ -19,6 +19,9 @@ for page in ROOT.glob("*.html"):
         if STAGING_ROBOTS not in text:
             raise SystemExit(f"{page.name}: staging robots marker missing")
         text=text.replace(STAGING_ROBOTS,PROD_ROBOTS,1)
+    text=text.replace('<base href="/ZLT_Website/">','<base href="/">')
+    # Root-relative assets/links remain valid on canonical extensionless routes.
+    text=re.sub(r'(href|src)="(?!https?:|mailto:|tel:|/|#)([^"]+)"',r'\1="/\2"',text)
     (DEST/page.name).write_text(text,encoding="utf-8")
 
 for name in ("sitemap.xml",".nojekyll"):
