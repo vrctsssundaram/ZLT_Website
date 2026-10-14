@@ -1,91 +1,28 @@
 {
-  "version": "v28-boardroom-precision",
-  "status": "staging-release-candidate",
-  "canonical_origin": "https://zeptologic.com",
+  "version": "v31-service-led",
+  "active_styles": [
+    "assets/site-v31.css"
+  ],
+  "active_scripts": [
+    "assets/site-v31.js"
+  ],
+  "visuals": [
+    {
+      "file": "assets/visuals/silicon-landscape.svg",
+      "origin": "Original code-native semiconductor illustration"
+    }
+  ],
+  "font": {
+    "file": "assets/fonts/manrope.ttf",
+    "source": "https://github.com/google/fonts/tree/main/ofl/manrope",
+    "license": "assets/fonts/OFL.txt"
+  },
   "brand": [
-    {
-      "file": "assets/brand/zepto-logo.png",
-      "type": "transparent PNG logo",
-      "use": "Header and footer wordmark"
-    },
-    {
-      "file": "assets/brand/og-image.jpg",
-      "type": "social sharing image",
-      "use": "Open Graph and social cards"
-    },
-    {
-      "file": "assets/brand/favicon-32.png",
-      "type": "32x32 PNG favicon",
-      "use": "Browser tab icon"
-    },
-    {
-      "file": "assets/people/suresh-kuppuswamy.jpg",
-      "type": "approved leadership portrait",
-      "use": "CEO leadership profile"
-    }
+    "assets/brand/zepto-logo.png",
+    "assets/brand/og-image.jpg"
   ],
-  "interface": [
-    {
-      "file": "assets/style.css",
-      "type": "base site styles",
-      "use": "Core layout and shared controls"
-    },
-    {
-      "file": "assets/stature.css",
-      "type": "specialist-page styles and V27 import",
-      "use": "Technical landing-page structure and global executive precision entry point"
-    },
-    {
-      "file": "assets/v16.css",
-      "type": "legacy responsive component layer",
-      "use": "Existing accessible component/layout contracts retained beneath V27"
-    },
-    {
-      "file": "assets/v27-executive.css",
-      "type": "V27 executive precision design system",
-      "use": "Restrained light enterprise semiconductor visual language; removes Matrix/cyberpunk spectacle"
-    },
-    {
-      "file": "assets/site.js",
-      "type": "V27 lean progressive interaction layer",
-      "use": "Navigation, command palette, IP explorer, contextual enquiry routing, Supabase submission, media lifecycle, five-stage engineering path, accessibility controls and performance hooks"
-    }
+  "people": [
+    "assets/people/suresh-kuppuswamy.jpg"
   ],
-  "active_media": [],
-  "current_ui_features": [
-    "White-first executive semiconductor visual system",
-    "Original inline static/minimal-motion semiconductor diagrams",
-    "Five-stage engineering review path",
-    "13-block FPGA-validated IP explorer",
-    "Ctrl/Cmd+K technical command palette",
-    "Responsive page-local navigation",
-    "Keyboard and reduced-motion accessibility",
-    "Supabase-backed technical enquiry with email fallback",
-    "Local performance dataLayer instrumentation",
-    "Production-package and migration-readiness automation"
-  ],
-  "retired_experience_systems": [
-    "V19 original zlt-silicon-film media pipeline",
-    "V20 prism playground",
-    "V20 animated colour rail and chapter-dot navigation",
-    "V21 constellation, signal canvas, pointer sparks and spectacle runtime",
-    "V25 decorative faux-3D silicon object, self-drawing signal path and Bauhaus geometry"
-  ],
-  "content_principles": [
-    "Precise semiconductor engineering language with bounded verified claims",
-    "Co-creation, collaboration, co-development, co-engineering and co-opting specialist capability appear only where they describe a genuine engagement model",
-    "No unsupported customer, silicon-validation, foundry-ready, patent or performance claims"
-  ],
-  "asset_policy": [
-    "No stock or third-party visual assets in the semiconductor cinematic system",
-    "No third-party logo artwork without written permission",
-    "Leadership portrait and biography are published only after CEO confirmation",
-    "Staging remains noindex/nofollow until controlled production packaging",
-    "Production artifact contains only the active site assets required for deployment"
-  ],
-  "retired_assets": [
-    "V19/V22/V24 cinematic video assets and generators",
-    "V25/V26 user-facing Experience/Motion control",
-    "Mobile Call dock"
-  ]
+  "reference_policy": "Original text and artwork. No reference-site customer claims, logos or testimonials."
 }

@@ -1,117 +1,38 @@
-# Zepto Logic Website 2.0 — V28 Boardroom Precision Candidate
+# Zepto Logic website — V31
 
-This repository is the controlled staging implementation of Zepto Logic Website 2.0.
+A 24-page static company website for service, consultancy and applied research enquiries.
 
-- Staging: https://vrctsssundaram.github.io/ZLT_Website/
-- Production canonical origin: https://zeptologic.com/
+- GitHub Pages: https://vrctsssundaram.github.io/ZLT_Website/
+- Separate production origin: https://zeptologic.com/
 
-Staging remains separate from production. Source pages retain `noindex,nofollow`; the release workflow builds a separate audited production artifact with indexing enabled.
+## Design and content
 
-## V28 design direction
+Original navy/blue/cyan visual system derived from the existing Zepto Logic logo. Original semiconductor SVG illustration. GSOC informed the visual hierarchy and page structures; iVLSI, Swindon Silicon and CSEM informed navigation and enquiry patterns. No reference-site copy, customer claims, testimonials or third-party brand assets are republished.
 
-V28 is the boardroom-precision reset following leadership review. The public experience is deliberately white-first, restrained and technical rather than cinematic or cyberpunk.
+The homepage has three introductions rotating every five seconds. Rotation pauses on hover/focus, supports manual pause and respects reduced-motion settings. All content and navigation remain available without animation.
 
-The visible system is based on:
+13 application areas reflect the outreach categories, without publishing prospect names or contact lists, implying existing customer relationships, or making sector-certification claims. Service scope, tools, infrastructure, eligibility and commercial terms are established through discussion.
 
-- white and light-neutral enterprise surfaces
-- restrained navy, blue, teal, violet, amber and coral accents
-- consistent responsive typography, spacing and top alignment
-- original inline semiconductor technical diagrams instead of video
-- only very low-amplitude node-opacity motion; disabled under reduced-motion
-- concise content hierarchy
-- conventional cards, listings and engineering review paths
-- a five-stage Define → Architect → Implement → Verify → Prove engineering path
-- collaboration language where it reflects a real engagement model: **co-creation, collaboration, co-development, co-engineering and co-opting specialist capability**
+## Maintain
 
-Explicitly retired from the public experience:
+- Page content and shared HTML: `scripts/build_site.py`
+- Original illustration generator: `scripts/build_visual.py`
+- Active styles: `assets/site-v31.css`
+- Navigation, hero, filtering and enquiry: `assets/site-v31.js`
+- Existing company logo and approved leadership portrait retained.
 
-- cinematic/autoplay hero and domain videos
-- user-facing Motion / Full / Calm / Still controls
-- user-facing Text Size / Contrast panel
-- repeated phone/call UI outside the dedicated Contact page
-- neon/cyberpunk full-page colour systems
-- prism playground and colour rail
-- constellation/signal canvas
-- pointer sparks, card tilt and ripple spectacle
-- orbiting/faux-3D silicon spectacle and self-drawing signal-path animation
-- decorative chapter-dot navigation
+Run `npm run build` after changing the page generator. Run `npm run check` for static integrity. Browser tests use `npm ci` and Playwright via Website Release QA.
 
-## Current capability
+Earlier design scripts, styles, tests and release notes are historical; V31 pages load only the active stylesheet and runtime. Older white-only/no-motion design instructions are superseded by the requested V31 redesign. The prior disclosure, verified-claim and staging/production separation requirements remain in force.
 
-- 13 FPGA-validated soft IP blocks
-- 9 arithmetic / complex-compute blocks
-- 4 digital interface blocks
-- architecture, RTL, verification and FPGA engineering routes
-- approved CEO leadership profile and structured Person metadata
-- Ctrl/Cmd+K and `/` command palette
-- simple page-local navigation
-- original static/minimal-motion semiconductor SVG diagrams
-- Supabase-backed technical enquiry with email fallback
-- direct phone and WhatsApp shown only on `contact.html`
-- local performance instrumentation
-- deterministic production-package builder and migration audit
+## Enquiry handling
 
-## Public-claim guardrails
+The form preserves the existing Supabase Edge Function endpoint and payload contract. Success is displayed only after an HTTP success with `ok: true`. Failure retains user input and presents a manual email fallback. No actual enquiry is sent by browser tests: endpoint requests are intercepted. No meeting is automatically booked; the meeting CTA preselects a meeting request on Contact.
 
-- 13 FPGA-validated soft IP blocks
-- no silicon-validation claim
-- no unsupported customer-deployment/customer-logo claim
-- no public numeric PPA figures until approved/re-characterised
-- research, grants, land, MoU and future-infrastructure statements retain explicit status language
-- proprietary implementation mechanisms remain non-public
-- no third-party logo artwork without written permission
+## Release and production
 
-## Release verification
+CI checks all 24 pages at desktop/mobile widths in Chromium, Firefox and WebKit, core accessibility, navigation, hero controls, enquiry success/failure, and narrow layouts. It builds an audited production artifact only after checks pass.
 
-Every migration candidate must pass:
+GitHub Pages publishes this repository as its existing staging website. Staging stays `noindex,nofollow`. The separate production domain is not changed by a repository push.
 
-1. zero-dependency V28 static QA
-2. deep integrity, SEO, disclosure, collaboration-language and phone-isolation QA
-3. JavaScript syntax validation
-4. Chromium functional/accessibility/conversion suite
-5. phone portrait and landscape checks
-6. tablet portrait and landscape checks
-7. laptop and desktop checks
-8. 25%, 50%, 75%, 100%, 125%, 150%, 175% and 200% zoom/reflow matrix across all HTML pages
-9. internal page and fragment link graph validation
-10. absence of retired video/motion/experience UI
-11. static technical-SVG contract
-12. representative screenshot artifact across devices and zoom extremes
-13. Firefox and WebKit cross-browser smoke
-14. live enquiry-endpoint CORS checks for staging, `zeptologic.com`, and `www.zeptologic.com`
-15. deterministic production package generation
-16. V28 production-package audit
-17. production-ready artifact creation
-
-The release workflow is `.github/workflows/site-qa.yml`.
-
-## Production packaging
-
-Run locally:
-
-```bash
-python scripts/prepare_production.py dist-production
-python scripts/production_audit.py dist-production
-```
-
-The production builder does **not** mutate staging. It:
-
-- changes public pages from staging `noindex,nofollow` to production indexing directives
-- keeps `404.html` and `enquiry-received.html` non-indexable
-- creates production `robots.txt`
-- copies the active website assets
-- adds Apache/LiteSpeed/Hostinger-compatible clean-route rewrites
-- adds conservative response-security/cache headers
-- writes a release manifest
-
-## URL policy
-
-Production canonicals use clean routes such as `/products/`, `/services/`, `/applications/`, `/research/`, `/about/` and `/contact/`.
-
-The staging source keeps physical `.html` links because GitHub Pages directly serves static files. The generated production package includes rewrite rules so the clean canonical routes resolve to those static files on an Apache/LiteSpeed-style production host.
-
-## Migration policy
-
-Do not overwrite production from an unverified staging checkout. Use the audited `zeptologic-v28-production-ready` workflow artifact from the exact commit that passed the complete release workflow.
-
-Production migration remains a separate controlled action.
+Build production with `python scripts/prepare_production.py /tmp/zeptologic-production` and audit using `python scripts/production_audit.py /tmp/zeptologic-production`. The package enables indexing, retains non-indexing on 404/status pages, and supports canonical clean URLs on Apache/LiteSpeed. Production migration requires the existing host's deployment access, a backup and verification; see PRODUCTION-MIGRATION.md.

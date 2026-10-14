@@ -1,0 +1,54 @@
+[
+  {
+    "id": "compute",
+    "title": "Computing & infrastructure"
+  },
+  {
+    "id": "security",
+    "title": "Security & trusted communications"
+  },
+  {
+    "id": "quantum",
+    "title": "Quantum technology & control"
+  },
+  {
+    "id": "edge-ai",
+    "title": "Edge AI & semiconductor products"
+  },
+  {
+    "id": "industrial",
+    "title": "Industrial systems & mobility"
+  },
+  {
+    "id": "autonomous",
+    "title": "Autonomous & embedded systems"
+  },
+  {
+    "id": "space",
+    "title": "Space & mission technology"
+  },
+  {
+    "id": "networks",
+    "title": "Networks & communications"
+  },
+  {
+    "id": "instrumentation",
+    "title": "Sensing & instrumentation"
+  },
+  {
+    "id": "financial",
+    "title": "Financial technology infrastructure"
+  },
+  {
+    "id": "processors",
+    "title": "Processors & open architectures"
+  },
+  {
+    "id": "engineering",
+    "title": "Engineering & design organisations"
+  },
+  {
+    "id": "institutions",
+    "title": "Research & public programmes"
+  }
+]
