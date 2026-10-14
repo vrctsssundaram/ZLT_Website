@@ -34,8 +34,13 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium firefox webkit
       - name: Start test server
-        run: python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/zlt-test-server.log 2>&1 &
+        run: |
+          mkdir -p /tmp/zlt-review
+          ln -s "$GITHUB_WORKSPACE" /tmp/zlt-review/ZLT_Website
+          python3 -m http.server 4173 --directory /tmp/zlt-review --bind 127.0.0.1 > /tmp/zlt-test-server.log 2>&1 &
       - name: Test Chromium, Firefox and WebKit
+        env:
+          BASE_URL: http://127.0.0.1:4173/ZLT_Website
         run: npx playwright test tests/v31.spec.js --reporter=line --workers=4
       - uses: actions/upload-artifact@v7
         if: always()
