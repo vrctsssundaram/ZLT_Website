@@ -11,7 +11,7 @@
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const active=q('.nav-group.open button');closeMenus();if(toggle.getAttribute('aria-expanded')==='true'){setMenu(false);toggle.focus()}else active?.focus()}});
  addEventListener('resize',()=>{if(innerWidth>960)setMenu(false)},{passive:true});
  const current=location.pathname.split('/').filter(Boolean).pop()||'index.html';
- qa('#primary-nav a').filter(a=>a.getAttribute('href')===current).forEach(a=>a.setAttribute('aria-current','page'));
+ qa('#primary-nav a').filter(a=>a.getAttribute('href')===current).forEach(a=>{a.setAttribute('aria-current','page');const parent=a.closest('.nav-group');if(parent)q('.nav-disclosure',parent).setAttribute('data-current','true')});
  // Progressive hero rotation: keyboard controls, explicit pause, and reduced-motion support.
  const title=q('#hero-title'),desc=q('#hero-description');
  if(title){

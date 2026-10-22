@@ -33,13 +33,64 @@ apps=[
 models=[('consultancy','Consultancy','A focused review or technical discussion around a decision, constraint or open question.'),('project','Defined work packages','A bounded part of your programme, with responsibilities and review points agreed in advance.'),('collaboration','Co-development','A collaborative approach alongside your internal team or programme partners.'),('ongoing','Ongoing engineering support','A support arrangement shaped around your programme, subject to scope and resource alignment.')]
 nav='<nav id="primary-nav" aria-label="Primary navigation"><div class="nav-group"><button class="nav-disclosure" aria-expanded="false" aria-controls="services-menu">Services <span aria-hidden="true">⌄</span></button><div class="dropdown" id="services-menu">'+link('All services','services.html','')+''.join(link(x[0],x[1],'') for x in services)+link('Engagement models','engagement-models.html','')+'</div></div>'+link('Applications','applications.html','')+link('Research','research.html','')+'<div class="nav-group"><button class="nav-disclosure" aria-expanded="false" aria-controls="company-menu">Company <span aria-hidden="true">⌄</span></button><div class="dropdown" id="company-menu">'+link('About Zepto Logic','about.html','')+link('Working together','ecosystem.html','')+link('Perspectives','news.html','')+'</div></div>'+link('Careers','careers.html','')+'</nav>'
 footer=f'''<section class="contact-band"><div class="wrap"><div><p class="eyebrow">A conversation is a good place to start</p><h2>What are you working on?</h2></div>{link('Let’s talk','contact.html','button dark')}</div></section><footer><div class="wrap footer-grid"><div>{brand()}<p>Engineering services, consultancy and applied research.<br>Shaped around your requirement.</p><a href="mailto:info@zeptologic.com">info@zeptologic.com</a></div><div><h3>Explore</h3>{link('Services','services.html','')}{link('Applications','applications.html','')}{link('Engagement models','engagement-models.html','')}{link('Applied R&D','research.html','')}</div><div><h3>Company</h3>{link('About us','about.html','')}{link('Working together','ecosystem.html','')}{link('Careers','careers.html','')}{link('Contact','contact.html','')}</div><div><h3>Find us</h3><p>TICEL Bio Park<br>Coimbatore, Tamil Nadu<br>India — 641046</p><p class="small">CIN U74999TZ2018PTC031390</p></div></div><div class="wrap footer-bottom"><span>© <span data-year>2026</span> Zepto Logic Technologies Private Limited</span><div><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="#top">Back to top ↑</a></div></div></footer>'''
+# A compact, page-specific identity layer. Generated HTML remains usable without JS.
+def page_identity(file, title, body):
+ import re
+ slug=file.removesuffix('.html')
+ family='detail'
+ if slug in ['index','about','services','applications','research','careers','contact','news','ecosystem','engagement-models']: family=slug
+ if slug in ['privacy','terms','404','enquiry-received']: family='utility'
+ sections=[]
+ def anchor_section(match):
+  opening,content=match.groups()
+  heading=re.search(r'<h2[^>]*>(.*?)</h2>',content,re.S)
+  if not heading or len(sections)>=4: return match.group(0)
+  eyebrow=re.search(r'<p class="eyebrow">(.*?)</p>',content,re.S)
+  text=re.sub(r'<[^>]+>',' ',eyebrow[1] if eyebrow else heading[1]);text=' '.join(text.split())
+  text=text if len(text)<42 else text[:39].rsplit(' ',1)[0]+'…'
+  existing=re.search(r' id="([^"]+)"',opening)
+  ident=existing[1] if existing else 'section-'+str(len(sections)+1)
+  if not existing: opening+=' id="'+ident+'"'
+  sections.append((ident,text))
+  return '<section'+opening+'>'+content+'</section>'
+ body=re.sub(r'<section([^>]*)>(.*?)</section>',anchor_section,body,flags=re.S)
+ labels={'index':'Home','about':'About Zepto Logic','services':'Engineering services','applications':'Application areas','research':'Applied research','careers':'Careers','contact':'Contact','news':'Perspectives','ecosystem':'Working together','engagement-models':'Engagement models'}
+ label=labels.get(slug,title)
+ crumb=f'<nav class="page-location" aria-label="Breadcrumb"><a href="index.html">Zepto Logic</a><span aria-hidden="true">/</span><span aria-current="page">{e(label)}</span></nav>'
+ body=body.replace('<p class="eyebrow">',crumb+'<p class="eyebrow">',1) if family!='index' else body
+ panels={
+ 'about':('Company, at a glance','Built on understanding.', [('01 / Our beginning','Established in 2018'),('02 / Our base','Coimbatore, India'),('03 / Our focus','Digital hardware & applied research')], 'Meet our leadership','#leadership'),
+ 'services':('Engineering / Scope map','Where does your programme need support?', [('01 / Define','Consultancy & architecture'),('02 / Develop','RTL, verification & integration'),('03 / Evaluate','FPGA prototypes & applied R&D')], 'Compare working models','engagement-models.html'),
+ 'applications':('Application atlas','13 contexts. Your requirement at the centre.', [('01–04','Compute · Security · Quantum · Edge AI'),('05–09','Industrial · Embedded · Space · Networks · Sensing'),('10–13','Finance · Processors · Engineering · Research')], 'Find your application','#application-search'),
+ 'research':('Question → Evidence','Make the unknown useful.', [('01','Frame the research question'),('02','Explore an implementation'),('03','Define the evaluation')], 'Explore research to hardware','research-to-hardware.html'),
+ 'careers':('People / Possibility','What do you want to work on?', [('Design','Architecture & digital logic'),('Evaluate','Verification & FPGA'),('Explore','Research & internships')], 'Introduce yourself','mailto:info@zeptologic.com?subject=Career%20enquiry'),
+ 'contact':('Your first conversation','A little context goes a long way.', [('01','Your objective'),('02','Your current stage'),('03','The support you need')], 'Prefer email?','mailto:info@zeptologic.com'),
+ 'ecosystem':('Working relationships','A shared objective starts here.', [('Product teams','A defined requirement'),('Engineering teams','A shared work package'),('Research teams','A practical investigation')], 'Explore engagement models','engagement-models.html'),
+ 'engagement-models':('Engagement / Framework','Choose the way forward together.', [('Review','A focused consultation'),('Develop','An agreed work package'),('Collaborate','A coordinated programme')], 'Discuss the fit','contact.html'),
+ 'news':('Notes from the engineering conversation','Context before conclusions.', [('01','Frame the requirement'),('02','Choose a working model'),('03','Question the assumptions')], 'Start a conversation','contact.html')}
+ if family=='detail':
+  scope=re.findall(r'<h3>(.*?)</h3>',body)
+  panels[family]=('Engineering / '+title,'A clear scope. A useful next step.',[(f'{i+1:02d}',re.sub('<[^>]+>','',x)) for i,x in enumerate(scope[:3])], 'Discuss this requirement','contact.html')
+ if family in panels:
+  kicker,headline,items,cta,url=panels[family]
+  panel='<aside class="identity-panel" aria-label="'+e(kicker)+'"><p class="identity-kicker">'+e(kicker)+'</p><h2>'+e(headline)+'</h2><div class="identity-items">'+''.join('<div><span>'+e(a)+'</span><p>'+e(b)+'</p></div>' for a,b in items)+'</div>'+link(cta,url,'identity-link')+'</aside>'
+  body=body.replace('<div class="wrap">','<div class="wrap identity-layout">',1)
+  pos=body.find('</section>')
+  body=body[:pos].rsplit('</div>',1)[0]+'<div class="identity-panel-wrap">'+panel+'</div></div>'+body[pos:]
+ # An explicit page map makes the content change obvious at every navigation.
+ if sections and family!='utility':
+  jump='<nav class="page-map" aria-label="On this page"><div class="wrap"><span class="page-map-title">'+e(label)+'</span><div>'+''.join(f'<a href="#{i}"><span aria-hidden="true">{n+1:02d}</span> {t}</a>' for n,(i,t) in enumerate(sections))+'</div></div></nav>'
+  pos=body.find('</section>')+len('</section>');body=body[:pos]+jump+body[pos:]
+ return family,slug,body
+
 pages={}
 def shell(file,title,desc,body):
+ family,slug,body=page_identity(file,title,body)
  canonical='https://zeptologic.com/'+('' if file=='index.html' else file.replace('.html','/'))
  pages[file]=(title,desc)
  base='<base href="/ZLT_Website/">' if file=='404.html' else ''
  (R/file).write_text(f'''<!doctype html>
-<html lang="en"><head>{base}<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(title)} | Zepto Logic Technologies</title><meta name="description" content="{e(desc)}"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#04131e"><link rel="canonical" href="{canonical}"><meta property="og:type" content="website"><meta property="og:title" content="{e(title)} | Zepto Logic Technologies"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{canonical}"><meta property="og:image" content="https://zeptologic.com/assets/brand/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="assets/brand/favicon-32.png"><link rel="stylesheet" href="assets/site-v31.css"><script defer src="assets/site-v31.js"></script></head><body id="top"><a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="header-inner">{brand()}{nav}<a class="button header-contact" href="contact.html">Contact {arrow()}</a><button class="menu-toggle" aria-label="Open navigation" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span></button></div></header><main id="main">{body}</main>{footer}</body></html>'''.replace('↗', ARROW_SVG),encoding='utf-8')
+<html lang="en"><head>{base}<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(title)} | Zepto Logic Technologies</title><meta name="description" content="{e(desc)}"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#04131e"><link rel="canonical" href="{canonical}"><meta property="og:type" content="website"><meta property="og:title" content="{e(title)} | Zepto Logic Technologies"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{canonical}"><meta property="og:image" content="https://zeptologic.com/assets/brand/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="assets/brand/favicon-32.png"><link rel="stylesheet" href="assets/site-v31.css"><link rel="stylesheet" href="assets/page-identities.css"><script defer src="assets/site-v31.js"></script></head><body id="top" class="page-{family} route-{slug}"><a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="header-inner">{brand()}{nav}<a class="button header-contact" href="contact.html">Contact {arrow()}</a><button class="menu-toggle" aria-label="Open navigation" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span></button></div></header><main id="main">{body}</main>{footer}</body></html>'''.replace('↗', ARROW_SVG),encoding='utf-8')
 def hero(k,title,desc,large=False):
  return f'<section class="page-hero {"large" if large else ""}"><div class="hero-art" aria-hidden="true"></div><div class="wrap"><p class="eyebrow">{k}</p><h1>{title}</h1><p class="lead">{desc}</p></div></section>'
 def heading(k,t,p=''):return f'<div class="section-heading"><div><p class="eyebrow">{k}</p><h2>{t}</h2></div><p>{p}</p></div>'
