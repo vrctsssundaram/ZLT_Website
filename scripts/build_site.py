@@ -1,157 +1,789 @@
 #!/usr/bin/env python3
-"""Generate the Zepto Logic public pages from shared layout and original copy."""
-from pathlib import Path
-from html import escape as e
+"""Generate the static Zepto Logic website with shared layouts and navigation."""
+
+from html import escape
 import json
-R=Path(__file__).resolve().parents[1]
-ARROW_SVG = '<svg class="ui-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19 19 5M5 5h14v14"/></svg>'
+import re
+from pathlib import Path
 
-def arrow(): return '<span aria-hidden="true">↗</span>'
-def link(label,url,cls='button'): return f'<a class="{cls}" href="{url}">{label} {arrow()}</a>'
-def brand(): return '<a class="brand" href="index.html" aria-label="Zepto Logic home"><img src="assets/brand/zepto-logo.png" width="52" height="52" alt=""><span>ZEPTO LOGIC<small>TECHNOLOGIES</small></span></a>'
-services=[
-('Engineering consultancy','consultancy.html','An independent perspective on requirements, feasibility and the next engineering decision.','01'),
-('Architecture & RTL design','rtl-design-services.html','Translate a system requirement into a defined architecture and digital implementation.','02'),
-('Design verification','verification-coverage-closure.html','Plan and review the evidence needed to evaluate design behaviour.','03'),
-('FPGA prototyping','fpga-prototyping-services.html','Explore implementation, integration and hardware evaluation on a suitable platform.','04'),
-('IP & integration support','ip-quality-audit.html','Review reusable design blocks, interfaces and integration requirements.','05'),
-('Applied R&D','research.html','Connect an open technical question with a practical programme of investigation.','06')]
-apps=[
-('compute','Computing & infrastructure','Compute accelerators, proof systems and infrastructure platforms.','Discuss a defined design, verification or integration requirement within a wider computing programme.','Acceleration · Data movement · Platform integration'),
-('security','Security & trusted communications','Post-quantum security, cryptographic hardware and secure connectivity.','Explore the engineering scope, interfaces and evaluation criteria for a security-related programme.','Security requirements · Hardware interfaces · Evaluation'),
-('quantum','Quantum technology & control','Control electronics, instrumentation and research platforms.','Start with the control or readout requirement, the research stage and the support being considered.','Control · Instrumentation · Research platforms'),
-('edge-ai','Edge AI & semiconductor products','Embedded intelligence, accelerators and product development.','Discuss a bounded hardware development task, an integration challenge or an independent engineering review.','Product architecture · Digital logic · Prototyping'),
-('industrial','Industrial systems & mobility','Control systems, power electronics and hardware-in-the-loop environments.','Explore the interface, timing and test context for an industrial or mobility application.','Control interfaces · Test environments · Integration'),
-('autonomous','Autonomous & embedded systems','Robotics, unmanned platforms and connected embedded products.','Discuss supporting digital hardware, subsystem interfaces and prototype evaluation requirements.','Embedded systems · Interfaces · Subsystem support'),
-('space','Space & mission technology','Satellite systems, ground infrastructure and mission programmes.','Define the engineering boundary, programme requirements and any qualification obligations before considering an engagement.','Payload interfaces · Ground systems · Programme support'),
-('networks','Networks & communications','Wireless systems, network infrastructure and telecom platforms.','Explore digital implementation, platform integration or verification support for a communications programme.','Connectivity · Digital processing · Infrastructure'),
-('instrumentation','Sensing & instrumentation','Measurement systems, imaging and specialist electronic products.','Discuss the signal path, data interfaces and engineering support relevant to your application.','Data acquisition · Measurement · Product integration'),
-('financial','Financial technology infrastructure','Latency-sensitive systems and specialist computing platforms.','Explore the requirement and system constraints for hardware-related platform development or review.','Data processing · System interfaces · Performance evaluation'),
-('processors','Processors & open architectures','RISC-V ecosystems, processor IP and system development.','Discuss a defined design, verification, interface or prototyping requirement within your architecture.','Processor systems · Reusable IP · Verification'),
-('engineering','Engineering & design organisations','Product developers, design houses and system integrators.','Consider project collaboration, a defined work package or additional support within your existing delivery structure.','Project support · Co-development · Engineering review'),
-('institutions','Research & public programmes','Universities, laboratories and institutional technology initiatives.','Explore feasibility, research collaboration and the practical steps from an idea to an evaluation platform.','Feasibility · Research collaboration · Technology transfer')]
-models=[('consultancy','Consultancy','A focused review or technical discussion around a decision, constraint or open question.'),('project','Defined work packages','A bounded part of your programme, with responsibilities and review points agreed in advance.'),('collaboration','Co-development','A collaborative approach alongside your internal team or programme partners.'),('ongoing','Ongoing engineering support','A support arrangement shaped around your programme, subject to scope and resource alignment.')]
-nav='<nav id="primary-nav" aria-label="Primary navigation"><div class="nav-group"><button class="nav-disclosure" aria-expanded="false" aria-controls="services-menu">Services <span aria-hidden="true">⌄</span></button><div class="dropdown" id="services-menu">'+link('All services','services.html','')+''.join(link(x[0],x[1],'') for x in services)+link('Engagement models','engagement-models.html','')+'</div></div>'+link('Applications','applications.html','')+link('Research','research.html','')+'<div class="nav-group"><button class="nav-disclosure" aria-expanded="false" aria-controls="company-menu">Company <span aria-hidden="true">⌄</span></button><div class="dropdown" id="company-menu">'+link('About Zepto Logic','about.html','')+link('Working together','ecosystem.html','')+link('Perspectives','news.html','')+'</div></div>'+link('Careers','careers.html','')+'</nav>'
-footer=f'''<section class="contact-band"><div class="wrap"><div><p class="eyebrow">A conversation is a good place to start</p><h2>What are you working on?</h2></div>{link('Let’s talk','contact.html','button dark')}</div></section><footer><div class="wrap footer-grid"><div>{brand()}<p>Engineering services, consultancy and applied research.<br>Shaped around your requirement.</p><a href="mailto:info@zeptologic.com">info@zeptologic.com</a></div><div><h3>Explore</h3>{link('Services','services.html','')}{link('Applications','applications.html','')}{link('Engagement models','engagement-models.html','')}{link('Applied R&D','research.html','')}</div><div><h3>Company</h3>{link('About us','about.html','')}{link('Working together','ecosystem.html','')}{link('Careers','careers.html','')}{link('Contact','contact.html','')}</div><div><h3>Find us</h3><p>TICEL Bio Park<br>Coimbatore, Tamil Nadu<br>India — 641046</p><p class="small">CIN U74999TZ2018PTC031390</p></div></div><div class="wrap footer-bottom"><span>© <span data-year>2026</span> Zepto Logic Technologies Private Limited</span><div><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="#top">Back to top ↑</a></div></div></footer>'''
-# A compact, page-specific identity layer. Generated HTML remains usable without JS.
-def page_identity(file, title, body):
- import re
- slug=file.removesuffix('.html')
- family='detail'
- if slug in ['index','about','services','applications','research','careers','contact','news','ecosystem','engagement-models']: family=slug
- if slug in ['privacy','terms','404','enquiry-received']: family='utility'
- sections=[]
- def anchor_section(match):
-  opening,content=match.groups()
-  heading=re.search(r'<h2[^>]*>(.*?)</h2>',content,re.S)
-  if not heading or len(sections)>=4: return match.group(0)
-  eyebrow=re.search(r'<p class="eyebrow">(.*?)</p>',content,re.S)
-  text=re.sub(r'<[^>]+>',' ',eyebrow[1] if eyebrow else heading[1]);text=' '.join(text.split())
-  if 'id="application-list"' in content: text='All application areas'
-  text=text if len(text)<42 else text[:39].rsplit(' ',1)[0]+'…'
-  existing=re.search(r' id="([^"]+)"',opening)
-  ident=existing[1] if existing else 'section-'+str(len(sections)+1)
-  if not existing: opening+=' id="'+ident+'"'
-  sections.append((ident,text))
-  return '<section'+opening+'>'+content+'</section>'
- body=re.sub(r'<section([^>]*)>(.*?)</section>',anchor_section,body,flags=re.S)
- labels={'index':'Home','about':'About Zepto Logic','services':'Engineering services','applications':'Application areas','research':'Applied research','careers':'Careers','contact':'Contact','news':'Perspectives','ecosystem':'Working together','engagement-models':'Engagement models'}
- label=labels.get(slug,title)
- crumb=f'<nav class="page-location" aria-label="Breadcrumb"><a href="index.html">Zepto Logic</a><span aria-hidden="true">/</span><span aria-current="page">{e(label)}</span></nav>'
- body=body.replace('<p class="eyebrow">',crumb+'<p class="eyebrow">',1) if family!='index' else body
- panels={
- 'about':('Company, at a glance','Built on understanding.', [('01 / Our beginning','Established in 2018'),('02 / Our base','Coimbatore, India'),('03 / Our focus','Digital hardware & applied research')], 'Meet our leadership','#leadership'),
- 'services':('Engineering / Scope map','Where does your programme need support?', [('01 / Define','Consultancy & architecture'),('02 / Develop','RTL, verification & integration'),('03 / Evaluate','FPGA prototypes & applied R&D')], 'Compare working models','engagement-models.html'),
- 'applications':('Application atlas','13 contexts. Your requirement at the centre.', [('01–04','Compute · Security · Quantum · Edge AI'),('05–09','Industrial · Embedded · Space · Networks · Sensing'),('10–13','Finance · Processors · Engineering · Research')], 'Find your application','#application-search'),
- 'research':('Question → Evidence','Make the unknown useful.', [('01','Frame the research question'),('02','Explore an implementation'),('03','Define the evaluation')], 'Explore research to hardware','research-to-hardware.html'),
- 'careers':('People / Possibility','What do you want to work on?', [('Design','Architecture & digital logic'),('Evaluate','Verification & FPGA'),('Explore','Research & internships')], 'Introduce yourself','mailto:info@zeptologic.com?subject=Career%20enquiry'),
- 'contact':('Your first conversation','A little context goes a long way.', [('01','Your objective'),('02','Your current stage'),('03','The support you need')], 'Prefer email?','mailto:info@zeptologic.com'),
- 'ecosystem':('Working relationships','A shared objective starts here.', [('Product teams','A defined requirement'),('Engineering teams','A shared work package'),('Research teams','A practical investigation')], 'Explore engagement models','engagement-models.html'),
- 'engagement-models':('Engagement / Framework','Choose the way forward together.', [('Review','A focused consultation'),('Develop','An agreed work package'),('Collaborate','A coordinated programme')], 'Discuss the fit','contact.html'),
- 'news':('Notes from the engineering conversation','Context before conclusions.', [('01','Frame the requirement'),('02','Choose a working model'),('03','Question the assumptions')], 'Start a conversation','contact.html')}
- if family=='detail':
-  scope=re.findall(r'<h3>(.*?)</h3>',body)
-  panels[family]=('Engineering / '+title,'A clear scope. A useful next step.',[(f'{i+1:02d}',re.sub('<[^>]+>','',x)) for i,x in enumerate(scope[:3])], 'Discuss this requirement','contact.html')
- if family in panels:
-  kicker,headline,items,cta,url=panels[family]
-  panel='<aside class="identity-panel" aria-label="'+e(kicker)+'"><p class="identity-kicker">'+e(kicker)+'</p><h2>'+e(headline)+'</h2><div class="identity-items">'+''.join('<div><span>'+e(a)+'</span><p>'+e(b)+'</p></div>' for a,b in items)+'</div>'+link(cta,url,'identity-link')+'</aside>'
-  body=body.replace('<div class="wrap">','<div class="wrap identity-layout">',1)
-  pos=body.find('</section>')
-  body=body[:pos].rsplit('</div>',1)[0]+'<div class="identity-panel-wrap">'+panel+'</div></div>'+body[pos:]
- # An explicit page map makes the content change obvious at every navigation.
- if sections and family!='utility':
-  jump='<nav class="page-map" aria-label="On this page"><div class="wrap"><span class="page-map-title">'+e(label)+'</span><div>'+''.join(f'<a href="#{i}"><span aria-hidden="true">{n+1:02d}</span> {t}</a>' for n,(i,t) in enumerate(sections))+'</div></div></nav>'
-  pos=body.find('</section>')+len('</section>');body=body[:pos]+jump+body[pos:]
- return family,slug,body
+from site_content import APPLICATIONS, DETAILS, ENQUIRY_TYPES, MODELS, SERVICES
 
-pages={}
-def shell(file,title,desc,body):
- family,slug,body=page_identity(file,title,body)
- canonical='https://zeptologic.com/'+('' if file=='index.html' else file.replace('.html','/'))
- pages[file]=(title,desc)
- base='<base href="/ZLT_Website/">' if file=='404.html' else ''
- (R/file).write_text(f'''<!doctype html>
-<html lang="en"><head>{base}<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(title)} | Zepto Logic Technologies</title><meta name="description" content="{e(desc)}"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#04131e"><link rel="canonical" href="{canonical}"><meta property="og:type" content="website"><meta property="og:title" content="{e(title)} | Zepto Logic Technologies"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{canonical}"><meta property="og:image" content="https://zeptologic.com/assets/brand/og-image.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="assets/brand/favicon-32.png"><link rel="stylesheet" href="assets/site-v31.css"><link rel="stylesheet" href="assets/page-identities.css"><script defer src="assets/site-v31.js?v=20261022"></script></head><body id="top" class="page-{family} route-{slug}"><a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="header-inner">{brand()}{nav}<a class="button header-contact" href="contact.html">Contact {arrow()}</a><button class="menu-toggle" aria-label="Open navigation" aria-controls="primary-nav" aria-expanded="false"><span></span><span></span></button></div></header><main id="main">{body}</main>{footer}</body></html>'''.replace('↗', ARROW_SVG),encoding='utf-8')
-def hero(k,title,desc,large=False):
- return f'<section class="page-hero {"large" if large else ""}"><div class="hero-art" aria-hidden="true"></div><div class="wrap"><p class="eyebrow">{k}</p><h1>{title}</h1><p class="lead">{desc}</p></div></section>'
-def heading(k,t,p=''):return f'<div class="section-heading"><div><p class="eyebrow">{k}</p><h2>{t}</h2></div><p>{p}</p></div>'
-def cards(items):return '<div class="service-grid">'+''.join(f'<a class="service-card" href="{url}"><span class="card-number">{n}</span><span class="line-icon" aria-hidden="true">{["◇","⌘","◎","▧","⊞","↗"][i%6]}</span><h3>{t}</h3><p>{d}</p><span class="text-link">Explore {arrow()}</span></a>' for i,(t,url,d,n) in enumerate(items))+'</div>'
-def section(content,cls='',id=''):return f'<section class="section {cls}"'+(f' id="{id}"' if id else '')+f'><div class="wrap">{content}</div></section>'
-def split(k,t,p,extra=''):return section(f'<div class="split"><div><p class="eyebrow">{k}</p><h2>{t}</h2></div><div class="prose"><p>{p}</p>{extra}</div></div>')
-def steps():return '<div class="steps">'+''.join(f'<article><span>0{i+1}</span><h3>{t}</h3><p>{p}</p></article>' for i,(t,p) in enumerate([('Understand','Your objective, current stage and the support you are seeking.'),('Explore','Technical fit, dependencies, tools and the approach to collaboration.'),('Define','Scope, responsibilities, commercial terms and review criteria.'),('Engage','Work proceeds following an agreed scope and engagement model.')]))+'</div>'
-# Home
-home='''<section class="home-hero" aria-label="Introduction"><div class="hero-art" aria-hidden="true"></div><div class="hero-grid" aria-hidden="true"></div><div class="wrap"><p class="eyebrow"><span class="status-dot"></span> Engineering · Consultancy · Applied R&D</p><div class="hero-copy"><h1 id="hero-title">Bring the challenge.<br><span>We make it work.</span></h1><p id="hero-description">Engineering conversations that turn an open question into a considered next step.</p></div><div class="hero-actions">'''+link('Discuss your challenge','contact.html')+link('Explore what we solve','applications.html','button outline')+'''</div><div class="hero-secondary">'''+link('Schedule a meeting','contact.html?type=meeting','text-link')+link('Join our team','careers.html','text-link')+'''</div><div class="hero-bottom"><div class="carousel-controls"><button class="slide-dot active" data-slide="0" aria-label="Show introduction 1" aria-pressed="true"><span>01</span></button><button class="slide-dot" data-slide="1" aria-label="Show introduction 2" aria-pressed="false"><span>02</span></button><button class="slide-dot" data-slide="2" aria-label="Show introduction 3" aria-pressed="false"><span>03</span></button><button id="pause-hero" aria-label="Pause introduction rotation" aria-pressed="false">Ⅱ</button></div><a class="scroll-cue" href="#introduction">Explore Zepto Logic <span>↓</span></a></div></div></section>'''
-home+=section('<div class="intro-grid"><p class="eyebrow">A practical starting point</p><h2>Your requirement.<br>Our starting point.</h2><div class="prose"><p>Zepto Logic Technologies brings together semiconductor engineering, consultancy and applied research. We welcome conversations with organisations seeking external support for a new idea, an active programme or a specific technical requirement.</p><p>Every engagement starts with understanding what matters to you. The scope and working model follow from that conversation.</p>'+link('Get to know us','about.html','text-link')+'</div></div>','dark-section','introduction')
-home+=section(heading('Our services','Engineering around<br>the work ahead.','From an early technical question to a defined development task, explore where a conversation can begin.')+cards(services))
-home+=section('<div class="split"><div><p class="eyebrow">Across applications</p><h2>Different industries.<br>A shared need to<br><span class="accent">move forward.</span></h2><p>We are open to requirements across established and emerging technology programmes. Your application helps frame the conversation; it does not limit it.</p>'+link('Explore all application areas','applications.html','button outline')+'</div><div class="application-links">'+''.join(f'<a href="applications.html#{id}"><span>{title}</span>{arrow()}</a>' for id,title,*_ in [apps[0],apps[1],apps[2],apps[4],apps[6],apps[12]])+'</div></div>','dark-section applications-preview')
-home+=section(heading('Ways to work together','One conversation.<br>Several ways to engage.','A focused consultation, a defined work package or a collaborative programme. The approach is discussed around your needs.')+'<div class="models-grid">'+''.join(f'<a href="engagement-models.html#{id}"><span class="card-number">0{i+1}</span><h3>{t}</h3><p>{p}</p>{arrow()}</a>' for i,(id,t,p) in enumerate(models))+'</div>')
-home+=section(heading('From enquiry to engagement','Clarity before commitment.','Tools, infrastructure, eligibility, standards and commercial expectations can be discussed as the requirement becomes clearer.')+steps(),'soft')
-shell('index.html','Engineering services, consultancy & applied R&D','Explore service and consultancy engagements with Zepto Logic Technologies. Start with your requirement and shape the next step together.',home)
-# Services
-shell('services.html','Services', 'Consultancy, architecture, RTL design, verification, FPGA prototyping, IP integration and applied research.',hero('What we do','Services built around<br><span>your requirement.</span>','A defined challenge. A considered approach. An engagement shaped through discussion.',True)+split('Engineering services','The right place<br>to begin.','A project may need an independent review, support at a particular development stage or collaboration across a wider programme. We begin by understanding the requirement, then discuss the scope, responsibilities and resources involved.')+section(cards(services),'soft')+section(heading('Working model','Support that fits<br>your programme.','Explore the available ways to structure a conversation and a potential engagement.')+steps()+link('Explore engagement models','engagement-models.html','button secondary')))
-# Application areas: all 13, open rather than capability/qualification claims.
-appbody=hero('Where conversations begin','Your application.<br><span>A shared engineering question.</span>','Explore areas in which we welcome service, consultancy and research discussions. Requirements beyond these areas are welcome.',True)
-appbody+=section('<div class="application-tools"><label for="application-search">Find an application area</label><input id="application-search" type="search" placeholder="Search areas, e.g. space or research" autocomplete="off"><p class="small" id="application-count" role="status">13 application areas</p></div><div class="application-index">'+''.join(f'<a href="#{a[0]}">{a[1]}</a>' for a in apps)+'</div>','soft')
-appbody+=section('<div id="application-list">'+''.join(f'<article class="application-row" id="{id}" data-application="{e(t+" "+d+" "+tags)}"><span class="row-number">{i+1:02d}</span><div><h2>{t}</h2><p class="application-subtitle">{d}</p></div><div><p>{p}</p><p class="tags">{tags}</p>{link("Discuss this area","contact.html?area="+id,"text-link")}</div></article>' for i,(id,t,d,p,tags) in enumerate(apps))+'</div><div id="no-applications" hidden><h2>No matching area?</h2><p>Your requirement may sit across categories. We would still welcome an introduction.</p>'+link('Tell us about it','contact.html')+'</div>')
-appbody+=split('An open conversation','The requirement<br>comes first.','These application areas describe the context for a discussion. The specific scope, resources, standards, certifications and eligibility requirements are reviewed for each proposed engagement.')
-shell('applications.html','Application areas','Explore 13 application areas for service, consultancy and research conversations with Zepto Logic Technologies.',appbody)
-# Engagement
-shell('engagement-models.html','Engagement models','Consultancy, defined work packages, co-development and ongoing engineering support, shaped around your programme.',hero('How we work','A working model<br><span>that starts with you.</span>','Your priorities, processes and programme context shape the discussion.')+section(''.join(f'<article class="model-row" id="{id}"><span class="row-number">0{i+1}</span><div><h2>{t}</h2><p>{p}</p></div><div><p>{["Useful when an engineering decision needs a focused review before development begins.","Useful when the work can be described through clear inputs, boundaries and reviewable outputs.","Useful when responsibilities are shared and the work needs close coordination with your team.","Useful when support needs extend across stages and can be planned against a defined programme."][i]}</p>{link("Discuss this model","contact.html?model="+id,"text-link")}</div></article>' for i,(id,t,p) in enumerate(models)))+section(heading('Before work begins','Agree what matters.','The introductory conversation establishes fit. Detailed commitments follow through an agreed scope.')+cards([('Scope & responsibilities','contact.html','Objectives, inputs, interfaces, deliverables and the working relationship.','01'),('Tools & requirements','contact.html','Systems, infrastructure, access, standards and any supplier eligibility conditions.','02'),('Commercial framework','contact.html','Pricing approach, milestones, review criteria and terms appropriate to the scope.','03')]),'soft'))
-# Service detail routes
-specials=[
-('consultancy.html','Engineering consultancy','Make room for<br>a considered decision.','An open question does not always call for an immediate build. A focused discussion can help establish the requirement and the options worth examining.',['Feasibility and requirement review','Architecture and design discussions','Independent technical assessment'],['The decision or challenge you are considering','The current stage and available context','The form of input or review you would find useful']),
-('rtl-design-services.html','Architecture & RTL design','From a requirement<br>to a defined design.','Explore support for digital architecture, logic design and integration within an agreed development scope.',['Architecture and specification','Digital logic and interface design','Design review and integration support'],['System objectives and interfaces','Existing design context and constraints','The proposed work package and review criteria']),
-('verification-coverage-closure.html','Design verification','A clearer view<br>of design behaviour.','Discuss verification planning, design review and evidence gathering around your specification and development stage.',['Verification planning and review','Simulation and debugging support','Coverage and integration discussions'],['What the design is expected to do','The current verification environment','The evidence needed for your next decision']),
-('fpga-prototyping-services.html','FPGA prototyping','Bring the question<br>into hardware.','Explore FPGA-based prototyping and evaluation as part of a defined engineering programme.',['Platform and implementation review','Prototype integration and bring-up','Evaluation and documentation support'],['Target platform and available hardware','Interfaces and implementation constraints','The purpose and criteria of the evaluation']),
-('ip-quality-audit.html','IP & integration support','Understand the block.<br>Consider the system.','Discuss design reuse, interface requirements and the integration context before defining an IP-related engagement.',['Reusable digital design review','Interface and integration support','Readiness and documentation assessment'],['The function and intended system context','Available documentation and review material','The scope of evaluation or integration support']),
-('floating-point-ip.html','Arithmetic & digital IP','A building block.<br>A wider application.','Explore arithmetic and digital IP requirements in the context of your application, interfaces and evaluation needs.',['Arithmetic and digital interface requirements','IP evaluation and integration discussions','Application-specific design review'],['The required function and formats','The platform and interface context','Evaluation criteria and proposed use']),
-('cryptographic-hardware-acceleration.html','Security-related hardware','Explore the hardware<br>behind the requirement.','We welcome discussions about digital hardware support for security-related research and development. The intended use, standards and evaluation obligations frame the scope.',['Hardware feasibility discussions','Digital architecture and integration review','Prototype and research support'],['The non-confidential programme objective','Relevant security and compliance requirements','The specific engineering support being considered']),
-('research-to-hardware.html','Research to hardware','Connect an idea<br>with a practical next step.','Explore how a research question could be framed for digital implementation, prototyping or an engineering evaluation.',['Feasibility and architecture exploration','Prototype-oriented collaboration','Evaluation planning and handover discussions'],['The research question and its current stage','What is known and what needs investigation','The intended evaluation or transfer pathway']),
-('semiconductor-design-partner-india.html','Engineering partner in India','A conversation<br>across teams and borders.','Based in Coimbatore, Zepto Logic welcomes semiconductor engineering and consultancy discussions with organisations in India and internationally.',['Defined engineering work packages','Collaborative development discussions','Consultancy and programme support'],['Your programme and engineering requirement','Your preferred way of working','Supplier onboarding and engagement requirements'])]
-for file,title,headline,desc,scope,start in specials:
- body=hero('Services & specialist discussions',title,headline.replace('<br>',' ').replace('<span>','').replace('</span>',''))+split('The conversation',headline,desc)+section('<div class="split"><div><p class="eyebrow">Potential discussion areas</p><h2>Start with the scope.</h2></div><div class="numbered-list">'+''.join(f'<div><span>0{i+1}</span><h3>{v}</h3></div>' for i,v in enumerate(scope))+'</div></div>','soft')+section('<div class="split"><div><p class="eyebrow">An introduction</p><h2>What would be<br>useful to share?</h2></div><div><ul class="clean-list">'+''.join(f'<li>{v}</li>' for v in start)+'</ul><p>High-level, non-confidential context is sufficient to begin. Detailed scope and any engagement terms can follow.</p>'+link('Discuss your requirement','contact.html')+'</div></div>')
- shell(file,title,desc,body)
-# Research
-shell('research.html','Applied research & development','Explore feasibility, co-development and research-to-hardware discussions with Zepto Logic Technologies.',hero('Applied research & development','An open question.<br><span>A practical direction.</span>','From early feasibility to prototype evaluation and technology-transfer discussions, the next step starts with understanding the research objective.',True)+split('Research with context','Explore what is possible.<br>Define what comes next.','Research programmes often move between ideas, implementation constraints and emerging evidence. We welcome collaboration with technology companies, laboratories and institutions seeking engineering input at those boundaries.')+section(cards([('Feasibility','consultancy.html','Frame the question, examine assumptions and discuss a practical route for investigation.','01'),('Co-development','engagement-models.html#collaboration','Consider a shared programme with agreed responsibilities and review points.','02'),('Research to hardware','research-to-hardware.html','Discuss digital implementation, prototype evaluation and the intended transfer pathway.','03')]),'soft')+section(heading('Working together','Start with the question.','Your programme may be exploratory or well defined. Either is a valid starting point.')+steps()))
-# Company, retaining approved leadership identity without publishing private programme details.
-shell('about.html','About Zepto Logic','Zepto Logic Technologies Private Limited is a semiconductor engineering, consultancy and applied research company based in Coimbatore, India.',hero('Company','Engineering starts<br><span>with understanding.</span>','Zepto Logic Technologies Private Limited · Coimbatore, India',True)+split('Who we are','An engineering perspective.<br>An open approach.','Zepto Logic Technologies works in semiconductor engineering, digital hardware and applied research. We welcome discussions with organisations seeking consultancy, development support or collaboration around a defined requirement.','<p>Our approach is to understand the application and working context before proposing how an engagement might be structured.</p>')+section('<div class="principles"><article><p class="eyebrow">Purpose</p><h2>Make technical conversations useful.</h2><p>Connect the question being asked with the engineering decisions that follow.</p></article><article><p class="eyebrow">Approach</p><h2>Keep the requirement at the centre.</h2><p>Discuss scope, constraints and expectations with the people responsible for the programme.</p></article><article><p class="eyebrow">Working principles</p><h2>Clarity. Care. Collaboration.</h2><p>Respect confidentiality, communicate precisely and agree responsibilities before work begins.</p></article></div>','soft')+section('<div class="leadership" id="leadership"><img src="assets/people/suresh-kuppuswamy.jpg" width="480" height="560" loading="lazy" alt="Suresh Kuppuswamy"><div><p class="eyebrow">Leadership</p><h2>Suresh Kuppuswamy</h2><p class="role">Co-Founder, Managing Director & Chief Executive Officer</p><p>Suresh’s leadership experience spans technology services, financial infrastructure, enterprise transformation and corporate strategy.</p><p>His career includes responsibilities across India, Europe and the Middle East, with organisations including Tata Consultancy Services, IBM, CAMS/SSPL, Adrenalin eSystems and the Sakthi Group.</p><p>He is a Harvard Business School Advanced Management Program alumnus and holds a B.E. in Computer Science & Engineering from Coimbatore Institute of Technology.</p></div></div>')+section('<div class="facts"><div><p class="eyebrow">Incorporated</p><h3>18 December 2018</h3></div><div><p class="eyebrow">Engineering centre</p><h3>Coimbatore, India</h3></div><div><p class="eyebrow">Corporate identity</p><h3>U74999TZ2018PTC031390</h3></div></div>','soft'))
-shell('ecosystem.html','Working together','Explore collaboration with Zepto Logic across product teams, engineering organisations and research institutions.',hero('Working together','Different perspectives.<br><span>A shared objective.</span>','We welcome introductions from organisations exploring service relationships, engineering collaboration or applied research.')+section(cards([('Product & technology teams','contact.html','Discuss the work ahead and where external support may fit your programme.','01'),('Engineering organisations','contact.html','Explore defined work packages or collaboration alongside your existing team.','02'),('Research & institutions','contact.html','Discuss research questions, feasibility work and practical engineering pathways.','03')]))+split('The first discussion','Understand the fit.','Start with a short overview of your organisation, the requirement and the kind of working relationship you are considering. Supplier onboarding, eligibility and any relevant standards can be discussed as the scope develops.'))
-# Perspectives; genuine editorial guidance, no fabricated news or customer proof.
-shell('news.html','Perspectives','Practical starting points for an engineering service, consultancy or research discussion.',hero('Perspectives','A useful conversation<br><span>starts with context.</span>','A few considerations when exploring external engineering support.')+section('<div class="editorial-grid">'+''.join(f'<article><span class="eyebrow">{k}</span><h2>{t}</h2><p>{p}</p>{link("Explore further",url,"text-link")}</article>' for k,t,p,url in [('Getting started','Frame the requirement.','A short account of the objective, current stage and support being sought is enough for an initial discussion. Detailed implementation material can follow through an appropriate exchange.','contact.html'),('Working models','Choose the structure together.','An isolated review and an ongoing programme call for different ways of working. Scope, responsibilities and dependencies help determine the appropriate model.','engagement-models.html'),('Applied research','Separate the question from the assumption.','A useful feasibility discussion makes clear what is already known, what remains uncertain and what evidence would inform the next decision.','research.html')])+'</div>'))
-shell('careers.html','Careers','Introduce yourself to Zepto Logic Technologies for engineering, research or internship opportunities.',hero('Careers','Curious minds.<br><span>Considered engineering.</span>','We welcome introductions from people interested in digital design, verification, FPGA engineering and applied research.')+split('Join our team','Tell us what<br>interests you.','Share a short introduction, your area of interest and a concise summary of relevant experience. Opportunities depend on current programme needs; this page is an invitation to enquire rather than a list of confirmed vacancies.',link('Introduce yourself','mailto:info@zeptologic.com?subject=Career%20enquiry%20%E2%80%94%20Zepto%20Logic'))+section(cards([('Design & architecture','mailto:info@zeptologic.com?subject=Design%20career%20enquiry','Digital design, system thinking and clear engineering documentation.','01'),('Verification & FPGA','mailto:info@zeptologic.com?subject=Verification%20career%20enquiry','Design behaviour, implementation and practical evaluation.','02'),('Research & internships','mailto:info@zeptologic.com?subject=Research%20or%20internship%20enquiry','Learning through defined technical questions and considered investigation.','03')]),'soft'))
-# Contact uses the existing endpoint contract, with clear delivery states and manual fallback.
-options=['Service or consultancy discussion','Schedule a meeting','Project collaboration','Research collaboration','Supplier / partnership discussion','Other requirement']
-contact=hero('Contact','Let’s begin<br><span>with your requirement.</span>','A short introduction is enough. Share what you are working on and the support you would like to discuss.')+section('''<div class="contact-layout"><aside><p class="eyebrow">Direct contact</p><h2>A conversation,<br>at your pace.</h2><p>For service, consultancy, collaboration and general enquiries.</p><div class="contact-item"><span>Email</span><a href="mailto:info@zeptologic.com">info@zeptologic.com</a></div><div class="contact-item"><span>Phone</span><a href="tel:+919626632233">+91 96266 32233</a></div><div class="contact-item"><span>Engineering centre</span><address>TICEL Bio Park Ltd, M:503, 5th Floor,<br>Maruthamalai Road, Somayampalayam,<br>Coimbatore – 641046,<br>Tamil Nadu, India.</address></div></aside><form id="technicalEnquiry" class="enquiry-form"><p class="eyebrow">Introduce your requirement</p><p class="form-context" id="enquiry-context" hidden></p><div class="form-grid"><div class="field"><label for="name">Name <span>*</span></label><input id="name" name="name" autocomplete="name" maxlength="120" required></div><div class="field"><label for="email">Work email <span>*</span></label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div><div class="field"><label for="company">Organisation <span>*</span></label><input id="company" name="company" autocomplete="organization" maxlength="180" required></div><div class="field"><label for="country">Country</label><input id="country" name="country" autocomplete="country-name" maxlength="100"></div><div class="field full"><label for="projectType">What would you like to discuss? <span>*</span></label><select id="projectType" name="projectType" required>'''+''.join(f'<option>{o}</option>' for o in options)+'''</select></div><div class="field full"><label for="description">A brief introduction <span>*</span></label><textarea id="description" name="description" rows="5" minlength="40" maxlength="6000" aria-describedby="description-help" required placeholder="Your objective, current stage and the support you would like to discuss."></textarea><p class="small" id="description-help">At least 40 characters. Please keep your initial message non-confidential.</p></div><div class="hp-field" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div><label class="check full"><input type="checkbox" name="nda"><span>I would like to discuss confidentiality before sharing further details.</span></label><label class="check full"><input type="checkbox" name="consent" required><span>I agree that my information may be used to respond to this enquiry, as described in the <a href="privacy.html">Privacy Notice</a>. *</span></label></div><button class="button" type="submit">Send enquiry <span aria-hidden="true">↗</span></button><p id="form-status" role="status" aria-live="polite"></p><div id="email-fallback" hidden><p>You can send your message using your email application.</p><a class="text-link" id="fallback-link" href="mailto:info@zeptologic.com">Prepare an email ↗</a></div><noscript><p>The form requires JavaScript. Please email <a href="mailto:info@zeptologic.com">info@zeptologic.com</a>.</p></noscript></form></div>''')+section(heading('The next step','Understand. Discuss. Define.','Your enquiry starts a conversation. The first discussion is an opportunity to review fit, requirements and a possible working model.')+steps(),'soft')
-shell('contact.html','Contact','Discuss a service, consultancy or research requirement with Zepto Logic Technologies in Coimbatore, India.',contact)
-shell('enquiry-received.html','Enquiry status','Enquiry status and contact details for Zepto Logic Technologies.',hero('Your conversation','Thank you<br><span>for getting in touch.</span>','If your enquiry was submitted successfully, the confirmation appeared on the contact page.')+section('<div class="prose"><p>If you did not see a delivery confirmation, please return to the contact page or email info@zeptologic.com.</p>'+link('Return to contact','contact.html')+'</div>'))
-shell('404.html','Page not found','Find services, applications and contact information for Zepto Logic Technologies.',hero('404 · Page not found','Let’s find<br><span>the right direction.</span>','The page may have moved. Explore our services or return to the home page.')+section(link('Back to home','index.html')+' '+link('Explore services','services.html','button secondary')))
-# Old public research URL retains a useful route without detailed project disclosures.
-shell('cdot-samarth-zksnark.html','Research conversations','Explore applied research and hardware development discussions with Zepto Logic.',hero('Applied research','Research conversations.<br><span>Relevant context first.</span>','For information about a specific research or institutional engagement, please contact our team.')+split('Further information','Start a research discussion.','We share programme-specific information through an appropriate direct discussion. You can explore our general research approach or introduce your requirement.',link('Explore applied research','research.html')+' '+link('Contact us','contact.html','button secondary')))
-# Plain factual notices, based on the site's actual behaviour.
-privacy=[('Information you provide','The enquiry form asks for your name, email address, organisation and message. Country and confidentiality preference are optional. Please do not include confidential designs, sensitive personal information or protected implementation details in an initial enquiry.'),('How information is used','Zepto Logic Technologies Private Limited uses enquiry information to review and respond to your request and discuss a potential engagement. Sending an enquiry does not subscribe you to a marketing list.'),('Delivery and hosting','Website enquiries are submitted through our existing Supabase-hosted enquiry service. The website hosting provider and enquiry service may process technical information needed to serve the website and handle requests. If delivery cannot be confirmed, you may choose to send an email instead.'),('Cookies and local storage','This website does not set advertising or analytics cookies. It uses only the information needed for the enquiry you choose to submit. Your browser may cache site assets. Third-party websites linked from this site have their own practices.'),('Your choices','To ask about information you have provided, request a correction or request deletion, contact info@zeptologic.com. Retention and any applicable obligations can be discussed with the team.'),('Contact','Zepto Logic Technologies Private Limited, TICEL Bio Park, Coimbatore, Tamil Nadu, India. Email: info@zeptologic.com.')]
-terms=[('Website information','This website introduces areas of service, consultancy and research discussion. Descriptions are general and do not constitute an offer, an assurance of availability or a commitment to a particular outcome.'),('Engagements','Scope, eligibility, standards, resources, tools, infrastructure, fees and commercial terms are reviewed for each proposed engagement. Work proceeds under separately agreed terms.'),('Application areas','Application areas indicate topics for discussion. They do not represent customer relationships, completed projects, regulatory approvals or certifications for those industries.'),('Confidentiality and intellectual property','Please begin with non-confidential context. Any confidentiality arrangements, access permissions, ownership, licensing or use of project information should be agreed through the appropriate engagement process.'),('External links','External websites are provided for convenience where relevant. Their content and practices are managed by their respective operators.'),('Questions','For questions about the website or a potential engagement, contact info@zeptologic.com.')]
-for file,title,sections in [('privacy.html','Privacy Notice',privacy),('terms.html','Website Terms',terms)]:shell(file,title,title+' for the Zepto Logic Technologies website.',hero('Information',title,'Last updated: 14 October 2026')+section('<div class="legal prose">'+''.join(f'<h2>{t}</h2><p>{p}</p>' for t,p in sections)+'</div>'))
-# Asset-independent metadata indexes.
-(R/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>https://zeptologic.com/'+('' if f=='index.html' else f.replace('.html','/'))+'</loc></url>' for f in pages if f not in ['404.html','enquiry-received.html'])+'</urlset>')
-(R/'assets/applications.json').write_text(json.dumps([{'id':a[0],'title':a[1]} for a in apps],indent=2))
-print(f'Built {len(pages)} pages; {len(apps)} application areas.')
+ROOT = Path(__file__).resolve().parents[1]
+ORIGIN = "https://zeptologic.com"
+COMPANY = "Zepto Logic Technologies Private Limited"
+EMAIL = "info@zeptologic.com"
+RELEASE = "20261123"
+STAGING_PREFIX = "/ZLT_Website/"
+UTILITY = {"404", "enquiry-received", "privacy", "terms"}
+ICONS = {
+    "arrow": '<path d="M4.5 12h14m-6-6 6 6-6 6"/>',
+    "down": '<path d="M12 4.5v14m-6-6 6 6 6-6"/>',
+    "chevron": '<path d="m7 10 5 5 5-5"/>',
+    "chip": '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 3v3m6-3v3M9 18v3m6-3v3M3 9h3m-3 6h3m12-6h3m-3 6h3"/><rect x="9.5" y="9.5" width="5" height="5" rx=".6"/>',
+    "check": '<path d="M8 5h12v14H4V9m4 3 2.5 2.5L16 9M4 5h.01"/>',
+    "board": '<rect x="3" y="5" width="18" height="14" rx="2"/><rect x="7" y="9" width="6" height="6" rx="1"/><path d="M17 9h1m-1 3h1m-1 3h1"/>',
+    "compass": '<circle cx="12" cy="12" r="9"/><path d="m16.5 7.5-2.7 6.3-6.3 2.7 2.7-6.3 6.3-2.7Z"/>',
+    "layers": '<path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5m-18 4 9 5 9-5"/>',
+    "orbit": '<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-38 12 12)"/>',
+    "signal": '<path d="M3 12h4l2.5-6 4 12 2.5-6h5"/>',
+    "shield": '<path d="M12 3 4 6v5c0 4.6 3.1 7.7 8 10 4.9-2.3 8-5.4 8-10V6l-8-3Zm-3 9 2 2 4-4"/>',
+    "network": '<circle cx="5" cy="12" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="18" cy="19" r="2"/><path d="m7 11 9-5m-9 7 9 5"/>',
+    "mail": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+    "phone": '<path d="M5 3h4l2 5-3 2c1.2 2.5 3.5 4.8 6 6l2-3 5 2v4a2 2 0 0 1-2 2C10.2 21 3 13.8 3 5a2 2 0 0 1 2-2Z"/>',
+    "pin": '<path d="M19 10c0 4.5-7 10-7 10S5 14.5 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2"/>',
+}
+SERVICE_LINKS = [(slug, title) for slug, title, _, _ in SERVICES]
+COMPANY_LINKS = [
+    ("about", "About Zepto Logic"),
+    ("ecosystem", "Partnerships"),
+    ("news", "Engineering guides"),
+]
+GROUPS = {
+    "services": {"services", "engagement-models", *DETAILS}
+    - {"research-to-hardware", "cryptographic-hardware-acceleration", "semiconductor-design-partner-india"},
+    "research": {"research", "research-to-hardware", "cryptographic-hardware-acceleration", "cdot-samarth-zksnark"},
+    "about": {"about", "ecosystem", "news", "semiconductor-design-partner-india"},
+}
+PAGES = []
+
+
+def icon(name, css=""):
+    return (
+        f'<svg class="icon {css}" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        f'stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" '
+        f'aria-hidden="true" focusable="false">{ICONS[name]}</svg>'
+    )
+
+
+def link(label, url, css="button", arrow="arrow"):
+    return f'<a class="{css}" href="{escape(url)}">{escape(label)}{icon(arrow)}</a>'
+
+
+def brand():
+    return """<a class="brand" href="index.html" aria-label="Zepto Logic home">
+        <img src="assets/brand/zepto-mark.webp" width="40" height="40" alt="">
+        <span>Zepto Logic <small>TECHNOLOGIES</small></span>
+    </a>"""
+
+
+def navigation(current):
+    def nav_link(slug, name, active=False):
+        state = ' aria-current="page"' if current == slug else ""
+        active_class = ' class="nav-active"' if active else ""
+        return f'<a href="{slug}.html"{state}{active_class}>{escape(name)}</a>'
+
+    def group(slug, name, items):
+        group_link = nav_link(slug, name, current in GROUPS[slug])
+        menu = "".join(nav_link(path, title) for path, title in items)
+        return f"""<div class="nav-group">
+            <div class="nav-line">{group_link}
+                <button class="nav-disclosure" type="button" aria-label="More {name.lower()} pages"
+                    aria-controls="{slug}-menu" aria-expanded="false" hidden>{icon("chevron")}</button>
+            </div>
+            <div id="{slug}-menu" class="nav-dropdown" hidden>{menu}</div>
+        </div>"""
+
+    return f"""<header class="site-header">
+        <div class="header-inner">
+            {brand()}
+            <nav id="primary-nav" aria-label="Primary navigation">
+                {group("services", "Services", [*SERVICE_LINKS, ("engagement-models", "Ways to work with us")])}
+                {nav_link("applications", "Applications")}
+                {nav_link("research", "Research", current in GROUPS["research"])}
+                {group("about", "Company", COMPANY_LINKS[1:])}
+                {nav_link("careers", "Careers")}
+            </nav>
+            <a class="button header-contact" href="contact.html"{' aria-current="page"' if current == "contact" else ""}>Contact{icon("arrow")}</a>
+            <button class="menu-toggle" type="button" aria-label="Open navigation"
+                aria-controls="primary-nav" aria-expanded="false" hidden><span></span><span></span></button>
+        </div>
+    </header>"""
+
+
+def footer():
+    return f"""<footer class="site-footer">
+        <div class="wrap footer-grid">
+            <div class="footer-brand">
+                {brand()}
+                <p>Semiconductor design, verification and FPGA engineering. Based in Coimbatore, India.</p>
+                <a href="mailto:{EMAIL}">{EMAIL}</a>
+            </div>
+            <div><h2>Engineering</h2>
+                <a href="services.html">Services</a>
+                <a href="applications.html">Applications</a>
+                <a href="research.html">Research</a>
+                <a href="engagement-models.html">Ways to work with us</a>
+            </div>
+            <div><h2>Company</h2>
+                <a href="about.html">About us</a>
+                <a href="ecosystem.html">Partnerships</a>
+                <a href="news.html">Engineering guides</a>
+                <a href="careers.html">Careers</a>
+            </div>
+            <div><h2>Office</h2>
+                <address>TICEL Bio Park<br>Coimbatore, Tamil Nadu 641046<br>India</address>
+                <a href="contact.html#office">Contact details</a>
+            </div>
+        </div>
+        <div class="wrap footer-bottom">
+            <p>© <span data-year>2026</span> {COMPANY}</p>
+            <div><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="#top">Back to top ↑</a></div>
+        </div>
+    </footer>"""
+
+
+def canonical(slug):
+    return f"{ORIGIN}/" if slug == "index" else f"{ORIGIN}/{slug}/"
+
+
+def write_page(slug, title, description, body, contact=True):
+    PAGES.append(slug)
+    title = f"{title} | Zepto Logic Technologies"
+    url = canonical(slug)
+    schema = ""
+    if slug == "index":
+        organization = {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": COMPANY,
+            "url": url,
+            "email": EMAIL,
+            "logo": f"{ORIGIN}/assets/brand/zepto-logo.png",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Coimbatore",
+                "addressRegion": "Tamil Nadu",
+                "postalCode": "641046",
+                "addressCountry": "IN",
+            },
+        }
+        schema = f'<script type="application/ld+json">{json.dumps(organization)}</script>'
+    closing = contact_band() if contact and slug not in UTILITY else ""
+    markup = f"""<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{escape(title)}</title>
+    <meta name="description" content="{escape(description)}">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#0a192b">
+    <link rel="canonical" href="{url}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Zepto Logic Technologies">
+    <meta property="og:title" content="{escape(title)}">
+    <meta property="og:description" content="{escape(description)}">
+    <meta property="og:url" content="{url}">
+    <meta property="og:image" content="{ORIGIN}/assets/brand/og-image.jpg">
+    <meta property="og:image:alt" content="Zepto Logic Technologies semiconductor engineering">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="assets/brand/favicon-32.png">
+    <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+    <link rel="preload" href="assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/site-v31.css?v={RELEASE}">
+    <script defer src="assets/site-v31.js?v={RELEASE}"></script>
+    {schema}
+</head>
+<body id="top" class="page-{slug}">
+    <a class="skip" href="#main">Skip to content</a>
+    {navigation(slug)}
+    <main id="main" tabindex="-1">
+        {body}
+        {closing}
+    </main>
+    {footer()}
+</body>
+</html>
+"""
+    # Pages serves this file at missing URLs of any depth.
+    if slug == "404":
+        markup = re.sub(
+            r'(href|src)="(?!https?:|mailto:|tel:|/|#)([^"]+)"',
+            lambda match: f'{match[1]}="{STAGING_PREFIX}{match[2]}"',
+            markup,
+        )
+    markup = "\n".join(line.rstrip() for line in markup.splitlines()) + "\n"
+    (ROOT / f"{slug}.html").write_text(markup, encoding="utf-8")
+
+
+def hero(title, description, parent=None, label=None, actions="", aside=""):
+    hierarchy = ""
+    if parent:
+        label_text, url = parent
+        hierarchy = f'<a href="{url}">{escape(label_text)}</a><span aria-hidden="true">/</span>'
+    state = escape(label or title)
+    grid = " subhero-grid" if aside else ""
+    return f"""<section class="subhero">
+        <div class="wrap{grid}">
+            <div>
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="index.html">Home</a><span aria-hidden="true">/</span>{hierarchy}
+                    <span aria-current="page">{state}</span>
+                </nav>
+                <h1>{escape(title)}</h1>
+                <p class="lead">{escape(description)}</p>
+                {f'<div class="actions">{actions}</div>' if actions else ""}
+            </div>
+            {aside}
+        </div>
+    </section>"""
+
+
+def section(body, css="", anchor=""):
+    identity = f' id="{anchor}"' if anchor else ""
+    return f'<section class="section {css}"{identity}><div class="wrap">{body}</div></section>'
+
+
+def heading(title, description="", action=""):
+    detail = f"<p>{escape(description)}</p>" if description else ""
+    return f'<div class="section-heading"><div><h2>{escape(title)}</h2>{detail}</div>{action}</div>'
+
+
+def card(title, url, symbol, description):
+    return f"""<a class="card" href="{escape(url)}">
+        <span class="card-icons"><span class="icon-tile">{icon(symbol)}</span><span class="card-arrow">{icon("arrow")}</span></span>
+        <h3>{escape(title)}</h3><p>{escape(description)}</p>
+    </a>"""
+
+
+def service_cards(items=SERVICES):
+    return '<div class="card-grid">' + "".join(
+        card(title, f"{slug}.html", symbol, description)
+        for slug, title, symbol, description in items
+    ) + "</div>"
+
+
+def blocks(items, css="info-grid"):
+    return f'<div class="{css}">' + "".join(
+        f"<article><h3>{escape(title)}</h3><p>{escape(description)}</p></article>"
+        for title, description in items
+    ) + "</div>"
+
+
+def check_list(items):
+    return '<ul class="check-list">' + "".join(
+        f'<li>{escape(item)}</li>' for item in items
+    ) + "</ul>"
+
+
+def contact_band():
+    return f"""<section class="contact-band">
+        <div class="wrap contact-band-inner">
+            <div><h2>Tell us about your project.</h2>
+                <p>Share what you’re building, your current stage and where you need support.</p></div>
+            {link("Discuss a project", "contact.html", "button")}
+        </div>
+    </section>"""
+
+
+def models_grid():
+    return '<div class="models-grid">' + "".join(
+        f"""<a href="engagement-models.html#{key}">
+            <span><strong>{escape(title)}</strong><span>{escape(description)}</span></span>{icon("arrow")}
+        </a>"""
+        for key, title, description, _ in MODELS
+    ) + "</div>"
+
+
+def write_home():
+    shortcuts = [
+        ("Design & verification", "services.html", "chip"),
+        ("FPGA prototypes", "fpga-prototyping-services.html", "board"),
+        ("Engineering reviews", "consultancy.html", "compass"),
+        ("Research partnerships", "research.html", "orbit"),
+    ]
+    quick_links = "".join(
+        f'<a href="{url}">{icon(symbol)}<span>{escape(title)}</span>{icon("arrow", "quick-arrow")}</a>'
+        for title, url, symbol in shortcuts
+    )
+    body = f"""<section class="home-hero">
+        <div class="wrap">
+            <div class="hero-layout">
+                <div class="hero-copy">
+                    <p class="eyebrow"><span></span> Semiconductor engineering · Coimbatore, India</p>
+                    <h1>Chip design,<br>from concept<br><em>to prototype.</em></h1>
+                    <p class="lead">We help teams worldwide design digital chips, verify their behaviour and test them on reprogrammable FPGA hardware.</p>
+                    <div class="actions">
+                        {link("Discuss a project", "contact.html")}
+                        {link("Explore services", "#section-2", "button button-outline", "down")}
+                    </div>
+                </div>
+                <figure class="hero-image">
+                    <picture>
+                        <source media="(max-width: 600px)" srcset="assets/visuals/fpga-board-small.webp">
+                        <img src="assets/visuals/fpga-board.webp" width="1140" height="912"
+                            alt="" fetchpriority="high">
+                    </picture>
+                    <figcaption>{icon("board")} <span>FPGA development board illustration</span></figcaption>
+                </figure>
+            </div>
+            <nav class="quick-paths" aria-label="Explore our work">
+                {quick_links}
+            </nav>
+        </div>
+    </section>"""
+    body += section(
+        '<span id="section-2" class="anchor-alias"></span>'
+        + heading(
+            "Engineering services",
+            "Bring us a specification, a design that needs testing or a block you need running on hardware.",
+            link("View all services", "services.html", "text-link"),
+        )
+        + service_cards(SERVICES[:3]),
+        anchor="introduction",
+    )
+    selected = ("compute", "security", "edge-ai", "industrial", "networks", "instrumentation")
+    areas = "".join(
+        f'<a href="applications.html#{slug}">{icon(symbol)}<span>{escape(title)}</span>{icon("arrow")}</a>'
+        for slug, title, symbol, _, _ in APPLICATIONS if slug in selected
+    )
+    body += section(f"""<div class="split">
+        <div>
+            <h2>Where we can help</h2>
+            <p class="section-lead">Find examples of the hardware design, testing and integration work you can discuss with our team.</p>
+            {link("Browse application areas", "applications.html", "button button-outline")}
+        </div>
+        <div class="application-links">{areas}</div>
+    </div>""", "section-ink", "section-3")
+    body += section(
+        heading(
+            "Ways to work with us",
+            "Start with the kind of support your team needs. We’ll agree the scope, deliverables and review points before work starts.",
+        ) + models_grid(),
+        "section-soft", "section-4",
+    )
+    write_page(
+        "index", "Semiconductor design, verification & FPGA services",
+        "Zepto Logic Technologies helps global teams with digital chip design, design verification, FPGA prototyping, IP integration and applied research from Coimbatore, India.",
+        body,
+    )
+
+
+def write_services():
+    body = hero(
+        "Semiconductor engineering services",
+        "Get help defining a digital chip, building and testing its logic, or bringing a design up on FPGA hardware.",
+        label="Services",
+        actions=link("Discuss a project", "contact.html")
+        + link("See engineering services", "#engineering-services", "button button-outline", "down"),
+    )
+    body += section(
+        heading("Where do you need support?", "Choose the work you need done or start with a technical review.")
+        + service_cards(), anchor="engineering-services",
+    )
+    body += section(
+        heading("Specialist engineering", "Explore more specific requirements in digital arithmetic, security or distributed teams.")
+        + '<div class="card-grid">'
+        + card("Floating-point & digital IP", "floating-point-ip.html", "layers",
+               "Discuss arithmetic blocks, data formats and hardware interfaces.")
+        + card("Cryptographic hardware", "cryptographic-hardware-acceleration.html", "shield",
+               "Discuss digital design, integration or prototype evaluation for security hardware.")
+        + card("Work with a team in India", "semiconductor-design-partner-india.html", "network",
+               "Plan handovers, tools and reviews with our Coimbatore engineering team.")
+        + "</div>", "section-soft",
+    )
+    write_page(
+        "services", "Semiconductor engineering services",
+        "Digital chip architecture and RTL design, simulation and verification, FPGA prototypes, engineering consultancy and semiconductor IP integration.",
+        body,
+    )
+
+
+def write_details():
+    for slug, (title, description, scope, share) in DETAILS.items():
+        if slug in GROUPS["research"]:
+            parent = ("Research", "research.html")
+        elif slug in GROUPS["about"]:
+            parent = ("Company", "about.html")
+        else:
+            parent = ("Services", "services.html")
+        enquiry = f"contact.html?service={slug}"
+        body = hero(title, description, parent, actions=link("Ask about this service", enquiry))
+        body += section(heading("What we can help with") + blocks(scope), anchor="scope")
+        body += section(f"""<div class="split">
+            <div><h2>What to share when you contact us</h2>
+                <p class="section-lead">A short, non-confidential description is enough to start.</p></div>
+            <div>{check_list(share)}{link("Start an enquiry", enquiry, "text-link")}</div>
+        </div>""", "section-soft", "what-to-share")
+        write_page(slug, title, description, body, contact=False)
+
+
+def write_applications():
+    body = hero(
+        "Application areas",
+        "See where digital design, verification and FPGA prototyping can fit into your product or research project.",
+        actions=link("Find your application", "#application-search-section", "button button-outline", "down"),
+    )
+    areas = "".join(
+        f'<a href="#{slug}">{escape(title)}</a>' for slug, title, _, _, _ in APPLICATIONS
+    )
+    body += section(f"""<div class="application-tools" id="application-search-section">
+        <div id="search-controls" hidden>
+            <label for="application-search">Find an application area</label>
+            <input type="search" id="application-search" placeholder="Try telecom, robotics or research" autocomplete="off">
+            <p id="application-count" role="status">{len(APPLICATIONS)} application areas</p>
+        </div>
+        <nav class="application-index" aria-label="Jump to an application area">{areas}</nav>
+    </div>""", "section-soft section-tight")
+    listing = "".join(
+        f"""<article class="application-row" id="{slug}" data-application="{escape(f'{title} {example} {search_terms}')}">
+            <span class="icon-tile">{icon(symbol)}</span>
+            <div><h2>{escape(title)}</h2><p>{escape(example)}</p></div>
+            {link("Discuss this area", f"contact.html?area={slug}", "text-link")}
+        </article>"""
+        for slug, title, symbol, example, search_terms in APPLICATIONS
+    )
+    body += section(f"""<div id="application-list">{listing}</div>
+        <p id="no-applications" hidden>No matching areas. Try a different term or browse the links above.</p>""",
+        "section-tight")
+    write_page(
+        "applications", "Semiconductor application areas",
+        "Explore semiconductor engineering for compute, security, networks, sensing, industrial systems, embedded devices and research.",
+        body,
+    )
+
+
+def write_engagement():
+    body = hero(
+        "Ways to work with us",
+        "Choose a focused review, a specific deliverable, joint development or ongoing engineering support.",
+        label="Working with Zepto",
+        actions=link("Request an introductory call", "contact.html?type=meeting"),
+    )
+    body += section('<div class="engagement-grid">' + "".join(
+        f"""<article class="engagement-card" id="{key}">
+            <h2>{escape(title)}</h2><p>{escape(description)}</p><p>{escape(start)}</p>
+            {link("Discuss this approach", f"contact.html?model={key}", "text-link")}
+        </article>"""
+        for key, title, description, start in MODELS
+    ) + "</div>")
+    body += section(
+        heading("What we agree before work starts")
+        + blocks((
+            ("Scope & deliverables", "What we’ll build, review or test and how you’ll assess the results."),
+            ("Tools & access", "The tools, environments, confidentiality arrangements and other requirements for the work."),
+            ("Schedule & terms", "Milestones, review dates, responsibilities and commercial terms."),
+        )), "section-soft",
+    )
+    write_page(
+        "engagement-models", "Semiconductor engineering engagement models",
+        "Work with Zepto Logic through a technical review, defined project, joint development or ongoing semiconductor engineering support.",
+        body,
+    )
+
+
+def write_research():
+    body = hero(
+        "Applied research & development",
+        "Work with us to assess an idea, build a prototype and decide what to test next.",
+        label="Research", actions=link("Discuss research collaboration", "contact.html?type=research"),
+    )
+    body += section(
+        heading("From research question to hardware", "For technology teams, universities and research labs exploring a hardware idea.")
+        + '<div class="card-grid">'
+        + card("Feasibility studies", "consultancy.html", "compass",
+               "Identify constraints, compare options and agree what you need to learn first.")
+        + card("Hardware prototypes", "research-to-hardware.html", "board",
+               "Turn a research idea into a testable implementation with a plan for evaluating it.")
+        + card("Joint research projects", "engagement-models.html#collaboration", "orbit",
+               "Agree research goals, responsibilities and how the teams will review results.")
+        + "</div>",
+    )
+    body += section(f"""<div class="split">
+        <div><h2>Research topics</h2>
+        <p class="section-lead">We can discuss the hardware requirements and evaluation plan for your area of research.</p></div>
+        <div>{check_list(("Cryptographic hardware and post-quantum security",
+                          "Digital accelerators and processing on embedded devices",
+                          "Control, readout and measurement electronics"))}
+        {link("See application areas", "applications.html", "text-link")}</div>
+    </div>""", "section-soft")
+    write_page(
+        "research", "Applied semiconductor research & development",
+        "Discuss research collaboration, feasibility, FPGA prototypes and hardware evaluation with Zepto Logic Technologies.",
+        body,
+    )
+
+
+def write_company():
+    facts = """<dl class="company-facts">
+        <div><dt>Established</dt><dd>2018</dd></div>
+        <div><dt>Engineering centre</dt><dd>Coimbatore, India</dd></div>
+        <div><dt>Corporate identification number</dt><dd>U74999TZ2018PTC031390</dd></div>
+    </dl>"""
+    body = hero(
+        "About Zepto Logic",
+        f"{COMPANY} is a semiconductor engineering company based in Coimbatore, India.",
+        aside=facts,
+    )
+    body += section(f"""<div class="split">
+        <div><h2>Design and development support</h2></div>
+        <div class="prose">
+            <p>We work with product companies, engineering teams and research groups on digital chip design, verification, FPGA prototypes and applied research.</p>
+            <p>We’re a fabless design company. Our work focuses on the design and validation of chips and digital hardware.</p>
+            {link("See our services", "services.html", "text-link")}
+        </div>
+    </div>""")
+    body += section("""<div class="leadership">
+        <img src="assets/people/suresh-kuppuswamy.jpg" width="480" height="560" loading="lazy" alt="Suresh Kuppuswamy">
+        <div>
+            <p class="eyebrow">Leadership</p>
+            <h2>Suresh Kuppuswamy</h2>
+            <p class="role">Co-Founder, Managing Director &amp; Chief Executive Officer</p>
+            <p>Suresh’s leadership experience spans technology services, financial infrastructure, enterprise transformation and corporate strategy.</p>
+            <p>His career includes responsibilities across India, Europe and the Middle East, with organisations including Tata Consultancy Services, IBM, CAMS/SSPL, Adrenalin eSystems and the Sakthi Group.</p>
+            <p>He is a Harvard Business School Advanced Management Program alumnus and holds a B.E. in Computer Science &amp; Engineering from Coimbatore Institute of Technology.</p>
+        </div>
+    </div>""", "section-soft", "leadership")
+    write_page(
+        "about", "About Zepto Logic",
+        "Meet Zepto Logic Technologies Private Limited, a fabless semiconductor engineering and applied research company in Coimbatore, India.",
+        body,
+    )
+
+    partnerships = hero(
+        "Engineering & research partnerships",
+        "Work with our team on a shared engineering task, a research project or a prototype.",
+        ("Company", "about.html"), label="Partnerships",
+        actions=link("Discuss a partnership", "contact.html?type=partnership"),
+    ) + section(
+        heading("Who we work with")
+        + blocks((
+            ("Product teams", "Add support for a particular design, verification task or prototype."),
+            ("Design houses & integrators", "Scope a defined engineering task or work alongside your technical team."),
+            ("Universities & research labs", "Plan a feasibility study, test an idea in hardware or explore how to develop a prototype together."),
+        )),
+    )
+    write_page("ecosystem", "Engineering & research partnerships",
+               "Explore chip design, shared development and research collaborations with Zepto Logic Technologies.", partnerships)
+
+    guides = hero(
+        "Engineering guides",
+        "Practical questions to ask when you need outside support for a hardware project.",
+        ("Company", "about.html"),
+    ) + section(
+        heading("Start with your project")
+        + '<div class="card-grid">'
+        + card("Write a project brief", "contact.html#what-to-include", "check",
+               "Summarise the goal, the current stage and the support you need.")
+        + card("Choose how to work together", "engagement-models.html", "network",
+               "Compare a technical review, a defined project, joint development and ongoing support.")
+        + card("Plan a hardware trial", "research-to-hardware.html", "board",
+               "Define what the prototype should demonstrate and how you will evaluate it.")
+        + "</div>",
+    )
+    write_page("news", "Engineering guides",
+               "Guidance on scoping semiconductor engineering work, choosing a working model and planning hardware trials.", guides)
+
+
+def write_careers():
+    apply = f"mailto:{EMAIL}?subject=Career%20enquiry%20-%20Zepto%20Logic"
+    body = hero(
+        "Careers & internships",
+        "Introduce yourself if you’re interested in digital chip design, verification, FPGA engineering or applied research.",
+        label="Careers", actions=link("Email your profile", apply),
+    )
+    body += section(
+        heading("Areas of work")
+        + blocks((
+            ("Design & architecture", "Read specifications, design digital logic and document how blocks and interfaces work."),
+            ("Verification & FPGA", "Check designs in simulation, debug failures and evaluate designs on FPGA boards."),
+            ("Applied research", "Investigate hardware ideas through reading, implementation, testing and documentation."),
+        )),
+    )
+    body += section(f"""<div class="split">
+        <div><h2>Introduce yourself</h2><p class="section-lead">We review profiles as project and hiring needs arise.</p></div>
+        <div>{check_list(("Send your résumé and the role or internship you’re interested in.",
+                          "Include relevant projects, code samples or a portfolio if available.",
+                          "For internships, share your course, expected graduation date and availability."))}
+        {link("Email your profile", apply, "text-link")}</div>
+    </div>""", "section-soft")
+    write_page(
+        "careers", "Careers & internships",
+        "Contact Zepto Logic Technologies about digital design, design verification, FPGA engineering, applied research and internships.",
+        body, contact=False,
+    )
+
+
+def write_contact():
+    options = "".join(
+        f'<option value="{escape(value)}">{escape(label)}</option>' for value, label in ENQUIRY_TYPES
+    )
+    types = {
+        "meeting": "Schedule a meeting",
+        "research": "Research collaboration",
+        "partnership": "Supplier / partnership discussion",
+    }
+    contextual = {
+        "area": {row[0]: row[1] for row in APPLICATIONS},
+        "model": {row[0]: row[1] for row in MODELS},
+        "service": {**{slug: details[0] for slug, details in DETAILS.items()}, **dict(SERVICE_LINKS)},
+        "types": types,
+    }
+    context_json = json.dumps(contextual).replace("<", "\\u003c")
+    body = hero(
+        "Contact Zepto Logic",
+        "Tell us what you’re building or ask for an introductory call. Start with a short, non-confidential description.",
+        label="Contact",
+    )
+    body += section(f"""<div class="contact-layout">
+        <div>
+            <div class="contact-details" id="office">
+                <h2>Contact details</h2>
+                <div class="contact-item"><span class="icon-tile">{icon("mail")}</span>
+                    <div><strong>Email</strong><a href="mailto:{EMAIL}">{EMAIL}</a></div></div>
+                <div class="contact-item"><span class="icon-tile">{icon("phone")}</span>
+                    <div><strong>Phone</strong><a href="tel:+919626632233">+91 96266 32233</a></div></div>
+                <div class="contact-item"><span class="icon-tile">{icon("pin")}</span>
+                    <div><strong>Engineering office</strong><address>TICEL Bio Park Ltd, M:503, 5th Floor<br>
+                    Maruthamalai Road, Somayampalayam<br>Coimbatore, Tamil Nadu 641046, India</address></div></div>
+            </div>
+            <div class="contact-brief" id="what-to-include">
+                <h2>What to include</h2>
+                {check_list(("What you want to build or test", "How far the project has progressed", "Where your team needs help"))}
+                <p>For jobs and internships, visit our <a href="careers.html">Careers page</a>.</p>
+            </div>
+        </div>
+        <div class="enquiry-panel">
+            <h2>Send a project enquiry</h2>
+            <form id="technicalEnquiry" method="post" hidden>
+                <p id="enquiry-context" class="form-context" hidden></p>
+                <p class="field-note">Fields marked * are required.</p>
+                <fieldset class="form-grid" id="enquiry-fields" aria-label="Project enquiry details">
+                    <div class="field">
+                        <label for="name">Name *</label>
+                        <input id="name" name="name" autocomplete="name" maxlength="120" required>
+                    </div>
+                    <div class="field">
+                        <label for="email">Work email *</label>
+                        <input type="email" id="email" name="email" autocomplete="email" maxlength="254" required>
+                    </div>
+                    <div class="field">
+                        <label for="company">Company or institution *</label>
+                        <input id="company" name="company" autocomplete="organization" maxlength="180" required>
+                    </div>
+                    <div class="field">
+                        <label for="country">Country</label>
+                        <input id="country" name="country" autocomplete="country-name" maxlength="100">
+                    </div>
+                    <div class="field full">
+                        <label for="projectType">What would you like to discuss? *</label>
+                        <select id="projectType" name="projectType" required>{options}</select>
+                    </div>
+                    <div class="field full">
+                        <label for="description">A brief project description *</label>
+                        <textarea id="description" name="description" rows="5" minlength="40" maxlength="6000"
+                            aria-describedby="description-help" required></textarea>
+                        <p class="field-note" id="description-help">At least 40 characters. Keep your first message non-confidential.</p>
+                    </div>
+                    <div class="hp-field" aria-hidden="true">
+                        <label for="website">Website</label>
+                        <input id="website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+                    <label class="check full"><input type="checkbox" name="nda">
+                        <span>I’d like to discuss a confidentiality agreement before sharing details.</span></label>
+                    <label class="check full"><input type="checkbox" name="consent" required>
+                        <span>I agree that Zepto Logic may use my information to respond to this enquiry. See the <a href="privacy.html">Privacy Notice</a>. *</span></label>
+                </fieldset>
+                <button class="button button-primary-dark" type="submit"><span>Send enquiry</span>{icon("arrow")}</button>
+                <p id="form-status" role="status" aria-live="polite"></p>
+                <div id="email-fallback" hidden>
+                    {link("Open your email app", f"mailto:{EMAIL}", css="text-link").replace('<a ', '<a id="fallback-link" ', 1)}
+                </div>
+            </form>
+            <p id="form-unavailable">You can send your project enquiry to <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
+            <script id="contact-contexts" type="application/json">{context_json}</script>
+        </div>
+    </div>""", "section-contact")
+    faqs = (
+        ("Can you work with a team based outside India?",
+         "Yes. Tell us your location, time zone and project needs so we can discuss working hours, communication and reviews."),
+        ("Can I ask for a call before sharing requirements?",
+         "Yes. Select “Request an introductory call” and suggest a few times and your time zone. We’ll reply to agree a time."),
+        ("Can we arrange an NDA?",
+         "Select the confidentiality option when you enquire. You can share detailed material once both teams have agreed the appropriate arrangements."),
+    )
+    body += section(
+        heading("Frequently asked questions")
+        + '<div class="faq-list">'
+        + "".join(f'<details><summary>{escape(q)}{icon("chevron")}</summary><p>{escape(a)}</p></details>' for q, a in faqs)
+        + "</div>", "section-soft",
+    )
+    write_page(
+        "contact", "Contact Zepto Logic",
+        "Contact Zepto Logic Technologies in Coimbatore, India, to discuss a semiconductor design project, verification, FPGA prototypes or research.",
+        body, contact=False,
+    )
+
+
+def write_other_pages():
+    body = hero(
+        "Research programme enquiries",
+        "For information about a specific research or institutional project, contact our team with the programme name and your question.",
+        ("Research", "research.html"), label="Programme enquiries",
+        actions=link("Contact research team", "contact.html?type=research") + link("Explore applied research", "research.html", "button button-outline"),
+    )
+    write_page("cdot-samarth-zksnark", "Research programme enquiries",
+               "Ask Zepto Logic Technologies about a research or institutional programme.", body, contact=False)
+    body = hero(
+        "Enquiry status",
+        "The contact form shows a confirmation when your enquiry is received. If you need to try again or reach us by email, return to Contact.",
+        actions=link("Return to contact", "contact.html"),
+    )
+    write_page("enquiry-received", "Enquiry status", "Find contact information and enquiry status help.", body)
+    body = hero(
+        "Page not found",
+        "The link may have changed. Go to the homepage or browse our engineering services.",
+        label="404",
+        actions=link("Back to home", "index.html") + link("Browse services", "services.html", "button button-outline"),
+    )
+    write_page("404", "Page not found", "Find services and contact information for Zepto Logic Technologies.", body)
+    privacy = (
+        ("Information you provide", "The enquiry form asks for your name, email, organisation and message. Country and confidentiality preference are optional. Keep your first enquiry free of confidential designs, sensitive personal information and protected implementation details."),
+        ("How we use information", f"{COMPANY} uses the information you provide to respond to your enquiry and discuss a potential engagement."),
+        ("Hosting and delivery", "The website sends enquiries through a Supabase-hosted service. Our hosting and enquiry providers may process technical information to serve the website and handle requests. The site offers an email option when form delivery cannot be confirmed."),
+        ("Cookies and caching", "This website does not set advertising or analytics cookies. Submitting an enquiry does not subscribe you to a marketing list. Your browser may cache site assets. Third-party websites linked from this site have their own practices."),
+        ("Your choices", f"To ask about information you provided, or to request a correction or deletion, email {EMAIL}. Contact us to ask about retention or other applicable obligations."),
+    )
+    terms = (
+        ("Website information", "This website describes areas for engineering services, consultancy and research. Specific work, availability and terms are agreed for each engagement."),
+        ("Engagements", "Scope, standards, resources, tools, infrastructure, eligibility and pricing are reviewed for each proposed engagement. Work proceeds under separately agreed terms."),
+        ("Application areas", "The examples on this site describe possible uses for our engineering services. Ask us about the requirements and criteria that apply to your project."),
+        ("Confidentiality and intellectual property", "Share non-confidential information initially. Access, confidentiality, ownership, licensing and use of project information should be agreed through the engagement process."),
+        ("External links and questions", f"External websites are managed by their operators. For questions about this website or a potential engagement, email {EMAIL}."),
+    )
+    for slug, title, entries in [("privacy", "Privacy Notice", privacy), ("terms", "Website Terms", terms)]:
+        text = "".join(f"<h2>{escape(t)}</h2><p>{escape(p)}</p>" for t, p in entries)
+        body = hero(title, f"Website information for {COMPANY}.")
+        body += section(f'<div class="legal prose">{text}</div>')
+        write_page(slug, title, f"{title} for the Zepto Logic Technologies website.", body)
+
+
+def main():
+    write_home()
+    write_services()
+    write_details()
+    write_applications()
+    write_engagement()
+    write_research()
+    write_company()
+    write_careers()
+    write_contact()
+    write_other_pages()
+    urls = "\n".join(
+        f"    <url><loc>{canonical(slug)}</loc></url>"
+        for slug in PAGES if slug not in {"404", "enquiry-received"}
+    )
+    (ROOT / "sitemap.xml").write_text(f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{urls}
+</urlset>
+""", encoding="utf-8")
+    (ROOT / "assets/applications.json").write_text(
+        json.dumps([{"id": row[0], "title": row[1]} for row in APPLICATIONS], indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Built {len(PAGES)} pages and {len(APPLICATIONS)} application areas.")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,28 +1,21 @@
 {
-  "version": "v31-service-led",
-  "active_styles": [
-    "assets/site-v31.css"
-  ],
-  "active_scripts": [
-    "assets/site-v31.js"
-  ],
+  "active_styles": ["assets/site-v31.css"],
+  "active_scripts": ["assets/site-v31.js"],
   "visuals": [
     {
-      "file": "assets/visuals/silicon-landscape.svg",
-      "origin": "Original code-native semiconductor illustration"
+      "files": ["assets/visuals/fpga-board.webp", "assets/visuals/fpga-board-small.webp"],
+      "origin": "Original generated illustration of an FPGA development board"
     }
   ],
   "font": {
-    "file": "assets/fonts/manrope.ttf",
-    "source": "https://github.com/google/fonts/tree/main/ofl/manrope",
+    "file": "assets/fonts/manrope.woff2",
+    "source": "Converted from the Manrope TTF in this repository",
     "license": "assets/fonts/OFL.txt"
   },
   "brand": [
     "assets/brand/zepto-logo.png",
+    "assets/brand/zepto-mark.webp",
     "assets/brand/og-image.jpg"
   ],
-  "people": [
-    "assets/people/suresh-kuppuswamy.jpg"
-  ],
-  "reference_policy": "Original text and artwork. No reference-site customer claims, logos or testimonials."
+  "people": ["assets/people/suresh-kuppuswamy.jpg"]
 }

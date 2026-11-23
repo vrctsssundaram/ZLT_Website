@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release integrity checks for the V31 service-led site."""
+"""Release integrity checks for the Zepto Logic website."""
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse,unquote
@@ -16,6 +16,8 @@ class Page(HTMLParser):
   if t=='img':self.alt.append(a.get('alt'))
   if t=='link' and a.get('rel')=='canonical':self.canonical.append(a.get('href'));return
   if t=='meta' and a.get('name')=='robots':self.robots.append(a.get('content'))
+  if t in ('source', 'img') and a.get('srcset'):
+   self.refs.extend(entry.split()[0] for entry in a['srcset'].split(','))
   k={'a':'href','link':'href','script':'src','img':'src'}.get(t)
   if k and a.get(k):self.refs.append(a[k])
 def check(root,production=False):
@@ -37,7 +39,10 @@ def check(root,production=False):
   for ref in p.refs:
    u=urlparse(ref)
    if u.scheme or u.netloc:continue
-   f=unquote(u.path).lstrip('/') or name
+   path = unquote(u.path)
+   if not production:
+    path = path.removeprefix('/ZLT_Website/')
+   f = path.lstrip('/') or name
    target=root/f
    if target.is_dir():target=target/'index.html'
    if not target.exists():failures.append(f'{name}: missing {ref}');continue

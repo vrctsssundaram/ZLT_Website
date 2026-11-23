@@ -7,7 +7,7 @@ for f in R.glob('*.html'):
  p=Page();p.feed(f.read_text())
  if f.name in ('404.html','enquiry-received.html'):assert 'noindex' in p.robots[0]
  else:assert 'noindex' not in p.robots[0] and 'index' in p.robots[0]
- assert 'href="assets/' not in f.read_text(),'Production asset routes must be root relative'
+ assert not any(ref.startswith('assets/') for ref in p.refs), 'Production asset routes must be root relative'
 assert (R/'.htaccess').exists()
 assert 'Disallow: /' not in (R/'robots.txt').read_text()
 print('PASS: production indexing, clean-route assets and host configuration')
