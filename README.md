@@ -1,38 +1,27 @@
-# Zepto Logic website — V31
+# Zepto Logic Technologies website
 
-A 24-page static company website for service, consultancy and applied research enquiries.
+The 24-page static site introduces digital chip design, verification, FPGA prototyping, engineering consultancy and applied research. The homepage uses an original illustration and a fixed introduction. Responsive navigation and service links guide visitors to the relevant project enquiry.
 
-- GitHub Pages: https://vrctsssundaram.github.io/ZLT_Website/
-- Separate production origin: https://zeptologic.com/
+- [GitHub Pages staging site](https://vrctsssundaram.github.io/ZLT_Website/)
+- [Separate production website](https://zeptologic.com/)
 
-## Design and content
+## Maintain the website
 
-Original navy/blue/cyan visual system derived from the existing Zepto Logic logo. Original semiconductor SVG illustration. GSOC informed the visual hierarchy and page structures; iVLSI, Swindon Silicon and CSEM informed navigation and enquiry patterns. No reference-site copy, customer claims, testimonials or third-party brand assets are republished.
+- Shared layouts and page generation in `scripts/build_site.py`
+- Service descriptions, application areas and enquiry options in `scripts/site_content.py`
+- Active styles and browser interactions in `assets/site-v31.css` and `assets/site-v31.js`
+- Image and font sources in `ASSET-MANIFEST.json`
 
-The homepage has three introductions rotating every five seconds. Rotation pauses on hover/focus, supports manual pause and respects reduced-motion settings. All content and navigation remain available without animation.
+Run `npm run build` after changing the content or templates and commit the generated HTML and sitemap. Run `npm run check` before publishing. The release workflow tests all 24 pages at desktop and mobile widths in Chromium, Firefox and WebKit, and checks keyboard navigation, accessibility, application search and enquiry handling.
 
-13 application areas reflect the outreach categories, without publishing prospect names or contact lists, implying existing customer relationships, or making sector-certification claims. Service scope, tools, infrastructure, eligibility and commercial terms are established through discussion.
+To run the browser suite locally, install dependencies with `npm ci` and `npx playwright install`. Start a static server, set `BASE_URL` to the site path served by it and run `npm test`.
 
-## Maintain
+## Contact form
 
-- Page content and shared HTML: `scripts/build_site.py`
-- Original illustration generator: `scripts/build_visual.py`
-- Active styles: `assets/site-v31.css`
-- Navigation, hero, filtering and enquiry: `assets/site-v31.js`
-- Existing company logo and approved leadership portrait retained.
+The form uses the existing Supabase Edge Function and payload. Application, service and engagement links pass the visitor's selected topic to Contact. A confirmed success clears the form. An unconfirmed delivery keeps the visitor's details and offers an email link. Visitors browsing without JavaScript can use the email address on Contact. Browser tests intercept submission requests.
 
-Run `npm run build` after changing the page generator. Run `npm run check` for static integrity. Browser tests use `npm ci` and Playwright via Website Release QA.
+## Deployment
 
-Earlier design scripts, styles, tests and release notes are historical; V31 pages load only the active stylesheet and runtime. Older white-only/no-motion design instructions are superseded by the requested V31 redesign. The prior disclosure, verified-claim and staging/production separation requirements remain in force.
+The default branch publishes the staging site through GitHub Pages. Staging blocks search indexing. The custom domain uses a separate deployment.
 
-## Enquiry handling
-
-The form preserves the existing Supabase Edge Function endpoint and payload contract. Success is displayed only after an HTTP success with `ok: true`. Failure retains user input and presents a manual email fallback. No actual enquiry is sent by browser tests: endpoint requests are intercepted. No meeting is automatically booked; the meeting CTA preselects a meeting request on Contact.
-
-## Release and production
-
-CI checks all 24 pages at desktop/mobile widths in Chromium, Firefox and WebKit, core accessibility, navigation, hero controls, enquiry success/failure, and narrow layouts. It builds an audited production artifact only after checks pass.
-
-GitHub Pages publishes this repository as its existing staging website. Staging stays `noindex,nofollow`. The separate production domain is not changed by a repository push.
-
-Build production with `python scripts/prepare_production.py /tmp/zeptologic-production` and audit using `python scripts/production_audit.py /tmp/zeptologic-production`. The package enables indexing, retains non-indexing on 404/status pages, and supports canonical clean URLs on Apache/LiteSpeed. Production migration requires the existing host's deployment access, a backup and verification; see PRODUCTION-MIGRATION.md.
+To prepare an indexable build for the production host, run `python3 scripts/prepare_production.py /tmp/zeptologic-production` and `python3 scripts/production_audit.py /tmp/zeptologic-production`. The release workflow also prepares an audited production artifact. See [PRODUCTION-MIGRATION.md](PRODUCTION-MIGRATION.md) for the host deployment steps.

@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
-"""Content, disclosure, shared-layout and accessibility contract checks."""
+"""Check disclosure boundaries and the shared page and enquiry markup."""
+
 from pathlib import Path
 import re
-R=Path(__file__).resolve().parents[1]
-for p in R.glob('*.html'):
- s=p.read_text()
- assert 'Skip to content' in s and 'id="main"' in s,p
- assert 'aria-controls="primary-nav"' in s,p
- assert 'meta name="viewport"' in s,p
- assert s.count('<header')==1 and s.count('<footer')==1,p
- assert 'gsoc' not in s.lower() and 'swindon' not in s.lower(),p
- assert 'sundaramss.zeptologic@gmail.com' not in s,p
- assert not re.search(r'@(?:cysic|pixxel|qnulabs|cdot)\.',s),p
-js=(R/'assets/site-v31.js').read_text();css=(R/'assets/site-v31.css').read_text()
-assert '5000' in js and 'prefers-reduced-motion' in js and 'prefers-reduced-motion' in css
-assert 'AbortController' in js and '!r.ok||!out.ok' in js
-assert 'setCustomValidity' in js and 'textContent' in js
-assert 'false' in js
-assert 'setInterval' in js
-print('PASS: disclosure boundaries, shared navigation, motion controls and enquiry states')
+
+ROOT = Path(__file__).resolve().parents[1]
+
+for page in ROOT.glob("*.html"):
+    text = page.read_text(encoding="utf-8")
+    assert 'href="#main">Skip to content' in text and 'id="main"' in text, page
+    assert 'aria-controls="primary-nav"' in text, page
+    assert 'meta name="viewport"' in text, page
+    assert text.count("<header") == 1 and text.count("<footer") == 1, page
+    assert "gsoc" not in text.lower() and "swindon" not in text.lower(), page
+    assert "sundaramss.zeptologic@gmail.com" not in text, page
+    assert not re.search(r"@(?:cysic|pixxel|qnulabs|cdot)\.", text), page
+
+styles = (ROOT / "assets/site-v31.css").read_text(encoding="utf-8")
+contact = (ROOT / "contact.html").read_text(encoding="utf-8")
+assert "prefers-reduced-motion: reduce" in styles
+assert '<form id="technicalEnquiry" method="post" hidden>' in contact
+assert 'id="form-unavailable"' in contact
+assert 'id="form-status" role="status"' in contact
+assert 'id="contact-contexts" type="application/json"' in contact
+print("PASS: disclosure boundaries, reduced motion and enquiry fallback markup")
