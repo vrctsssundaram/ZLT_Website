@@ -1,5 +1,37 @@
 "use strict";
 
+function redirectToSolutions() {
+    const marker = document.querySelector("[data-solutions-redirect]");
+    if (!marker) return false;
+    const target = new URL(document.querySelector(".subhero .actions a").href);
+    const applicationLinks = [...document.querySelectorAll(".application-index a")];
+    const savedAnchor = applicationLinks.some(link => new URL(link.href).hash === location.hash);
+    target.hash = savedAnchor ? location.hash : marker.dataset.solutionsRedirect;
+    target.search = location.search;
+    location.replace(target.href);
+    return true;
+}
+
+function setupExplorers() {
+    for (const explorer of document.querySelectorAll("[data-choice-explorer]")) {
+        const controls = explorer.querySelector(".choice-controls");
+        const buttons = [...controls.querySelectorAll("button")];
+        function select(selected) {
+            for (const button of buttons) {
+                const active = button === selected;
+                button.setAttribute("aria-pressed", String(active));
+                document.getElementById(button.getAttribute("aria-controls")).hidden = !active;
+            }
+        }
+        controls.addEventListener("click", event => {
+            const button = event.target.closest("button");
+            if (button) select(button);
+        });
+        select(buttons[0]);
+        controls.hidden = false;
+    }
+}
+
 function setupNavigation() {
     const header = document.querySelector(".site-header");
     const navigation = document.getElementById("primary-nav");
@@ -68,6 +100,7 @@ function setupApplicationSearch() {
     const search = document.getElementById("application-search");
     if (!search) return;
 
+    const group = document.getElementById("application-group");
     const count = document.getElementById("application-count");
     const empty = document.getElementById("no-applications");
     const normalise = value => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
@@ -80,7 +113,8 @@ function setupApplicationSearch() {
         const words = normalise(search.value).split(" ").filter(Boolean);
         let visible = 0;
         for (const row of rows) {
-            const matches = words.every(word => row.text.includes(word));
+            const matches = (!group.value || group.value === row.element.dataset.focus)
+                && words.every(word => row.text.includes(word));
             row.element.hidden = !matches;
             if (matches) visible += 1;
         }
@@ -90,10 +124,12 @@ function setupApplicationSearch() {
 
     function resetSearch() {
         search.value = "";
+        group.value = "";
         filter();
     }
 
     search.addEventListener("input", filter);
+    group.addEventListener("change", filter);
     document.querySelector(".application-index").addEventListener("click", event => {
         if (event.target.closest("a")) resetSearch();
     });
@@ -240,6 +276,9 @@ function setupEnquiry() {
 }
 
 document.querySelector("[data-year]").textContent = new Date().getFullYear();
-setupNavigation();
-setupApplicationSearch();
-setupEnquiry();
+if (!redirectToSolutions()) {
+    setupNavigation();
+    setupApplicationSearch();
+    setupExplorers();
+    setupEnquiry();
+}

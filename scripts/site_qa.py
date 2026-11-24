@@ -50,9 +50,9 @@ def check(root,production=False):
  apps=json.loads((root/'assets/applications.json').read_text())
  if len(apps)!=13:failures.append('Exactly 13 application areas required')
  for app in apps:
-  if app['id'] not in pages['applications.html'].ids:failures.append(f'Missing application {app["id"]}')
+  if app['id'] not in pages['solutions.html'].ids:failures.append(f'Missing application {app["id"]}')
  urls={n.text for n in ET.parse(root/'sitemap.xml').getroot().iter() if n.tag.endswith('loc')}
- expected={p.canonical[0] for n,p in pages.items() if n not in ['404.html','enquiry-received.html']}
+ expected={p.canonical[0] for n,p in pages.items() if n not in ['404.html','enquiry-received.html','applications.html','research.html']}
  if urls!=expected:failures.append('Sitemap/canonical mismatch')
  if failures:print('\n'.join(failures));raise SystemExit(1)
  print(f'PASS: {len(pages)} pages, 13 areas, local links, anchors, metadata and claim checks')

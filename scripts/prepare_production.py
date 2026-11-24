@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 ROOT=Path(__file__).resolve().parents[1]
 DEST=Path(sys.argv[1]).resolve() if len(sys.argv)>1 else (ROOT/"dist-production")
-KEEP_NOINDEX={"404.html","enquiry-received.html"}
+KEEP_NOINDEX={"404.html","enquiry-received.html","applications.html","research.html"}
 STAGING_ROBOTS='<meta name="robots" content="noindex,nofollow">'
 PROD_ROBOTS='<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">'
 

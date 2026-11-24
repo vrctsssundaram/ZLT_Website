@@ -2,7 +2,7 @@ const { test, expect } = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 const fs = require("node:fs");
 
-const pages = fs.readdirSync(".").filter(file => file.endsWith(".html"));
+const pages = fs.readdirSync(".").filter(file => file.endsWith(".html") && !["applications.html", "research.html"].includes(file));
 const base = process.env.BASE_URL || "http://127.0.0.1:4173/ZLT_Website";
 
 async function overflowingElements(page) {
@@ -66,11 +66,14 @@ test("mobile navigation and service enquiry context", async ({ page }) => {
 });
 
 test("application search and enquiry context", async ({ page }) => {
-    await page.goto(base + "/applications.html");
+    await page.goto(base + "/solutions.html");
     const input = page.getByLabel("Find an application area");
     await input.fill("missing search result");
     await expect(page.locator("#no-applications")).toBeVisible();
+    await page.getByLabel("Technology focus").selectOption("compute");
     await input.fill("space");
+    await expect(page.locator("#no-applications")).toBeVisible();
+    await page.getByLabel("Technology focus").selectOption("systems");
     await expect(page.locator("#application-count")).toHaveText("1 application area");
     await expect(page.locator("[data-application]:visible")).toHaveCount(1);
     await page.locator("#space").getByRole("link", { name: "Discuss this area" }).click();
@@ -99,7 +102,7 @@ test("primary journeys work without JavaScript", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
     const page = await context.newPage();
     await page.goto(base + "/");
-    await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Applications" }).click();
+    await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Solutions" }).click();
     await expect(page.locator("[data-application]:visible")).toHaveCount(13);
     await page.getByRole("navigation", { name: "Jump to an application area" }).getByRole("link", { name: "Space & mission technology" }).click();
     await expect(page).toHaveURL(/#space$/);
@@ -147,8 +150,7 @@ test("unconfirmed delivery preserves input and offers email", async ({ page }) =
 test("accessibility on primary pages", async ({ page }) => {
     test.setTimeout(120000);
     for (const file of [
-        "index.html", "services.html", "rtl-design-services.html", "applications.html",
-        "research.html", "about.html", "engagement-models.html", "contact.html", "careers.html",
+        "index.html", "services.html", "rtl-design-services.html", "solutions.html", "about.html", "engagement-models.html", "contact.html", "careers.html",
     ]) {
         await page.goto(base + "/" + file);
         const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
@@ -158,7 +160,7 @@ test("accessibility on primary pages", async ({ page }) => {
 
 test("narrow and zoomed layout", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 900 });
-    for (const file of ["index.html", "contact.html", "applications.html", "about.html"]) {
+    for (const file of ["index.html", "contact.html", "solutions.html", "about.html"]) {
         await page.goto(base + "/" + file);
         expect(await overflowingElements(page), file).toEqual([]);
     }
@@ -166,4 +168,25 @@ test("narrow and zoomed layout", async ({ page }) => {
     await page.goto(base + "/");
     await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBeTruthy();
+});
+
+test("saved Solutions links and page-specific explorers", async ({ page }) => {
+    await page.goto(base + "/applications.html#space");
+    await expect(page).toHaveURL(/solutions\.html#space$/);
+    await page.goto(base + "/research.html");
+    await expect(page).toHaveURL(/solutions\.html#research$/);
+    await expect(page.getByRole("heading", {name: "From research question to hardware"})).toBeVisible();
+
+    await page.goto(base + "/services.html");
+    const prototyping = page.getByRole("button", {name: "Prototyping", exact: true});
+    await prototyping.press("Enter");
+    await expect(prototyping).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("heading", {name: "Run a design on hardware"})).toBeVisible();
+    await expect(page.getByRole("heading", {name: "Assess feasibility"})).toBeHidden();
+
+    await page.goto(base + "/about.html");
+    const collaboration = page.getByRole("button", {name: "Collaboration", exact: true});
+    await collaboration.click();
+    await expect(collaboration).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("link", {name: "Explore partnerships"})).toHaveAttribute("href", "ecosystem.html");
 });

@@ -12,7 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 ORIGIN = "https://zeptologic.com"
 COMPANY = "Zepto Logic Technologies Private Limited"
 EMAIL = "info@zeptologic.com"
-RELEASE = "20261123"
+RELEASE = "20261124"
+LEGACY_SOLUTIONS = {"applications", "research"}
 STAGING_PREFIX = "/ZLT_Website/"
 UTILITY = {"404", "enquiry-received", "privacy", "terms"}
 ICONS = {
@@ -88,8 +89,7 @@ def navigation(current):
             {brand()}
             <nav id="primary-nav" aria-label="Primary navigation">
                 {group("services", "Services", [*SERVICE_LINKS, ("engagement-models", "Ways to work with us")])}
-                {nav_link("applications", "Applications")}
-                {nav_link("research", "Research", current in GROUPS["research"])}
+                {nav_link("solutions", "Solutions", current in GROUPS["research"])}
                 {group("about", "Company", COMPANY_LINKS[1:])}
                 {nav_link("careers", "Careers")}
             </nav>
@@ -110,8 +110,7 @@ def footer():
             </div>
             <div><h2>Engineering</h2>
                 <a href="services.html">Services</a>
-                <a href="applications.html">Applications</a>
-                <a href="research.html">Research</a>
+                <a href="solutions.html">Solutions</a>
                 <a href="engagement-models.html">Ways to work with us</a>
             </div>
             <div><h2>Company</h2>
@@ -139,7 +138,7 @@ def canonical(slug):
 def write_page(slug, title, description, body, contact=True):
     PAGES.append(slug)
     title = f"{title} | Zepto Logic Technologies"
-    url = canonical(slug)
+    url = canonical("solutions" if slug in LEGACY_SOLUTIONS else slug)
     schema = ""
     if slug == "index":
         organization = {
@@ -167,7 +166,7 @@ def write_page(slug, title, description, body, contact=True):
     <title>{escape(title)}</title>
     <meta name="description" content="{escape(description)}">
     <meta name="robots" content="noindex,nofollow">
-    <meta name="theme-color" content="#0a192b">
+    <meta name="theme-color" content="#e5f5fb">
     <link rel="canonical" href="{url}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Zepto Logic Technologies">
@@ -290,7 +289,7 @@ def write_home():
         ("Design & verification", "services.html", "chip"),
         ("FPGA prototypes", "fpga-prototyping-services.html", "board"),
         ("Engineering reviews", "consultancy.html", "compass"),
-        ("Research partnerships", "research.html", "orbit"),
+        ("Research partnerships", "solutions.html#research", "orbit"),
     ]
     quick_links = "".join(
         f'<a href="{url}">{icon(symbol)}<span>{escape(title)}</span>{icon("arrow", "quick-arrow")}</a>'
@@ -334,14 +333,14 @@ def write_home():
     )
     selected = ("compute", "security", "edge-ai", "industrial", "networks", "instrumentation")
     areas = "".join(
-        f'<a href="applications.html#{slug}">{icon(symbol)}<span>{escape(title)}</span>{icon("arrow")}</a>'
+        f'<a href="solutions.html#{slug}">{icon(symbol)}<span>{escape(title)}</span>{icon("arrow")}</a>'
         for slug, title, symbol, _, _ in APPLICATIONS if slug in selected
     )
     body += section(f"""<div class="split">
         <div>
             <h2>Where we can help</h2>
             <p class="section-lead">Find examples of the hardware design, testing and integration work you can discuss with our team.</p>
-            {link("Browse application areas", "applications.html", "button button-outline")}
+            {link("Explore solutions", "solutions.html", "button button-outline")}
         </div>
         <div class="application-links">{areas}</div>
     </div>""", "section-ink", "section-3")
@@ -359,6 +358,22 @@ def write_home():
     )
 
 
+def choice_explorer(key, label, choices):
+    buttons = "".join(
+        f'<button type="button" aria-pressed="false" aria-controls="{key}-{i}">'
+        f'{icon(symbol)}<span>{escape(name)}</span></button>'
+        for i, (name, symbol, *_rest) in enumerate(choices)
+    )
+    panels = "".join(
+        f'<article id="{key}-{i}" class="choice-result"><h3>{escape(title)}</h3>'
+        f'<p>{escape(description)}</p>{link(action, url, "text-link")}</article>'
+        for i, (_name, _symbol, title, description, action, url) in enumerate(choices)
+    )
+    return (f'<div class="choice-explorer {key}" data-choice-explorer>'
+            f'<div class="choice-controls" role="group" aria-label="{escape(label)}" hidden>{buttons}</div>'
+            f'<div class="choice-results" aria-live="polite">{panels}</div></div>')
+
+
 def write_services():
     body = hero(
         "Semiconductor engineering services",
@@ -366,6 +381,15 @@ def write_services():
         label="Services",
         actions=link("Discuss a project", "contact.html")
         + link("See engineering services", "#engineering-services", "button button-outline", "down"),
+    )
+    body += section(
+        heading("Find support for your project stage")
+        + choice_explorer("project-stages", "Project stage", (
+            ("Planning", "compass", "Assess feasibility", "Compare design options and identify constraints before committing to a build.", "Explore consultancy", "consultancy.html"),
+            ("Designing", "chip", "Define and build digital logic", "Bring your requirements or interfaces and discuss architecture, RTL and integration.", "Explore chip design", "rtl-design-services.html"),
+            ("Verifying", "check", "Check design behaviour", "Discuss a verification plan, simulation, debugging or coverage reviews.", "Explore verification", "verification-coverage-closure.html"),
+            ("Prototyping", "board", "Run a design on hardware", "Discuss platform selection, implementation and testing on an FPGA board.", "Explore FPGA prototyping", "fpga-prototyping-services.html"),
+        )), "section-soft", "project-stages",
     )
     body += section(
         heading("Where do you need support?", "Choose the work you need done or start with a technical review.")
@@ -392,7 +416,7 @@ def write_services():
 def write_details():
     for slug, (title, description, scope, share) in DETAILS.items():
         if slug in GROUPS["research"]:
-            parent = ("Research", "research.html")
+            parent = ("Solutions", "solutions.html#research")
         elif slug in GROUPS["about"]:
             parent = ("Company", "about.html")
         else:
@@ -408,25 +432,41 @@ def write_details():
         write_page(slug, title, description, body, contact=False)
 
 
-def write_applications():
+def write_solutions():
     body = hero(
-        "Application areas",
-        "See where digital design, verification and FPGA prototyping can fit into your product or research project.",
-        actions=link("Find your application", "#application-search-section", "button button-outline", "down"),
+        "Semiconductor solutions",
+        "Find where our hardware engineering fits your product, or work with us to take a research idea into hardware.",
+        label="Solutions",
+        actions=link("Explore application areas", "#application-search-section", "button", "down")
+        + link("Explore research collaboration", "#research", "button button-outline", "down"),
     )
     areas = "".join(
         f'<a href="#{slug}">{escape(title)}</a>' for slug, title, _, _, _ in APPLICATIONS
     )
     body += section(f"""<div class="application-tools" id="application-search-section">
+        <h2>Find your application area</h2>
         <div id="search-controls" hidden>
             <label for="application-search">Find an application area</label>
             <input type="search" id="application-search" placeholder="Try telecom, robotics or research" autocomplete="off">
+            <label for="application-group">Technology focus</label>
+            <select id="application-group">
+                <option value="">All areas</option>
+                <option value="compute">Computing &amp; security</option>
+                <option value="systems">Devices &amp; infrastructure</option>
+                <option value="research">Research &amp; collaboration</option>
+            </select>
             <p id="application-count" role="status">{len(APPLICATIONS)} application areas</p>
         </div>
         <nav class="application-index" aria-label="Jump to an application area">{areas}</nav>
     </div>""", "section-soft section-tight")
+    categories = {
+        "compute": {"compute", "security", "edge-ai", "financial", "processors"},
+        "systems": {"industrial", "autonomous", "space", "networks", "instrumentation"},
+        "research": {"quantum", "engineering", "institutions"},
+    }
+    focus = {slug: group for group, slugs in categories.items() for slug in slugs}
     listing = "".join(
-        f"""<article class="application-row" id="{slug}" data-application="{escape(f'{title} {example} {search_terms}')}">
+        f"""<article class="application-row" id="{slug}" data-focus="{focus[slug]}" data-application="{escape(f'{title} {example} {search_terms}')}">
             <span class="icon-tile">{icon(symbol)}</span>
             <div><h2>{escape(title)}</h2><p>{escape(example)}</p></div>
             {link("Discuss this area", f"contact.html?area={slug}", "text-link")}
@@ -436,11 +476,31 @@ def write_applications():
     body += section(f"""<div id="application-list">{listing}</div>
         <p id="no-applications" hidden>No matching areas. Try a different term or browse the links above.</p>""",
         "section-tight")
+    body += research_section()
     write_page(
-        "applications", "Semiconductor application areas",
-        "Explore semiconductor engineering for compute, security, networks, sensing, industrial systems, embedded devices and research.",
+        "solutions", "Semiconductor solutions & applied research",
+        "Explore semiconductor applications, feasibility studies, FPGA prototypes and applied research collaboration.",
         body,
     )
+
+
+def write_legacy_solutions():
+    for slug, title, target in (
+        ("applications", "Application areas", "application-search-section"),
+        ("research", "Applied research", "research"),
+    ):
+        path = f"solutions.html#{target}"
+        body = hero(
+            title, "Explore this topic on the Solutions page.",
+            actions=link("Go to Solutions", path),
+        )
+        body += f'<span data-solutions-redirect="{target}" hidden></span>'
+        if slug == "applications":
+            links = "".join(f'<a href="solutions.html#{area}">{escape(label)}</a>'
+                            for area, label, *_ in APPLICATIONS)
+            body += section(f'<nav class="application-index" aria-label="Application areas">{links}</nav>')
+        write_page(slug, title, "Continue to Zepto Logic’s Solutions page.", body, contact=False)
+
 
 
 def write_engagement():
@@ -472,13 +532,8 @@ def write_engagement():
     )
 
 
-def write_research():
-    body = hero(
-        "Applied research & development",
-        "Work with us to assess an idea, build a prototype and decide what to test next.",
-        label="Research", actions=link("Discuss research collaboration", "contact.html?type=research"),
-    )
-    body += section(
+def research_section():
+    body = section(
         heading("From research question to hardware", "For technology teams, universities and research labs exploring a hardware idea.")
         + '<div class="card-grid">'
         + card("Feasibility studies", "consultancy.html", "compass",
@@ -487,7 +542,7 @@ def write_research():
                "Turn a research idea into a testable implementation with a plan for evaluating it.")
         + card("Joint research projects", "engagement-models.html#collaboration", "orbit",
                "Agree research goals, responsibilities and how the teams will review results.")
-        + "</div>",
+        + "</div>", "research-section", "research",
     )
     body += section(f"""<div class="split">
         <div><h2>Research topics</h2>
@@ -495,13 +550,9 @@ def write_research():
         <div>{check_list(("Cryptographic hardware and post-quantum security",
                           "Digital accelerators and processing on embedded devices",
                           "Control, readout and measurement electronics"))}
-        {link("See application areas", "applications.html", "text-link")}</div>
+        {link("Discuss research collaboration", "contact.html?type=research")}</div>
     </div>""", "section-soft")
-    write_page(
-        "research", "Applied semiconductor research & development",
-        "Discuss research collaboration, feasibility, FPGA prototypes and hardware evaluation with Zepto Logic Technologies.",
-        body,
-    )
+    return body
 
 
 def write_company():
@@ -523,6 +574,15 @@ def write_company():
             {link("See our services", "services.html", "text-link")}
         </div>
     </div>""")
+    body += section(
+        heading("How we work with your team")
+        + choice_explorer("working-principles", "Working principles", (
+            ("Clarity", "compass", "Agree what success looks like", "Define the scope, interfaces, ownership and review criteria with your team.", "See ways to work with us", "engagement-models.html"),
+            ("Evidence", "check", "Make results reviewable", "Agree which simulation results, measurements or prototype tests will inform the next decision.", "See verification services", "verification-coverage-closure.html"),
+            ("Collaboration", "network", "Plan the handover together", "Agree how teams share progress, resolve open questions and hand over design or test material.", "Explore partnerships", "ecosystem.html"),
+            ("Confidentiality", "shield", "Set the terms for sharing", "Start with a short project description and agree confidentiality arrangements before exchanging details.", "Discuss a project", "contact.html"),
+        )), "section-soft", "how-we-work",
+    )
     body += section("""<div class="leadership">
         <img src="assets/people/suresh-kuppuswamy.jpg" width="480" height="560" loading="lazy" alt="Suresh Kuppuswamy">
         <div>
@@ -719,8 +779,8 @@ def write_other_pages():
     body = hero(
         "Research programme enquiries",
         "For information about a specific research or institutional project, contact our team with the programme name and your question.",
-        ("Research", "research.html"), label="Programme enquiries",
-        actions=link("Contact research team", "contact.html?type=research") + link("Explore applied research", "research.html", "button button-outline"),
+        ("Solutions", "solutions.html#research"), label="Programme enquiries",
+        actions=link("Contact research team", "contact.html?type=research") + link("Explore applied research", "solutions.html#research", "button button-outline"),
     )
     write_page("cdot-samarth-zksnark", "Research programme enquiries",
                "Ask Zepto Logic Technologies about a research or institutional programme.", body, contact=False)
@@ -762,16 +822,16 @@ def main():
     write_home()
     write_services()
     write_details()
-    write_applications()
+    write_solutions()
+    write_legacy_solutions()
     write_engagement()
-    write_research()
     write_company()
     write_careers()
     write_contact()
     write_other_pages()
     urls = "\n".join(
         f"    <url><loc>{canonical(slug)}</loc></url>"
-        for slug in PAGES if slug not in {"404", "enquiry-received"}
+        for slug in PAGES if slug not in {"404", "enquiry-received", *LEGACY_SOLUTIONS}
     )
     (ROOT / "sitemap.xml").write_text(f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
