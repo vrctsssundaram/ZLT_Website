@@ -5,7 +5,7 @@ from site_qa import check,Page
 R=Path(sys.argv[1]).resolve();check(R,production=True)
 for f in R.glob('*.html'):
  p=Page();p.feed(f.read_text())
- if f.name in ('404.html','enquiry-received.html'):assert 'noindex' in p.robots[0]
+ if f.name in ('404.html','enquiry-received.html','applications.html','research.html'):assert 'noindex' in p.robots[0]
  else:assert 'noindex' not in p.robots[0] and 'index' in p.robots[0]
  assert not any(ref.startswith('assets/') for ref in p.refs), 'Production asset routes must be root relative'
 assert (R/'.htaccess').exists()

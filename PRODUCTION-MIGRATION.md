@@ -51,8 +51,8 @@ If production is deployed to a host that does not use Apache/LiteSpeed rewrites,
    - `/`
    - `/products/`
    - `/services/`
-   - `/applications/`
-   - `/research/`
+   - `/solutions/`
+   - legacy `/applications/` and `/research/` forwarding
    - `/about/`
    - `/contact/`
    - specialist landing pages

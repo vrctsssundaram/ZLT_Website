@@ -1,6 +1,6 @@
 # Zepto Logic Technologies website
 
-The 24-page static site introduces digital chip design, verification, FPGA prototyping, engineering consultancy and applied research. The homepage uses an original illustration and a fixed introduction. Responsive navigation and service links guide visitors to the relevant project enquiry.
+The static site introduces digital chip design, verification, FPGA prototyping, engineering consultancy and applied research. The homepage uses an original illustration and a fixed introduction. Responsive navigation and service links guide visitors to the relevant project enquiry.
 
 - [GitHub Pages staging site](https://vrctsssundaram.github.io/ZLT_Website/)
 - [Separate production website](https://zeptologic.com/)
@@ -12,9 +12,13 @@ The 24-page static site introduces digital chip design, verification, FPGA proto
 - Active styles and browser interactions in `assets/site-v31.css` and `assets/site-v31.js`
 - Image and font sources in `ASSET-MANIFEST.json`
 
-Run `npm run build` after changing the content or templates and commit the generated HTML and sitemap. Run `npm run check` before publishing. The release workflow tests all 24 pages at desktop and mobile widths in Chromium, Firefox and WebKit, and checks keyboard navigation, accessibility, application search and enquiry handling.
+Run `npm run build` after changing the content or templates and commit the generated HTML and sitemap. Run `npm run check` before publishing. The release workflow tests all active pages at desktop and mobile widths in Chromium, Firefox and WebKit, and checks keyboard navigation, accessibility, application search and enquiry handling.
 
 To run the browser suite locally, install dependencies with `npm ci` and `npx playwright install`. Start a static server, set `BASE_URL` to the site path served by it and run `npm test`.
+
+## Solutions
+
+The Solutions page combines application areas and applied research. The previous Applications and Research URLs forward to it and provide direct links when JavaScript is disabled.
 
 ## Contact form
 
