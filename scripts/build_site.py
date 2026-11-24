@@ -179,7 +179,7 @@ def write_page(slug, title, description, body, contact=True):
     <link rel="icon" href="assets/brand/favicon-32.png">
     <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
     <link rel="preload" href="assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/site-v31.css?v={RELEASE}">
+    <link rel="stylesheet" href="assets/site-v31.css?v={RELEASE}{"-logo" if slug == "index" else ""}">
     <script defer src="assets/site-v31.js?v={RELEASE}"></script>
     {schema}
 </head>
@@ -309,11 +309,10 @@ def write_home():
                 </div>
                 <figure class="hero-image">
                     <picture>
-                        <source media="(max-width: 600px)" srcset="assets/visuals/fpga-board-small.webp">
-                        <img src="assets/visuals/fpga-board.webp" width="1140" height="912"
-                            alt="" fetchpriority="high">
+                        <source media="(max-width: 600px)" srcset="assets/brand/zepto-hero-small.webp">
+                        <img src="assets/brand/zepto-hero.webp" width="1000" height="1000"
+                            alt="Zepto Logic logo" fetchpriority="high">
                     </picture>
-                    <figcaption>{icon("board")} <span>FPGA development board illustration</span></figcaption>
                 </figure>
             </div>
             <nav class="quick-paths" aria-label="Explore our work">

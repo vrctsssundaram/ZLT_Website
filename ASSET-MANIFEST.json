@@ -1,10 +1,17 @@
 {
-  "active_styles": ["assets/site-v31.css"],
-  "active_scripts": ["assets/site-v31.js"],
+  "active_styles": [
+    "assets/site-v31.css"
+  ],
+  "active_scripts": [
+    "assets/site-v31.js"
+  ],
   "visuals": [
     {
-      "files": ["assets/visuals/fpga-board.webp", "assets/visuals/fpga-board-small.webp"],
-      "origin": "Original generated illustration of an FPGA development board"
+      "files": [
+        "assets/brand/zepto-hero.webp",
+        "assets/brand/zepto-hero-small.webp"
+      ],
+      "origin": "Zepto Logic logo supplied by the site owner"
     }
   ],
   "font": {
@@ -17,5 +24,7 @@
     "assets/brand/zepto-mark.webp",
     "assets/brand/og-image.jpg"
   ],
-  "people": ["assets/people/suresh-kuppuswamy.jpg"]
+  "people": [
+    "assets/people/suresh-kuppuswamy.jpg"
+  ]
 }

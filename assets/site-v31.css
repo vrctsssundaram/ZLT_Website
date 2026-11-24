@@ -342,30 +342,14 @@ address { font-style: normal; }
 
 .home-hero .lead { max-width: 31rem; }
 .hero-image {
-    position: relative;
-    margin: 0;
-    align-self: center;
-}
-
-.hero-image picture { display: block; }
-.hero-image img {
     width: 100%;
-    height: auto;
-    aspect-ratio: 5 / 4;
-    object-fit: cover;
-    filter: brightness(1.28) saturate(.9);
-    mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, #000 35%, #000d 49%, transparent 69%);
+    max-width: 35rem;
+    margin: 0;
+    justify-self: center;
+    mix-blend-mode: multiply;
 }
 
-.hero-image figcaption {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: .5rem;
-    color: var(--muted);
-    font-size: .78rem;
-    text-align: center;
-}
+.hero-image img { width: 100%; height: auto; }
 
 .quick-paths {
     margin-top: clamp(2.2rem, 5vw, 4.4rem);
@@ -852,7 +836,6 @@ textarea { display: block; resize: vertical; }
     .hero-layout { grid-template-columns: minmax(0, 1fr); }
     .home-hero h1 { font-size: clamp(2.8rem, 9.8vw, 4.75rem); }
     .home-hero .actions .button { padding-inline: .78rem; gap: .42rem; font-size: .86rem; }
-    .hero-image { max-width: 35rem; }
     .quick-paths, .card-grid, .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .split, .contact-layout, .subhero-grid { grid-template-columns: minmax(0, 1fr); }
     .subhero-grid { align-items: start; }
